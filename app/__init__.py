@@ -77,12 +77,25 @@ def create_app(config_name='default'):
 
 def get_locale():
     """Get user's preferred language"""
-    # Try to get language from session
+    from flask_login import current_user
+
+    # 1. Try to get language from session (highest priority)
     if 'language' in session:
         return session['language']
-    # Try to get from user settings (if logged in)
-    # Otherwise use browser's accept language
-    return request.accept_languages.best_match(['ar', 'en']) or 'ar'
+
+    # 2. Try to get from user settings (if logged in)
+    if current_user and current_user.is_authenticated:
+        if hasattr(current_user, 'language') and current_user.language:
+            session['language'] = current_user.language
+            return current_user.language
+
+    # 3. Try browser's accept language
+    browser_lang = request.accept_languages.best_match(['ar', 'en'])
+    if browser_lang:
+        return browser_lang
+
+    # 4. Default to Arabic
+    return 'ar'
 
 from app import models
 from app import models_license
