@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}عروض الأسعار - نظام إدارة المخزون{% endblock %}
+{% block page_title %}عروض الأسعار{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-file-contract"></i> عروض الأسعار</h2>
+                <p class="text-muted mb-0">عرض وإدارة جميع عروض الأسعار</p>
+            </div>
+            <div>
+                <a href="{{ url_for('sales.add_quotation') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> إضافة عرض سعر جديد
+                </a>
+                <a href="{{ url_for('sales.invoices') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-invoice"></i> الفواتير
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('sales.quotations') }}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="search" placeholder="بحث برقم عرض السعر..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="status">
+                            <option value="">جميع الحالات</option>
+                            <option value="draft" {% if status == 'draft' %}selected{% endif %}>مسودة</option>
+                            <option value="sent" {% if status == 'sent' %}selected{% endif %}>مرسل</option>
+                            <option value="accepted" {% if status == 'accepted' %}selected{% endif %}>مقبول</option>
+                            <option value="rejected" {% if status == 'rejected' %}selected{% endif %}>مرفوض</option>
+                            <option value="expired" {% if status == 'expired' %}selected{% endif %}>منتهي</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-search"></i> بحث
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quotations Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>رقم العرض</th>
+                            <th>التاريخ</th>
+                            <th>صالح حتى</th>
+                            <th>العميل</th>
+                            <th>المبلغ الإجمالي</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quotation in quotations.items %}
+                        <tr>
+                            <td><strong>{{ quotation.quotation_number }}</strong></td>
+                            <td>{{ quotation.quotation_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if quotation.valid_until %}
+                                    {{ quotation.valid_until.strftime('%Y-%m-%d') }}
+                                    {% if quotation.valid_until < today and quotation.status not in ['accepted', 'rejected'] %}
+                                        <span class="badge bg-danger ms-1">منتهي</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ quotation.customer.name }}</td>
+                            <td><strong>{{ "%.2f"|format(quotation.total_amount) }} ر.س</strong></td>
+                            <td>
+                                {% if quotation.status == 'draft' %}
+                                    <span class="badge bg-secondary">مسودة</span>
+                                {% elif quotation.status == 'sent' %}
+                                    <span class="badge bg-info">مرسل</span>
+                                {% elif quotation.status == 'accepted' %}
+                                    <span class="badge bg-success">مقبول</span>
+                                {% elif quotation.status == 'rejected' %}
+                                    <span class="badge bg-danger">مرفوض</span>
+                                {% elif quotation.status == 'expired' %}
+                                    <span class="badge bg-warning">منتهي</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('sales.quotation_details', id=quotation.id) }}" class="btn btn-sm btn-outline-info" title="عرض التفاصيل">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if quotation.status in ['draft', 'sent', 'accepted'] %}
+                                <button class="btn btn-sm btn-outline-success" title="تحويل لفاتورة" 
+                                        onclick="showConvertModal({{ quotation.id }}, '{{ quotation.quotation_number }}')">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                                {% endif %}
+                                {% if quotation.status != 'accepted' %}
+                                <form method="POST" action="{{ url_for('sales.delete_quotation', id=quotation.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف" 
+                                            onclick="return confirm('هل أنت متأكد من حذف عرض السعر؟')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <a href="#" class="btn btn-sm btn-outline-secondary" title="طباعة">
+                                    <i class="fas fa-print"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                <h5>لا توجد عروض أسعار</h5>
+                                <p>ابدأ بإضافة عرض سعر جديد</p>
+                                <a href="{{ url_for('sales.add_quotation') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> إضافة عرض سعر
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if quotations.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-3">
+        <ul class="pagination justify-content-center">
+            {% if quotations.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('sales.quotations', page=quotations.prev_num, search=search, status=status) }}">السابق</a>
+            </li>
+            {% endif %}
+
+            {% for page_num in quotations.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if page_num == quotations.page %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('sales.quotations', page=page_num, search=search, status=status) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if quotations.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('sales.quotations', page=quotations.next_num, search=search, status=status) }}">التالي</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Convert to Invoice Modal -->
+<div class="modal fade" id="convertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-exchange-alt"></i> تحويل إلى فاتورة</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="convertForm">
+                <div class="modal-body">
+                    <p>هل تريد تحويل عرض السعر <strong id="quotation_number_display"></strong> إلى فاتورة بيع؟</p>
+
+                    <div class="mb-3">
+                        <label for="warehouse_id" class="form-label">المستودع <span class="text-danger">*</span></label>
+                        <select class="form-select" id="warehouse_id" name="warehouse_id" required>
+                            <option value="">-- اختر المستودع --</option>
+                            {% for warehouse in warehouses %}
+                            <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        سيتم إنشاء فاتورة بيع جديدة بنفس البنود والأسعار
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> تحويل
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showConvertModal(quotationId, quotationNumber) {
+    document.getElementById('convertForm').action = "{{ url_for('sales.convert_quotation_to_invoice', id=0) }}".replace('0', quotationId);
+    document.getElementById('quotation_number_display').textContent = quotationNumber;
+
+    var modal = new bootstrap.Modal(document.getElementById('convertModal'));
+    modal.show();
+}
+
+// Set today's date for comparison
+const today = new Date().toISOString().split('T')[0];
+</script>
+
+<style>
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}تقرير ملخص الحضور{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-line"></i> تقرير ملخص الحضور</h2>
+        <div>
+            <button onclick="window.print()" class="btn btn-info">
+                <i class="fas fa-print"></i> طباعة
+            </button>
+            <a href="{{ url_for('hr.reports') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right"></i> العودة
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('hr.attendance_summary_report') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">الشهر</label>
+                    <select class="form-select" name="month">
+                        {% for m in range(1, 13) %}
+                        <option value="{{ m }}" {% if month == m %}selected{% endif %}>{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">السنة</label>
+                    <select class="form-select" name="year">
+                        {% for y in range(2020, 2031) %}
+                        <option value="{{ y }}" {% if year == y %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> عرض التقرير
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Title -->
+    <div class="text-center mb-4">
+        <h4>تقرير ملخص الحضور لشهر {{ month }}/{{ year }}</h4>
+    </div>
+
+    <!-- Summary Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-table"></i> ملخص الحضور</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>رقم الموظف</th>
+                            <th>الاسم</th>
+                            <th>القسم</th>
+                            <th>أيام الحضور</th>
+                            <th>أيام الغياب</th>
+                            <th>أيام التأخير</th>
+                            <th>إجمالي الساعات</th>
+                            <th>الساعات الإضافية</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in attendance_data %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ data.employee.employee_number }}</strong></td>
+                            <td>{{ data.employee.first_name }} {{ data.employee.last_name }}</td>
+                            <td>{{ data.employee.department.name if data.employee.department else '-' }}</td>
+                            <td><span class="badge bg-success">{{ data.present_days }}</span></td>
+                            <td><span class="badge bg-danger">{{ data.absent_days }}</span></td>
+                            <td><span class="badge bg-warning">{{ data.late_days }}</span></td>
+                            <td>{{ '%.2f'|format(data.total_hours) }}</td>
+                            <td>{{ '%.2f'|format(data.overtime_hours) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا توجد بيانات للفترة المحددة
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if attendance_data %}
+                    <tfoot class="table-light">
+                        <tr>
+                            <th colspan="4" class="text-end">الإجمالي:</th>
+                            <th><span class="badge bg-success">{{ attendance_data|sum(attribute='present_days') }}</span></th>
+                            <th><span class="badge bg-danger">{{ attendance_data|sum(attribute='absent_days') }}</span></th>
+                            <th><span class="badge bg-warning">{{ attendance_data|sum(attribute='late_days') }}</span></th>
+                            <th>{{ '%.2f'|format(attendance_data|sum(attribute='total_hours')) }}</th>
+                            <th>{{ '%.2f'|format(attendance_data|sum(attribute='overtime_hours')) }}</th>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    {% if attendance_data %}
+    <div class="row mt-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <h3>{{ attendance_data|sum(attribute='present_days') }}</h3>
+                    <p class="mb-0">إجمالي أيام الحضور</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body text-center">
+                    <h3>{{ attendance_data|sum(attribute='absent_days') }}</h3>
+                    <p class="mb-0">إجمالي أيام الغياب</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body text-center">
+                    <h3>{{ attendance_data|sum(attribute='late_days') }}</h3>
+                    <p class="mb-0">إجمالي أيام التأخير</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body text-center">
+                    <h3>{{ '%.0f'|format(attendance_data|sum(attribute='overtime_hours')) }}</h3>
+                    <p class="mb-0">إجمالي الساعات الإضافية</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar, .card:first-child {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
+

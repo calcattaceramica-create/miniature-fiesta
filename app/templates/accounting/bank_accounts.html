@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}الحسابات البنكية - نظام إدارة المخزون{% endblock %}
+{% block page_title %}الحسابات البنكية{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-university"></i> الحسابات البنكية</h4>
+                    <a href="{{ url_for('accounting.add_bank_account') }}" class="btn btn-light">
+                        <i class="fas fa-plus"></i> إضافة حساب بنكي
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Summary Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <h6 class="card-title">إجمالي الأرصدة</h6>
+                                    <h3 class="mb-0">{{ "{:,.2f}".format(total_balance) }} ريال</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <h6 class="card-title">عدد الحسابات النشطة</h6>
+                                    <h3 class="mb-0">{{ accounts|length }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body">
+                                    <h6 class="card-title">العملات</h6>
+                                    <h3 class="mb-0">SAR, USD, EUR</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accounts Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>اسم الحساب</th>
+                                    <th>رقم الحساب</th>
+                                    <th>البنك</th>
+                                    <th>الفرع</th>
+                                    <th>IBAN</th>
+                                    <th>العملة</th>
+                                    <th>الرصيد الحالي</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for account in accounts %}
+                                <tr>
+                                    <td><strong>{{ account.account_name }}</strong></td>
+                                    <td>{{ account.account_number or '-' }}</td>
+                                    <td>{{ account.bank_name or '-' }}</td>
+                                    <td>{{ account.branch or '-' }}</td>
+                                    <td>
+                                        {% if account.iban %}
+                                            <small class="font-monospace">{{ account.iban }}</small>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ account.currency }}</span>
+                                    </td>
+                                    <td>
+                                        <strong class="{% if account.current_balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                            {{ "{:,.2f}".format(account.current_balance) }}
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        {% if account.is_active %}
+                                            <span class="badge bg-success">نشط</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">غير نشط</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">لا توجد حسابات بنكية</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

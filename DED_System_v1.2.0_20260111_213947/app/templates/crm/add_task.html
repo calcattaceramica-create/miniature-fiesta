@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة مهمة - CRM{% endblock %}
+{% block page_title %}إضافة مهمة{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-tasks"></i> إضافة مهمة جديدة</h3>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('crm.add_task') }}">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">العنوان <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نوع المهمة</label>
+                        <select class="form-select" name="task_type">
+                            <option value="call">مكالمة</option>
+                            <option value="email">بريد إلكتروني</option>
+                            <option value="meeting">اجتماع</option>
+                            <option value="follow_up">متابعة</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الأولوية</label>
+                        <select class="form-select" name="priority">
+                            <option value="low">منخفضة</option>
+                            <option value="normal" selected>عادية</option>
+                            <option value="high">عالية</option>
+                            <option value="urgent">عاجلة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحالة</label>
+                        <select class="form-select" name="status">
+                            <option value="pending" selected>معلقة</option>
+                            <option value="in_progress">قيد التنفيذ</option>
+                            <option value="completed">مكتملة</option>
+                            <option value="cancelled">ملغاة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ الاستحقاق</label>
+                        <input type="datetime-local" class="form-control" name="due_date">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المسؤول</label>
+                        <select class="form-select" name="assigned_to">
+                            <option value="">اختر المسؤول</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Related To -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-link"></i> مرتبط بـ</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">عميل محتمل</label>
+                        <select class="form-select" name="lead_id">
+                            <option value="">اختر العميل المحتمل</option>
+                            {% for lead in leads %}
+                            <option value="{{ lead.id }}" {% if request.args.get('lead_id') == lead.id|string %}selected{% endif %}>
+                                {{ lead.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">عميل</label>
+                        <select class="form-select" name="customer_id">
+                            <option value="">اختر العميل</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">فرصة تجارية</label>
+                        <select class="form-select" name="opportunity_id">
+                            <option value="">اختر الفرصة</option>
+                            {% for opp in opportunities %}
+                            <option value="{{ opp.id }}">{{ opp.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="8"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <a href="{{ url_for('crm.tasks') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

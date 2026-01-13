@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة عرض سعر - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إضافة عرض سعر{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-file-contract"></i> إضافة عرض سعر جديد</h3>
+    <p class="text-muted mb-0">أدخل بيانات عرض السعر والمنتجات</p>
+</div>
+
+<form method="POST" action="{{ url_for('sales.add_quotation') }}" id="quotationForm">
+    <div class="row">
+        <!-- Quotation Header -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات عرض السعر</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">تاريخ العرض <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="quotation_date" value="{{ today }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">صالح لمدة (أيام) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="valid_days" value="30" min="1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">العميل <span class="text-danger">*</span></label>
+                                <select class="form-select" name="customer_id" required>
+                                    <option value="">اختر العميل</option>
+                                    {% for customer in customers %}
+                                    <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.code }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">ملاحظات</label>
+                                <textarea class="form-control" name="notes" rows="2" placeholder="شروط وأحكام عرض السعر..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quotation Items -->
+        <div class="col-md-12 mt-3">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> المنتجات</h5>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="addItem()">
+                        <i class="fas fa-plus"></i> إضافة منتج
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%;">المنتج</th>
+                                    <th style="width: 10%;">الكمية</th>
+                                    <th style="width: 15%;">سعر الوحدة</th>
+                                    <th style="width: 10%;">الخصم %</th>
+                                    <th style="width: 15%;">الإجمالي قبل الضريبة</th>
+                                    <th style="width: 10%;">الضريبة</th>
+                                    <th style="width: 15%;">الإجمالي</th>
+                                    <th style="width: 5%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                <!-- Items will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Totals -->
+        <div class="col-md-12 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>الإجمالي قبل الضريبة:</th>
+                                    <td class="text-end"><strong id="subtotalDisplay">0.00 ر.س</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>الضريبة (15%):</th>
+                                    <td class="text-end"><strong id="taxDisplay">0.00 ر.س</strong></td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <th>الإجمالي النهائي:</th>
+                                    <td class="text-end"><strong id="totalDisplay">0.00 ر.س</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-3">
+        <a href="{{ url_for('sales.quotations') }}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> إلغاء
+        </a>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> حفظ عرض السعر
+        </button>
+    </div>
+</form>
+
+<script>
+let itemCounter = 0;
+const products = {{ products|tojson }};
+
+function addItem() {
+    const tbody = document.getElementById('itemsBody');
+    const row = document.createElement('tr');
+    row.id = `item-${itemCounter}`;
+    
+    row.innerHTML = `
+        <td>
+            <select class="form-select form-select-sm" name="product_id_${itemCounter}" onchange="updateItemPrice(${itemCounter})" required>
+                <option value="">اختر المنتج</option>
+                ${products.map(p => `<option value="${p.id}" data-price="${p.selling_price}" data-tax="${p.tax_rate}">${p.name}</option>`).join('')}
+            </select>
+        </td>
+        <td><input type="number" class="form-control form-control-sm" name="quantity_${itemCounter}" value="1" min="0.01" step="0.01" onchange="calculateItem(${itemCounter})" required></td>
+        <td><input type="number" class="form-control form-control-sm" name="unit_price_${itemCounter}" value="0" min="0" step="0.01" onchange="calculateItem(${itemCounter})" required></td>
+        <td><input type="number" class="form-control form-control-sm" name="discount_${itemCounter}" value="0" min="0" max="100" step="0.01" onchange="calculateItem(${itemCounter})"></td>
+        <td><span id="subtotal_${itemCounter}">0.00</span></td>
+        <td><span id="tax_${itemCounter}">0.00</span></td>
+        <td><strong><span id="total_${itemCounter}">0.00</span></strong></td>
+        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeItem(${itemCounter})"><i class="fas fa-trash"></i></button></td>
+    `;
+    
+    tbody.appendChild(row);
+    itemCounter++;
+}
+
+function updateItemPrice(index) {
+    const select = document.querySelector(`select[name="product_id_${index}"]`);
+    const option = select.options[select.selectedIndex];
+    const price = option.getAttribute('data-price') || 0;
+    document.querySelector(`input[name="unit_price_${index}"]`).value = price;
+    calculateItem(index);
+}
+
+function calculateItem(index) {
+    const quantity = parseFloat(document.querySelector(`input[name="quantity_${index}"]`).value) || 0;
+    const unitPrice = parseFloat(document.querySelector(`input[name="unit_price_${index}"]`).value) || 0;
+    const discountPercent = parseFloat(document.querySelector(`input[name="discount_${index}"]`).value) || 0;
+
+    const select = document.querySelector(`select[name="product_id_${index}"]`);
+    const option = select.options[select.selectedIndex];
+    const taxRate = parseFloat(option.getAttribute('data-tax')) || 15;
+
+    const lineTotal = quantity * unitPrice;
+    const discountAmount = lineTotal * (discountPercent / 100);
+    const subtotal = lineTotal - discountAmount;
+    const taxAmount = subtotal * (taxRate / 100);
+    const total = subtotal + taxAmount;
+
+    document.getElementById(`subtotal_${index}`).textContent = subtotal.toFixed(2);
+    document.getElementById(`tax_${index}`).textContent = taxAmount.toFixed(2);
+    document.getElementById(`total_${index}`).textContent = total.toFixed(2);
+
+    calculateTotals();
+}
+
+function removeItem(index) {
+    document.getElementById(`item-${index}`).remove();
+    calculateTotals();
+}
+
+function calculateTotals() {
+    let subtotal = 0;
+    let tax = 0;
+
+    for (let i = 0; i < itemCounter; i++) {
+        const subtotalElement = document.getElementById(`subtotal_${i}`);
+        const taxElement = document.getElementById(`tax_${i}`);
+
+        if (subtotalElement && taxElement) {
+            subtotal += parseFloat(subtotalElement.textContent) || 0;
+            tax += parseFloat(taxElement.textContent) || 0;
+        }
+    }
+
+    const total = subtotal + tax;
+
+    document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2) + ' ر.س';
+    document.getElementById('taxDisplay').textContent = tax.toFixed(2) + ' ر.س';
+    document.getElementById('totalDisplay').textContent = total.toFixed(2) + ' ر.س';
+}
+
+// Form submission
+document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const items = [];
+    for (let i = 0; i < itemCounter; i++) {
+        const productSelect = document.querySelector(`select[name="product_id_${i}"]`);
+        if (productSelect && productSelect.value) {
+            items.push(JSON.stringify({
+                product_id: productSelect.value,
+                quantity: document.querySelector(`input[name="quantity_${i}"]`).value,
+                unit_price: document.querySelector(`input[name="unit_price_${i}"]`).value,
+                discount_percentage: document.querySelector(`input[name="discount_${i}"]`).value
+            }));
+        }
+    }
+
+    if (items.length === 0) {
+        alert('يرجى إضافة منتج واحد على الأقل');
+        return;
+    }
+
+    // Add items to form
+    items.forEach(item => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'items';
+        input.value = item;
+        this.appendChild(input);
+    });
+
+    this.submit();
+});
+
+// Add first item on page load
+window.addEventListener('load', function() {
+    addItem();
+});
+</script>
+{% endblock %}
+

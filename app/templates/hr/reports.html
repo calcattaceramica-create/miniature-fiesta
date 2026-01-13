@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}التقارير{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h2><i class="fas fa-chart-bar"></i> التقارير</h2>
+        <p class="text-muted">تقارير شاملة عن الموارد البشرية</p>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="row">
+        <!-- Attendance Report -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-clock fa-4x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">تقرير الحضور والانصراف</h5>
+                    <p class="card-text text-muted">تقرير شامل عن حضور الموظفين خلال فترة محددة</p>
+                    <a href="{{ url_for('hr.attendance_summary_report') }}" class="btn btn-primary">
+                        <i class="fas fa-file-alt"></i> عرض التقرير
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Report -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-4x text-success"></i>
+                    </div>
+                    <h5 class="card-title">تقرير الموظفين</h5>
+                    <p class="card-text text-muted">قائمة شاملة بجميع الموظفين وبياناتهم</p>
+                    <a href="{{ url_for('hr.employees') }}" class="btn btn-success">
+                        <i class="fas fa-file-alt"></i> عرض التقرير
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaves Report -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-calendar-times fa-4x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">تقرير الإجازات</h5>
+                    <p class="card-text text-muted">تقرير عن طلبات الإجازات وحالتها</p>
+                    <a href="{{ url_for('hr.leaves') }}" class="btn btn-warning">
+                        <i class="fas fa-file-alt"></i> عرض التقرير
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payroll Report -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-money-bill-wave fa-4x text-info"></i>
+                    </div>
+                    <h5 class="card-title">تقرير الرواتب</h5>
+                    <p class="card-text text-muted">تقرير شامل عن رواتب الموظفين</p>
+                    <a href="{{ url_for('hr.payroll') }}" class="btn btn-info">
+                        <i class="fas fa-file-alt"></i> عرض التقرير
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Departments Report -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-sitemap fa-4x text-danger"></i>
+                    </div>
+                    <h5 class="card-title">تقرير الأقسام</h5>
+                    <p class="card-text text-muted">تقرير عن الأقسام وعدد الموظفين في كل قسم</p>
+                    <a href="{{ url_for('hr.departments') }}" class="btn btn-danger">
+                        <i class="fas fa-file-alt"></i> عرض التقرير
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Positions Report -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-tie fa-4x text-secondary"></i>
+                    </div>
+                    <h5 class="card-title">تقرير المناصب</h5>
+                    <p class="card-text text-muted">تقرير عن المناصب الوظيفية</p>
+                    <a href="{{ url_for('hr.positions') }}" class="btn btn-secondary">
+                        <i class="fas fa-file-alt"></i> عرض التقرير
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-chart-pie"></i> إحصائيات سريعة</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                    <div class="border-end">
+                        <h3 class="text-primary mb-0">-</h3>
+                        <p class="text-muted mb-0">إجمالي الموظفين</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border-end">
+                        <h3 class="text-success mb-0">-</h3>
+                        <p class="text-muted mb-0">الموظفين النشطين</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border-end">
+                        <h3 class="text-warning mb-0">-</h3>
+                        <p class="text-muted mb-0">طلبات الإجازات المعلقة</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h3 class="text-info mb-0">-</h3>
+                    <p class="text-muted mb-0">إجمالي الأقسام</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل نظام DED الكامل - Complete Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            margin: 20px 0 10px 0;
+            font-size: 1.3em;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .code-box {
+            background: #263238;
+            color: #aed581;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .feature-item .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .footer {
+            background: #263238;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-right: 20px;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 دليل نظام DED الإداري المتكامل</h1>
+            <p>DED Complete Management System Guide</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">الإصدار v1.2.0 Professional Edition | 2026-01-12</p>
+        </div>
+
+        <div class="content">
+            <!-- Quick Start Section -->
+            <div class="section">
+                <h2>⚡ البدء السريع - Quick Start</h2>
+
+                <div class="success-box">
+                    <h3>🎯 الطريقة الأسهل للبدء:</h3>
+                    <p style="font-size: 1.2em; margin-top: 10px;">
+                        <strong>انقر نقراً مزدوجاً على:</strong> <code>DED_Modern_Launcher.pyw</code>
+                    </p>
+                    <p style="margin-top: 10px;">✅ سيفتح لك واجهة موحدة تحتوي على جميع الخيارات!</p>
+                </div>
+
+                <div class="button-group">
+                    <div class="btn btn-success">▶ تشغيل التطبيق الرئيسي</div>
+                    <div class="btn btn-warning">🔐 فتح مدير التراخيص</div>
+                    <div class="btn btn-info">🌐 فتح في المتصفح</div>
+                </div>
+            </div>
+
+            <!-- System Components -->
+            <div class="section">
+                <h2>📦 مكونات النظام - System Components</h2>
+
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="icon">🌐</div>
+                        <h3>تطبيق DED الرئيسي</h3>
+                        <p>نظام إدارة متكامل عبر الويب</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="icon">🔐</div>
+                        <h3>مدير التراخيص</h3>
+                        <p>تطبيق سطح مكتب لإدارة التراخيص</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="icon">🚀</div>
+                        <h3>واجهة التشغيل</h3>
+                        <p>واجهة موحدة لجميع الأدوات</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Application -->
+            <div class="section">
+                <h2>🌐 تطبيق DED الرئيسي - Main Application</h2>
+
+                <div class="card">
+                    <h3>🔐 معلومات الدخول الافتراضية</h3>
+                    <div class="code-box">
+🌐 الرابط:        http://127.0.0.1:5000
+👤 اسم المستخدم:  admin
+🔑 كلمة المرور:    admin123
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>⚠️ تحذير أمني:</strong> غيّر كلمة المرور فوراً بعد أول تسجيل دخول!
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>✨ المميزات الرئيسية</h3>
+                    <ul>
+                        <li>✅ إدارة الموظفين والمستخدمين</li>
+                        <li>✅ إدارة المشاريع والمهام</li>
+                        <li>✅ التقارير والإحصائيات التفصيلية</li>
+                        <li>✅ واجهة عربية/إنجليزية احترافية</li>
+                        <li>✅ نظام صلاحيات متقدم</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- License Manager -->
+            <div class="section">
+                <h2>🔐 مدير التراخيص - License Manager</h2>
+
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('tab1')">طرق الفتح</button>
+                    <button class="tab" onclick="showTab('tab2')">التبويبات</button>
+                    <button class="tab" onclick="showTab('tab3')">أمثلة عملية</button>
+                </div>
+
+                <div id="tab1" class="tab-content active">
+                    <div class="card">
+                        <h3>🎯 طرق فتح مدير التراخيص</h3>
+
+                        <div class="info-box">
+                            <strong>الطريقة 1️⃣ (الأسهل):</strong>
+                            <p>من واجهة DED_Modern_Launcher.pyw، اضغط على زر "🔐 مدير التراخيص"</p>
+                        </div>
+
+                        <div class="info-box">
+                            <strong>الطريقة 2️⃣:</strong>
+                            <p>انقر نقراً مزدوجاً على: <code>License_Manager_GUI.pyw</code></p>
+                        </div>
+
+                        <div class="info-box">
+                            <strong>الطريقة 3️⃣:</strong>
+                            <p>انقر نقراً مزدوجاً على: <code>Start_License_Manager.bat</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab2" class="tab-content">
+                    <div class="card">
+                        <h3>📱 التبويب الأول: إنشاء ترخيص جديد</h3>
+                        <ul>
+                            <li>إدخال بيانات العميل (الاسم، اسم المستخدم، كلمة المرور)</li>
+                            <li>اختيار نوع الترخيص (تجريبي، شهري، سنوي، دائم)</li>
+                            <li>تحديد الحدود (موظفين، مشاريع، مهام)</li>
+                            <li>الحصول على مفتاح الترخيص فوراً</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3>📊 التبويب الثاني: عرض جميع التراخيص</h3>
+                        <ul>
+                            <li>جدول شامل بجميع التراخيص</li>
+                            <li>عرض الحالة (نشط، منتهي، معلق)</li>
+                            <li>عرض الأيام المتبقية</li>
+                            <li>زر تحديث البيانات</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3>⚙️ التبويب الثالث: إدارة الترخيص</h3>
+                        <ul>
+                            <li>إدخال مفتاح الترخيص</li>
+                            <li>عرض جميع التفاصيل</li>
+                            <li>تعليق/إلغاء تعليق الترخيص</li>
+                            <li>تمديد الترخيص</li>
+                            <li>إلغاء الترخيص نهائياً</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="tab3" class="tab-content">
+                    <div class="card">
+                        <h3>📌 مثال 1: إنشاء ترخيص تجريبي</h3>
+                        <ol>
+                            <li>افتح مدير التراخيص</li>
+                            <li>اذهب لتبويب "إنشاء ترخيص جديد"</li>
+                            <li>املأ البيانات:
+                                <ul>
+                                    <li>اسم العميل: شركة التجربة</li>
+                                    <li>اسم المستخدم: trial_user</li>
+                                    <li>كلمة المرور: Trial@2026</li>
+                                    <li>نوع الترخيص: تجريبي (14 يوم)</li>
+                                </ul>
+                            </li>
+                            <li>اضغط "إنشاء الترخيص"</li>
+                            <li>احفظ المعلومات المعروضة!</li>
+                        </ol>
+                    </div>
+
+                    <div class="card">
+                        <h3>📌 مثال 2: تمديد ترخيص</h3>
+                        <ol>
+                            <li>اذهب لتبويب "إدارة الترخيص"</li>
+                            <li>الصق مفتاح الترخيص</li>
+                            <li>اضغط "عرض التفاصيل"</li>
+                            <li>اضغط "تمديد الترخيص"</li>
+                            <li>أدخل عدد الأيام (مثلاً: 30)</li>
+                            <li>اضغط "تمديد"</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Troubleshooting -->
+            <div class="section">
+                <h2>🆘 حل المشاكل الشائعة - Troubleshooting</h2>
+
+                <div class="card">
+                    <h3>❌ البيئة الافتراضية غير موجودة</h3>
+                    <div class="success-box">
+                        <strong>✅ الحل:</strong> شغّل ملف <code>setup.bat</code> في مجلد DED_App
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>❌ قاعدة البيانات غير موجودة</h3>
+                    <div class="success-box">
+                        <strong>✅ الحل:</strong> سيسألك التطبيق تلقائياً، اضغط "نعم" لإنشائها
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>❌ المنفذ 5000 مستخدم</h3>
+                    <div class="success-box">
+                        <strong>✅ الحل:</strong> أغلق أي تطبيق يستخدم المنفذ، أو غيّر المنفذ في ملف run.py
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="section">
+                <h2>💡 نصائح مهمة - Important Tips</h2>
+
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="icon">🔒</div>
+                        <p>احفظ مفاتيح التراخيص في مكان آمن</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="icon">💾</div>
+                        <p>اعمل نسخة احتياطية من قاعدة البيانات</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="icon">🔑</div>
+                        <p>غيّر كلمات المرور الافتراضية</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="icon">📝</div>
+                        <p>راجع السجلات عند حدوث مشاكل</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h2>🎉 شكراً لاستخدامك نظام DED! 🎉</h2>
+            <p style="margin-top: 10px;">Made with ❤️ in Saudi Arabia 🇸🇦</p>
+            <p style="margin-top: 10px; opacity: 0.7;">DED System v1.2.0 Professional Edition</p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

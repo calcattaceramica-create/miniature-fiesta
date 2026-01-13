@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الحساب - {{ account.name }}{% endblock %}
+{% block page_title %}تفاصيل الحساب{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Account Info Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-book"></i> معلومات الحساب</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">رمز الحساب:</th>
+                                    <td><strong class="text-primary">{{ account.code }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>اسم الحساب:</th>
+                                    <td><strong>{{ account.name }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>الاسم بالإنجليزية:</th>
+                                    <td>{{ account.name_en or '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>نوع الحساب:</th>
+                                    <td>
+                                        {% if account.account_type == 'asset' %}
+                                            <span class="badge bg-success">أصول</span>
+                                        {% elif account.account_type == 'liability' %}
+                                            <span class="badge bg-danger">خصوم</span>
+                                        {% elif account.account_type == 'equity' %}
+                                            <span class="badge bg-info">حقوق ملكية</span>
+                                        {% elif account.account_type == 'revenue' %}
+                                            <span class="badge bg-primary">إيرادات</span>
+                                        {% elif account.account_type == 'expense' %}
+                                            <span class="badge bg-warning">مصروفات</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">رصيد مدين:</th>
+                                    <td><strong class="text-success">{{ "{:,.2f}".format(account.debit_balance) }} ريال</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>رصيد دائن:</th>
+                                    <td><strong class="text-danger">{{ "{:,.2f}".format(account.credit_balance) }} ريال</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>الرصيد الحالي:</th>
+                                    <td><strong class="text-primary fs-5">{{ "{:,.2f}".format(account.current_balance) }} ريال</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>الحالة:</th>
+                                    <td>
+                                        {% if account.is_active %}
+                                            <span class="badge bg-success">نشط</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">غير نشط</span>
+                                        {% endif %}
+                                        {% if account.is_system %}
+                                            <span class="badge bg-warning">حساب نظام</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% if account.description %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>الوصف:</h6>
+                            <p class="text-muted">{{ account.description }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if account.parent %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>الحساب الرئيسي:</h6>
+                            <a href="{{ url_for('accounting.account_details', id=account.parent.id) }}" class="btn btn-sm btn-outline-primary">
+                                {{ account.parent.code }} - {{ account.parent.name }}
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-3">
+                        <a href="{{ url_for('accounting.accounts') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> العودة للقائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Card -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-list"></i> آخر الحركات (50 حركة)</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>رقم القيد</th>
+                                    <th>البيان</th>
+                                    <th>مدين</th>
+                                    <th>دائن</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in transactions %}
+                                <tr>
+                                    <td>{{ item.journal_entry.entry_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('accounting.journal_entry_details', id=item.journal_entry.id) }}">
+                                            {{ item.journal_entry.entry_number }}
+                                        </a>
+                                    </td>
+                                    <td>{{ item.description or item.journal_entry.description }}</td>
+                                    <td class="text-success">
+                                        {% if item.debit > 0 %}
+                                            {{ "{:,.2f}".format(item.debit) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-danger">
+                                        {% if item.credit > 0 %}
+                                            {{ "{:,.2f}".format(item.credit) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">لا توجد حركات لهذا الحساب</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

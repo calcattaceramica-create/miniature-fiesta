@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل عميل محتمل - CRM{% endblock %}
+{% block page_title %}تعديل عميل محتمل{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-edit"></i> تعديل عميل محتمل: {{ lead.name }}</h3>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('crm.edit_lead', id=lead.id) }}">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الاسم <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" value="{{ lead.name }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الشركة</label>
+                        <input type="text" class="form-control" name="company" value="{{ lead.company or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المسمى الوظيفي</label>
+                        <input type="text" class="form-control" name="title" value="{{ lead.title or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" name="email" value="{{ lead.email or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الهاتف</label>
+                        <input type="text" class="form-control" name="phone" value="{{ lead.phone or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الجوال</label>
+                        <input type="text" class="form-control" name="mobile" value="{{ lead.mobile or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الموقع الإلكتروني</label>
+                        <input type="url" class="form-control" name="website" value="{{ lead.website or '' }}">
+                    </div>
+                </div>
+                
+                <!-- Additional Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-map-marker-alt"></i> العنوان والمعلومات الإضافية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">العنوان</label>
+                        <textarea class="form-control" name="address" rows="2">{{ lead.address or '' }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المدينة</label>
+                        <input type="text" class="form-control" name="city" value="{{ lead.city or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الدولة</label>
+                        <input type="text" class="form-control" name="country" value="{{ lead.country or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المصدر</label>
+                        <select class="form-select" name="source">
+                            <option value="">اختر المصدر</option>
+                            <option value="website" {% if lead.source == 'website' %}selected{% endif %}>الموقع الإلكتروني</option>
+                            <option value="referral" {% if lead.source == 'referral' %}selected{% endif %}>إحالة</option>
+                            <option value="cold_call" {% if lead.source == 'cold_call' %}selected{% endif %}>اتصال بارد</option>
+                            <option value="social_media" {% if lead.source == 'social_media' %}selected{% endif %}>وسائل التواصل</option>
+                            <option value="event" {% if lead.source == 'event' %}selected{% endif %}>حدث</option>
+                            <option value="other" {% if lead.source == 'other' %}selected{% endif %}>أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحالة</label>
+                        <select class="form-select" name="status">
+                            <option value="new" {% if lead.status == 'new' %}selected{% endif %}>جديد</option>
+                            <option value="contacted" {% if lead.status == 'contacted' %}selected{% endif %}>تم الاتصال</option>
+                            <option value="qualified" {% if lead.status == 'qualified' %}selected{% endif %}>مؤهل</option>
+                            <option value="lost" {% if lead.status == 'lost' %}selected{% endif %}>مفقود</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">التقييم</label>
+                        <select class="form-select" name="rating">
+                            <option value="0" {% if lead.rating == 0 %}selected{% endif %}>بدون تقييم</option>
+                            <option value="1" {% if lead.rating == 1 %}selected{% endif %}>⭐</option>
+                            <option value="2" {% if lead.rating == 2 %}selected{% endif %}>⭐⭐</option>
+                            <option value="3" {% if lead.rating == 3 %}selected{% endif %}>⭐⭐⭐</option>
+                            <option value="4" {% if lead.rating == 4 %}selected{% endif %}>⭐⭐⭐⭐</option>
+                            <option value="5" {% if lead.rating == 5 %}selected{% endif %}>⭐⭐⭐⭐⭐</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المسؤول</label>
+                        <select class="form-select" name="assigned_to">
+                            <option value="">اختر المسؤول</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}" {% if lead.assigned_to == user.id %}selected{% endif %}>{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sales Information -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> معلومات المبيعات</h5>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">الإيراد المتوقع (ر.س)</label>
+                        <input type="number" class="form-control" name="expected_revenue" 
+                               step="0.01" value="{{ lead.expected_revenue }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">الاحتمالية (%)</label>
+                        <input type="number" class="form-control" name="probability" 
+                               min="0" max="100" value="{{ lead.probability }}">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ الإغلاق المتوقع</label>
+                        <input type="date" class="form-control" name="expected_close_date"
+                               value="{{ lead.expected_close_date.strftime('%Y-%m-%d') if lead.expected_close_date else '' }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="4">{{ lead.description or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> حفظ التعديلات
+                </button>
+                <a href="{{ url_for('crm.lead_details', id=lead.id) }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل المستودع - {{ warehouse.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-warehouse"></i> {{ warehouse.name }}</h2>
+            <p class="text-muted mb-0">{{ warehouse.code }}</p>
+        </div>
+        <div>
+            <a href="{{ url_for('inventory.warehouses') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right"></i> رجوع
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">إجمالي المنتجات</h6>
+                            <h3 class="mb-0">{{ total_products }}</h3>
+                        </div>
+                        <i class="fas fa-boxes fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">قيمة المخزون</h6>
+                            <h3 class="mb-0">{{ "%.2f"|format(total_value) }}</h3>
+                            <small>ر.س</small>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">منتجات منخفضة</h6>
+                            <h3 class="mb-0">{{ low_stock_count }}</h3>
+                        </div>
+                        <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">الحالة</h6>
+                            <h3 class="mb-0">
+                                {% if warehouse.is_active %}
+                                <i class="fas fa-check-circle"></i> نشط
+                                {% else %}
+                                <i class="fas fa-times-circle"></i> غير نشط
+                                {% endif %}
+                            </h3>
+                        </div>
+                        <i class="fas fa-info-circle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warehouse Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات المستودع</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="40%">الكود:</th>
+                            <td><span class="badge bg-secondary">{{ warehouse.code }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>الاسم بالعربية:</th>
+                            <td>{{ warehouse.name }}</td>
+                        </tr>
+                        {% if warehouse.name_en %}
+                        <tr>
+                            <th>الاسم بالإنجليزية:</th>
+                            <td>{{ warehouse.name_en }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if warehouse.branch %}
+                        <tr>
+                            <th>الفرع:</th>
+                            <td>{{ warehouse.branch.name }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if warehouse.address %}
+                        <tr>
+                            <th>العنوان:</th>
+                            <td>{{ warehouse.address }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if warehouse.manager_id %}
+                        <tr>
+                            <th>المدير:</th>
+                            <td>
+                                {% for user in [warehouse.manager_id] %}
+                                {{ user }}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>تاريخ الإنشاء:</th>
+                            <td>{{ warehouse.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> إحصائيات سريعة</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="stockChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Table -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-boxes"></i> المخزون في هذا المستودع</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المنتج</th>
+                            <th>الكود</th>
+                            <th>التصنيف</th>
+                            <th>الكمية</th>
+                            <th>محجوز</th>
+                            <th>متاح</th>
+                            <th>سعر التكلفة</th>
+                            <th>القيمة الإجمالية</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stock in stocks %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ stock.product.name }}</td>
+                            <td><code>{{ stock.product.code }}</code></td>
+                            <td>{{ stock.product.category.name if stock.product.category else '-' }}</td>
+                            <td><strong>{{ stock.quantity }}</strong></td>
+                            <td>{{ stock.reserved_quantity }}</td>
+                            <td>{{ stock.available_quantity }}</td>
+                            <td>{{ "%.2f"|format(stock.product.cost_price) }} ر.س</td>
+                            <td>{{ "%.2f"|format(stock.quantity * stock.product.cost_price) }} ر.س</td>
+                            <td>
+                                {% if stock.quantity <= stock.product.min_stock_level %}
+                                <span class="badge bg-danger">منخفض</span>
+                                {% elif stock.quantity >= stock.product.max_stock_level %}
+                                <span class="badge bg-warning">مرتفع</span>
+                                {% else %}
+                                <span class="badge bg-success">جيد</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% if not stocks %}
+                        <tr>
+                            <td colspan="10" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا يوجد مخزون في هذا المستودع
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

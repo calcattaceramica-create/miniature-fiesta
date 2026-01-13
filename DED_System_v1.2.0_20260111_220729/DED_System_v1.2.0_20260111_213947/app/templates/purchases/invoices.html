@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}فواتير الشراء - نظام إدارة المخزون{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> فواتير الشراء</h4>
+                    <a href="{{ url_for('purchases.add_invoice') }}" class="btn btn-light">
+                        <i class="fas fa-plus"></i> إضافة فاتورة جديدة
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Search and Filter Form -->
+                    <form method="GET" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="ابحث برقم الفاتورة..." 
+                                           value="{{ search }}">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search"></i> بحث
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-select" onchange="this.form.submit()">
+                                    <option value="">جميع الحالات</option>
+                                    <option value="draft" {% if status == 'draft' %}selected{% endif %}>مسودة</option>
+                                    <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>مؤكدة</option>
+                                    <option value="paid" {% if status == 'paid' %}selected{% endif %}>مدفوعة</option>
+                                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>ملغاة</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Invoices Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>التاريخ</th>
+                                    <th>المورد</th>
+                                    <th>المستودع</th>
+                                    <th>الإجمالي</th>
+                                    <th>المدفوع</th>
+                                    <th>المتبقي</th>
+                                    <th>الحالة</th>
+                                    <th>حالة الدفع</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if invoices.items %}
+                                    {% for invoice in invoices.items %}
+                                    <tr>
+                                        <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                        <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ invoice.supplier.name }}</td>
+                                        <td>{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
+                                        <td><strong>{{ "%.2f"|format(invoice.total_amount) }} ر.س</strong></td>
+                                        <td>{{ "%.2f"|format(invoice.paid_amount) }} ر.س</td>
+                                        <td>{{ "%.2f"|format(invoice.remaining_amount) }} ر.س</td>
+                                        <td>
+                                            {% if invoice.status == 'draft' %}
+                                                <span class="badge bg-secondary">مسودة</span>
+                                            {% elif invoice.status == 'confirmed' %}
+                                                <span class="badge bg-success">مؤكدة</span>
+                                            {% elif invoice.status == 'paid' %}
+                                                <span class="badge bg-primary">مدفوعة</span>
+                                            {% elif invoice.status == 'cancelled' %}
+                                                <span class="badge bg-danger">ملغاة</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if invoice.payment_status == 'unpaid' %}
+                                                <span class="badge bg-danger">غير مدفوعة</span>
+                                            {% elif invoice.payment_status == 'partial' %}
+                                                <span class="badge bg-warning">مدفوعة جزئياً</span>
+                                            {% elif invoice.payment_status == 'paid' %}
+                                                <span class="badge bg-success">مدفوعة</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('purchases.invoice_details', id=invoice.id) }}" 
+                                               class="btn btn-sm btn-info" title="عرض التفاصيل">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if invoice.status == 'draft' %}
+                                            <a href="{{ url_for('purchases.confirm_invoice', id=invoice.id) }}" 
+                                               class="btn btn-sm btn-success" title="تأكيد">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                            <a href="{{ url_for('purchases.delete_invoice', id=invoice.id) }}" 
+                                               class="btn btn-sm btn-danger" title="حذف"
+                                               onclick="return confirm('هل أنت متأكد من حذف هذه الفاتورة؟')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            {% endif %}
+                                            <a href="#" class="btn btn-sm btn-secondary" title="طباعة">
+                                                <i class="fas fa-print"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                                            <p>لا توجد فواتير شراء</p>
+                                            <a href="{{ url_for('purchases.add_invoice') }}" class="btn btn-success">
+                                                <i class="fas fa-plus"></i> إضافة فاتورة جديدة
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if invoices.pages > 1 %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if invoices.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('purchases.invoices', page=invoices.prev_num, search=search, status=status) }}">
+                                    السابق
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for page_num in invoices.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                {% if page_num %}
+                                    {% if page_num == invoices.page %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('purchases.invoices', page=page_num, search=search, status=status) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if invoices.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('purchases.invoices', page=invoices.next_num, search=search, status=status) }}">
+                                    التالي
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

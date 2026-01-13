@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة تحكم CRM - نظام إدارة العلاقات مع العملاء{% endblock %}
+{% block page_title %}لوحة تحكم CRM{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-chart-line"></i> لوحة تحكم إدارة العلاقات مع العملاء</h3>
+        <p class="text-muted mb-0">نظرة شاملة على العملاء المحتملين والفرص التجارية</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">العملاء المحتملون</h6>
+                        <h2 class="mb-0 mt-2">{{ stats.total_leads }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-user-plus fa-3x opacity-50"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('crm.leads') }}" class="btn btn-light btn-sm mt-3 w-100">
+                    <i class="fas fa-eye"></i> عرض الكل
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">الفرص التجارية</h6>
+                        <h2 class="mb-0 mt-2">{{ stats.total_opportunities }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-bullseye fa-3x opacity-50"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('crm.opportunities') }}" class="btn btn-light btn-sm mt-3 w-100">
+                    <i class="fas fa-eye"></i> عرض الكل
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">المهام المعلقة</h6>
+                        <h2 class="mb-0 mt-2">{{ stats.total_tasks }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-tasks fa-3x opacity-50"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('crm.tasks') }}" class="btn btn-light btn-sm mt-3 w-100">
+                    <i class="fas fa-eye"></i> عرض الكل
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">الحملات النشطة</h6>
+                        <h2 class="mb-0 mt-2">{{ stats.total_campaigns }}</h2>
+                    </div>
+                    <div>
+                        <i class="fas fa-bullhorn fa-3x opacity-50"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('crm.campaigns') }}" class="btn btn-light btn-sm mt-3 w-100">
+                    <i class="fas fa-eye"></i> عرض الكل
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie"></i> توزيع حالات العملاء المحتملين</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="leadStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> مراحل الفرص التجارية</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="opportunityStageChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-user-plus"></i> أحدث العملاء المحتملين</h5>
+                <a href="{{ url_for('crm.leads') }}" class="btn btn-sm btn-primary">عرض الكل</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الشركة</th>
+                                <th>الحالة</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in recent_leads %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('crm.lead_details', id=lead.id) }}">
+                                        {{ lead.name }}
+                                    </a>
+                                </td>
+                                <td>{{ lead.company or '-' }}</td>
+                                <td>
+                                    {% if lead.status == 'new' %}
+                                        <span class="badge bg-primary">جديد</span>
+                                    {% elif lead.status == 'contacted' %}
+                                        <span class="badge bg-info">تم الاتصال</span>
+                                    {% elif lead.status == 'qualified' %}
+                                        <span class="badge bg-success">مؤهل</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ lead.created_at.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">لا توجد بيانات</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-bullseye"></i> أحدث الفرص التجارية</h5>
+                <a href="{{ url_for('crm.opportunities') }}" class="btn btn-sm btn-success">عرض الكل</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>المبلغ</th>
+                                <th>المرحلة</th>
+                                <th>الاحتمالية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for opp in recent_opportunities %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('crm.opportunity_details', id=opp.id) }}">
+                                        {{ opp.name }}
+                                    </a>
+                                </td>
+                                <td>{{ "%.2f"|format(opp.amount) }} ر.س</td>
+                                <td>
+                                    {% if opp.stage == 'prospecting' %}
+                                        <span class="badge bg-secondary">استكشاف</span>
+                                    {% elif opp.stage == 'qualification' %}
+                                        <span class="badge bg-info">تأهيل</span>
+                                    {% elif opp.stage == 'proposal' %}
+                                        <span class="badge bg-primary">عرض</span>
+                                    {% elif opp.stage == 'negotiation' %}
+                                        <span class="badge bg-warning">تفاوض</span>
+                                    {% elif opp.stage == 'closed_won' %}
+                                        <span class="badge bg-success">مغلقة - فوز</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ opp.probability }}%</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">لا توجد بيانات</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tasks and Interactions -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-tasks"></i> المهام القادمة</h5>
+                <a href="{{ url_for('crm.tasks') }}" class="btn btn-sm btn-warning">عرض الكل</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for task in upcoming_tasks %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ task.title }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '-' }}
+                                </small>
+                            </div>
+                            <span class="badge bg-{{ 'danger' if task.priority == 'urgent' else 'warning' if task.priority == 'high' else 'info' }}">
+                                {{ task.priority }}
+                            </span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="list-group-item text-center text-muted">
+                        لا توجد مهام قادمة
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-comments"></i> أحدث التفاعلات</h5>
+                <a href="{{ url_for('crm.interactions') }}" class="btn btn-sm btn-info">عرض الكل</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for interaction in recent_interactions %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ interaction.subject }}</h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-{{ 'phone' if interaction.interaction_type == 'call' else 'envelope' if interaction.interaction_type == 'email' else 'handshake' if interaction.interaction_type == 'meeting' else 'sticky-note' }}"></i>
+                                    {{ interaction.interaction_date.strftime('%Y-%m-%d %H:%M') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="list-group-item text-center text-muted">
+                        لا توجد تفاعلات
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Lead Status Chart
+const leadStatusCtx = document.getElementById('leadStatusChart').getContext('2d');
+new Chart(leadStatusCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [
+            {% for status, count in lead_status %}
+            '{{ status }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            data: [
+                {% for status, count in lead_status %}
+                {{ count }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#0d6efd',
+                '#6c757d',
+                '#198754',
+                '#ffc107',
+                '#dc3545'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Opportunity Stage Chart
+const oppStageCtx = document.getElementById('opportunityStageChart').getContext('2d');
+new Chart(oppStageCtx, {
+    type: 'bar',
+    data: {
+        labels: [
+            {% for stage, count in opp_stages %}
+            '{{ stage }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'عدد الفرص',
+            data: [
+                {% for stage, count in opp_stages %}
+                {{ count }},
+                {% endfor %}
+            ],
+            backgroundColor: '#198754'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+

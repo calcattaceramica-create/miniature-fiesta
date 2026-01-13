@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الحملة - CRM{% endblock %}
+{% block page_title %}تفاصيل الحملة{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-bullhorn"></i> {{ campaign.name }}</h3>
+        <p class="text-muted mb-0">الكود: {{ campaign.code }}</p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.campaigns') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة للقائمة
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h6>الميزانية</h6>
+                <h4>{{ "%.0f"|format(campaign.budget) }} ر.س</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h6>التكلفة الفعلية</h6>
+                <h4>{{ "%.0f"|format(campaign.actual_cost) }} ر.س</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h6>الإيراد الفعلي</h6>
+                <h4>{{ "%.0f"|format(campaign.actual_revenue) }} ر.س</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h6>ROI</h6>
+                <h4>{{ "%.1f"|format(campaign.roi) if campaign.roi else '0' }}%</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Information -->
+<div class="row mt-3">
+    <div class="col-md-8">
+        <!-- Details Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> معلومات الحملة</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>الاسم:</strong> {{ campaign.name }}</p>
+                        <p><strong>الكود:</strong> {{ campaign.code }}</p>
+                        <p><strong>النوع:</strong> {{ campaign.campaign_type }}</p>
+                        <p><strong>الحالة:</strong> 
+                            {% if campaign.status == 'planning' %}
+                                <span class="badge bg-secondary">تخطيط</span>
+                            {% elif campaign.status == 'active' %}
+                                <span class="badge bg-success">نشطة</span>
+                            {% elif campaign.status == 'paused' %}
+                                <span class="badge bg-warning">متوقفة</span>
+                            {% elif campaign.status == 'completed' %}
+                                <span class="badge bg-info">مكتملة</span>
+                            {% elif campaign.status == 'cancelled' %}
+                                <span class="badge bg-danger">ملغاة</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>تاريخ البداية:</strong> {{ campaign.start_date.strftime('%Y-%m-%d') if campaign.start_date else '-' }}</p>
+                        <p><strong>تاريخ النهاية:</strong> {{ campaign.end_date.strftime('%Y-%m-%d') if campaign.end_date else '-' }}</p>
+                        <p><strong>تاريخ الإنشاء:</strong> {{ campaign.created_at.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>آخر تحديث:</strong> {{ campaign.updated_at.strftime('%Y-%m-%d') if campaign.updated_at else '-' }}</p>
+                    </div>
+                </div>
+                
+                {% if campaign.description %}
+                <hr>
+                <p><strong>الوصف:</strong></p>
+                <p>{{ campaign.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Performance Metrics -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-line"></i> مقاييس الأداء</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>العملاء المحتملون</h6>
+                        <div class="progress mb-3">
+                            {% set leads_percentage = (campaign.leads_generated / campaign.expected_leads * 100) if campaign.expected_leads > 0 else 0 %}
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                 style="width: {{ leads_percentage }}%" 
+                                 aria-valuenow="{{ leads_percentage }}" 
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ "%.0f"|format(leads_percentage) }}%
+                            </div>
+                        </div>
+                        <p>المحقق: {{ campaign.leads_generated }} / المتوقع: {{ campaign.expected_leads }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>الميزانية</h6>
+                        <div class="progress mb-3">
+                            {% set budget_percentage = (campaign.actual_cost / campaign.budget * 100) if campaign.budget > 0 else 0 %}
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: {{ budget_percentage }}%" 
+                                 aria-valuenow="{{ budget_percentage }}" 
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ "%.0f"|format(budget_percentage) }}%
+                            </div>
+                        </div>
+                        <p>المستخدم: {{ "%.0f"|format(campaign.actual_cost) }} / الإجمالي: {{ "%.0f"|format(campaign.budget) }} ر.س</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h6>التحويلات</h6>
+                            <h3 class="text-success">{{ campaign.conversions }}</h3>
+                            {% if campaign.leads_generated > 0 %}
+                            <small class="text-muted">{{ "%.1f"|format(campaign.conversions / campaign.leads_generated * 100) }}% معدل التحويل</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h6>تكلفة العميل المحتمل</h6>
+                            <h3 class="text-warning">
+                                {% if campaign.leads_generated > 0 %}
+                                    {{ "%.2f"|format(campaign.actual_cost / campaign.leads_generated) }} ر.س
+                                {% else %}
+                                    - ر.س
+                                {% endif %}
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h6>تكلفة التحويل</h6>
+                            <h3 class="text-info">
+                                {% if campaign.conversions > 0 %}
+                                    {{ "%.2f"|format(campaign.actual_cost / campaign.conversions) }} ر.س
+                                {% else %}
+                                    - ر.س
+                                {% endif %}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-bolt"></i> إجراءات سريعة</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-danger" onclick="deleteCampaign({{ campaign.id }})">
+                        <i class="fas fa-trash"></i> حذف الحملة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteCampaign(campaignId) {
+    if (confirm('هل أنت متأكد من حذف هذه الحملة؟')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/crm/campaigns/${campaignId}/delete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
+

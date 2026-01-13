@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة التحكم المحاسبية - نظام إدارة المخزون{% endblock %}
+{% block page_title %}لوحة التحكم المحاسبية{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">إجمالي الأصول</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(total_assets) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-wallet fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">الإيرادات (الشهر)</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(monthly_revenue) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-arrow-up fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-danger text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">المصروفات (الشهر)</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(monthly_expenses) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-arrow-down fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-warning text-dark shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-dark-50 mb-1">صافي الربح (الشهر)</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(monthly_profit) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> الإيرادات والمصروفات (آخر 6 أشهر)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueExpenseChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> توزيع المصروفات</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="expenseDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Indicators -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-tachometer-alt"></i> المؤشرات المالية</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="border-start border-primary border-4 ps-3">
+                                <h6 class="text-muted mb-1">نسبة التداول</h6>
+                                <h4 class="mb-0 text-primary">{{ "{:.2f}".format(current_ratio) }}</h4>
+                                <small class="text-muted">Current Ratio</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="border-start border-success border-4 ps-3">
+                                <h6 class="text-muted mb-1">هامش الربح</h6>
+                                <h4 class="mb-0 text-success">{{ "{:.1f}".format(profit_margin) }}%</h4>
+                                <small class="text-muted">Profit Margin</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="border-start border-warning border-4 ps-3">
+                                <h6 class="text-muted mb-1">نسبة المديونية</h6>
+                                <h4 class="mb-0 text-warning">{{ "{:.1f}".format(debt_ratio) }}%</h4>
+                                <small class="text-muted">Debt Ratio</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="border-start border-danger border-4 ps-3">
+                                <h6 class="text-muted mb-1">العائد على الأصول</h6>
+                                <h4 class="mb-0 text-danger">{{ "{:.1f}".format(roa) }}%</h4>
+                                <small class="text-muted">ROA</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> النقدية والبنوك</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>الصندوق</span>
+                            <strong>{{ "{:,.2f}".format(cash_balance) }} ريال</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: {{ (cash_balance / (cash_balance + bank_balance) * 100) if (cash_balance + bank_balance) > 0 else 0 }}%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>البنوك</span>
+                            <strong>{{ "{:,.2f}".format(bank_balance) }} ريال</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" style="width: {{ (bank_balance / (cash_balance + bank_balance) * 100) if (cash_balance + bank_balance) > 0 else 0 }}%"></div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <h6>إجمالي النقدية:</h6>
+                        <h5 class="text-primary mb-0">{{ "{:,.2f}".format(cash_balance + bank_balance) }} ريال</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions & Alerts -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-history"></i> آخر القيود المحاسبية</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>رقم القيد</th>
+                                    <th>التاريخ</th>
+                                    <th>المبلغ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in recent_entries %}
+                                <tr>
+                                    <td><a href="{{ url_for('accounting.journal_entry_details', id=entry.id) }}">{{ entry.entry_number }}</a></td>
+                                    <td>{{ entry.entry_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ "{:,.2f}".format(entry.total_debit) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> التنبيهات</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning mb-2">
+                        <i class="fas fa-clock"></i> لديك <strong>{{ overdue_receivables_count }}</strong> فاتورة متأخرة من العملاء
+                    </div>
+                    <div class="alert alert-danger mb-2">
+                        <i class="fas fa-exclamation-circle"></i> لديك <strong>{{ overdue_payables_count }}</strong> فاتورة متأخرة للموردين
+                    </div>
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle"></i> <strong>{{ pending_entries_count }}</strong> قيد محاسبي في انتظار الترحيل
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+}
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+.opacity-50 {
+    opacity: 0.5;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Revenue & Expense Chart
+const ctx1 = document.getElementById('revenueExpenseChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: {{ chart_labels|tojson }},
+        datasets: [{
+            label: 'الإيرادات',
+            data: {{ revenue_data|tojson }},
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        }, {
+            label: 'المصروفات',
+            data: {{ expense_data|tojson }},
+            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true
+    }
+});
+
+// Expense Distribution Chart
+const ctx2 = document.getElementById('expenseDistributionChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: {{ expense_categories|tojson }},
+        datasets: [{
+            data: {{ expense_values|tojson }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true
+    }
+});
+</script>
+{% endblock %}
+

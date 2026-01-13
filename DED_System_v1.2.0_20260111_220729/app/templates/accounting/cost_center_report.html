@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}تقرير مراكز التكلفة - نظام إدارة المخزون{% endblock %}
+{% block page_title %}تقرير مراكز التكلفة{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-sitemap"></i> تقرير الأرباح والخسائر حسب مركز التكلفة</h4>
+                        <button onclick="window.print()" class="btn btn-light">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Report Header -->
+                    <div class="text-center mb-4">
+                        <h3>تقرير الأرباح والخسائر حسب مركز التكلفة</h3>
+                        <p class="text-muted">Profit & Loss by Cost Center</p>
+                        <p>الفترة: {{ start_date }} إلى {{ end_date }}</p>
+                    </div>
+
+                    <!-- Cost Center Report Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th rowspan="2" class="align-middle">مركز التكلفة</th>
+                                    <th colspan="2" class="text-center">الإيرادات</th>
+                                    <th colspan="2" class="text-center">المصروفات</th>
+                                    <th rowspan="2" class="align-middle text-center">صافي الربح/الخسارة</th>
+                                    <th rowspan="2" class="align-middle text-center">هامش الربح %</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">المبلغ</th>
+                                    <th class="text-center">النسبة %</th>
+                                    <th class="text-center">المبلغ</th>
+                                    <th class="text-center">النسبة %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for center in cost_centers %}
+                                <tr>
+                                    <td><strong>{{ center.code }} - {{ center.name }}</strong></td>
+                                    <td class="text-end text-success">{{ "{:,.2f}".format(center.revenue) }}</td>
+                                    <td class="text-center">
+                                        {% if total_revenue > 0 %}
+                                            {{ "{:.1f}".format((center.revenue / total_revenue) * 100) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end text-danger">{{ "{:,.2f}".format(center.expenses) }}</td>
+                                    <td class="text-center">
+                                        {% if total_expenses > 0 %}
+                                            {{ "{:.1f}".format((center.expenses / total_expenses) * 100) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end fw-bold {% if center.net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(center.net_profit) }}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if center.revenue > 0 %}
+                                            {{ "{:.1f}".format((center.net_profit / center.revenue) * 100) }}%
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr class="fw-bold">
+                                    <td>الإجمالي</td>
+                                    <td class="text-end text-success">{{ "{:,.2f}".format(total_revenue) }}</td>
+                                    <td class="text-center">100%</td>
+                                    <td class="text-end text-danger">{{ "{:,.2f}".format(total_expenses) }}</td>
+                                    <td class="text-center">100%</td>
+                                    <td class="text-end {% if total_net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(total_net_profit) }}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if total_revenue > 0 %}
+                                            {{ "{:.1f}".format((total_net_profit / total_revenue) * 100) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Visual Charts -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">توزيع الإيرادات حسب مركز التكلفة</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% for center in cost_centers %}
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small>{{ center.name }}</small>
+                                            <small class="fw-bold">{{ "{:,.0f}".format(center.revenue) }}</small>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                 style="width: {% if total_revenue > 0 %}{{ (center.revenue / total_revenue) * 100 }}{% else %}0{% endif %}%">
+                                                {% if total_revenue > 0 %}
+                                                    {{ "{:.1f}".format((center.revenue / total_revenue) * 100) }}%
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-danger text-white">
+                                    <h6 class="mb-0">توزيع المصروفات حسب مركز التكلفة</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% for center in cost_centers %}
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small>{{ center.name }}</small>
+                                            <small class="fw-bold">{{ "{:,.0f}".format(center.expenses) }}</small>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-danger" role="progressbar" 
+                                                 style="width: {% if total_expenses > 0 %}{{ (center.expenses / total_expenses) * 100 }}{% else %}0{% endif %}%">
+                                                {% if total_expenses > 0 %}
+                                                    {{ "{:.1f}".format((center.expenses / total_expenses) * 100) }}%
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Summary -->
+                    <div class="row mt-4">
+                        {% for center in cost_centers %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card {% if center.net_profit >= 0 %}border-success{% else %}border-danger{% endif %}">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ center.name }}</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <small class="text-muted">الإيرادات</small>
+                                            <p class="mb-0 text-success fw-bold">{{ "{:,.0f}".format(center.revenue) }}</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">المصروفات</small>
+                                            <p class="mb-0 text-danger fw-bold">{{ "{:,.0f}".format(center.expenses) }}</p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="text-center">
+                                        <small class="text-muted">صافي الربح</small>
+                                        <h5 class="mb-0 {% if center.net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                            {{ "{:,.0f}".format(center.net_profit) }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Analysis -->
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-chart-bar"></i>
+                        <strong>التحليل:</strong>
+                        {% set best_center = cost_centers|sort(attribute='net_profit', reverse=true)|first %}
+                        {% if best_center %}
+                            أفضل مركز تكلفة من حيث الربحية هو <strong>{{ best_center.name }}</strong> 
+                            بصافي ربح {{ "{:,.2f}".format(best_center.net_profit) }} ريال.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar { display: none !important; }
+}
+</style>
+{% endblock %}
+

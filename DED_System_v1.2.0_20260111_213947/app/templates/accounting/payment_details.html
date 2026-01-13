@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل المدفوعة - {{ payment.payment_number }}{% endblock %}
+{% block page_title %}تفاصيل المدفوعة{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-money-bill-wave"></i> معلومات المدفوعة</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">رقم المدفوعة:</th>
+                                    <td><strong class="text-primary">{{ payment.payment_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>التاريخ:</th>
+                                    <td><strong>{{ payment.payment_date.strftime('%Y-%m-%d') }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>نوع العملية:</th>
+                                    <td>
+                                        {% if payment.payment_type == 'receipt' %}
+                                            <span class="badge bg-success">مقبوضات</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">مدفوعات</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>المبلغ:</th>
+                                    <td>
+                                        <strong class="fs-5 {% if payment.payment_type == 'receipt' %}text-success{% else %}text-danger{% endif %}">
+                                            {{ "{:,.2f}".format(payment.amount) }} ريال
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>طريقة الدفع:</th>
+                                    <td>
+                                        {% if payment.payment_method == 'cash' %}
+                                            <i class="fas fa-money-bill"></i> نقدي
+                                        {% elif payment.payment_method == 'bank' %}
+                                            <i class="fas fa-university"></i> تحويل بنكي
+                                        {% elif payment.payment_method == 'check' %}
+                                            <i class="fas fa-file-invoice"></i> شيك
+                                        {% elif payment.payment_method == 'card' %}
+                                            <i class="fas fa-credit-card"></i> بطاقة
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">نوع الجهة:</th>
+                                    <td>
+                                        {% if payment.party_type == 'customer' %}
+                                            <span class="badge bg-info">عميل</span>
+                                        {% elif payment.party_type == 'supplier' %}
+                                            <span class="badge bg-warning">مورد</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>اسم الجهة:</th>
+                                    <td><strong>{{ party_name or '-' }}</strong></td>
+                                </tr>
+                                {% if payment.bank_account %}
+                                <tr>
+                                    <th>الحساب البنكي:</th>
+                                    <td>{{ payment.bank_account.account_name }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if payment.check_number %}
+                                <tr>
+                                    <th>رقم الشيك:</th>
+                                    <td>{{ payment.check_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th>تاريخ الشيك:</th>
+                                    <td>{{ payment.check_date.strftime('%Y-%m-%d') if payment.check_date else '-' }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if payment.reference_number %}
+                                <tr>
+                                    <th>رقم المرجع:</th>
+                                    <td>{{ payment.reference_number }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>الحالة:</th>
+                                    <td>
+                                        {% if payment.status == 'draft' %}
+                                            <span class="badge bg-secondary">مسودة</span>
+                                        {% elif payment.status == 'posted' %}
+                                            <span class="badge bg-success">مرحّل</span>
+                                        {% elif payment.status == 'cancelled' %}
+                                            <span class="badge bg-danger">ملغي</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% if payment.notes %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>الملاحظات:</h6>
+                            <p class="text-muted">{{ payment.notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>معلومات إضافية:</h6>
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <th width="20%">المستخدم:</th>
+                                    <td>{{ payment.user.username if payment.user else '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>تاريخ الإنشاء:</th>
+                                    <td>{{ payment.created_at.strftime('%Y-%m-%d %H:%M') if payment.created_at else '-' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{{ url_for('accounting.payments') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> العودة للقائمة
+                        </a>
+                        <button onclick="window.print()" class="btn btn-primary">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

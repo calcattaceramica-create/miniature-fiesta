@@ -1,0 +1,287 @@
+from flask import render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
+from app.purchases import bp
+from app import db
+from app.models import Supplier, PurchaseInvoice, PurchaseInvoiceItem, Product, Warehouse, Stock, StockMovement
+from app.utils.accounting_helper import create_purchase_invoice_journal_entry
+from datetime import datetime
+
+@bp.route('/suppliers')
+@login_required
+def suppliers():
+    """List all suppliers"""
+    page = request.args.get('page', 1, type=int)
+    search = request.args.get('search', '')
+    
+    query = Supplier.query
+    
+    if search:
+        query = query.filter(
+            (Supplier.name.contains(search)) |
+            (Supplier.code.contains(search)) |
+            (Supplier.phone.contains(search))
+        )
+    
+    suppliers = query.order_by(Supplier.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    return render_template('purchases/suppliers.html',
+                         suppliers=suppliers,
+                         search=search)
+
+@bp.route('/suppliers/add', methods=['GET', 'POST'])
+@login_required
+def add_supplier():
+    """Add new supplier"""
+    if request.method == 'POST':
+        # Generate supplier code
+        last_supplier = Supplier.query.order_by(Supplier.id.desc()).first()
+        code = f'SUP{(last_supplier.id + 1):05d}' if last_supplier else 'SUP00001'
+        
+        supplier = Supplier(
+            code=code,
+            name=request.form.get('name'),
+            name_en=request.form.get('name_en'),
+            email=request.form.get('email'),
+            phone=request.form.get('phone'),
+            mobile=request.form.get('mobile'),
+            address=request.form.get('address'),
+            city=request.form.get('city'),
+            country=request.form.get('country'),
+            tax_number=request.form.get('tax_number'),
+            credit_limit=request.form.get('credit_limit', 0, type=float),
+            payment_terms=request.form.get('payment_terms', 0, type=int),
+            category=request.form.get('category'),
+            is_active=True
+        )
+        
+        db.session.add(supplier)
+        db.session.commit()
+        
+        flash('تم إضافة المورد بنجاح', 'success')
+        return redirect(url_for('purchases.suppliers'))
+    
+    return render_template('purchases/add_supplier.html')
+
+@bp.route('/invoices')
+@login_required
+def invoices():
+    """List all purchase invoices"""
+    page = request.args.get('page', 1, type=int)
+    search = request.args.get('search', '')
+    status = request.args.get('status', '')
+    
+    query = PurchaseInvoice.query
+    
+    if search:
+        query = query.filter(PurchaseInvoice.invoice_number.contains(search))
+    
+    if status:
+        query = query.filter_by(status=status)
+    
+    invoices = query.order_by(PurchaseInvoice.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    return render_template('purchases/invoices.html',
+                         invoices=invoices,
+                         search=search,
+                         status=status)
+
+@bp.route('/invoices/add', methods=['GET', 'POST'])
+@login_required
+def add_invoice():
+    """Add new purchase invoice"""
+    if request.method == 'POST':
+        # Generate invoice number
+        today = datetime.utcnow()
+        prefix = f'PINV{today.year}{today.month:02d}'
+        last_invoice = PurchaseInvoice.query.filter(
+            PurchaseInvoice.invoice_number.like(f'{prefix}%')
+        ).order_by(PurchaseInvoice.id.desc()).first()
+        
+        if last_invoice:
+            last_num = int(last_invoice.invoice_number[-4:])
+            invoice_number = f'{prefix}{(last_num + 1):04d}'
+        else:
+            invoice_number = f'{prefix}0001'
+        
+        invoice = PurchaseInvoice(
+            invoice_number=invoice_number,
+            invoice_date=datetime.strptime(request.form.get('invoice_date'), '%Y-%m-%d').date(),
+            supplier_id=request.form.get('supplier_id', type=int),
+            warehouse_id=request.form.get('warehouse_id', type=int),
+            supplier_invoice_number=request.form.get('supplier_invoice_number'),
+            notes=request.form.get('notes'),
+            user_id=current_user.id,
+            status='draft'
+        )
+        
+        db.session.add(invoice)
+        db.session.commit()
+        
+        flash('تم إضافة فاتورة الشراء بنجاح', 'success')
+        return redirect(url_for('purchases.invoices'))
+    
+    suppliers = Supplier.query.filter_by(is_active=True).all()
+    warehouses = Warehouse.query.filter_by(is_active=True).all()
+    products = Product.query.filter_by(is_active=True, is_purchasable=True).all()
+
+    return render_template('purchases/add_invoice.html',
+                         suppliers=suppliers,
+                         warehouses=warehouses,
+                         products=products)
+
+@bp.route('/invoices/<int:id>')
+@login_required
+def invoice_details(id):
+    """View purchase invoice details"""
+    invoice = PurchaseInvoice.query.get_or_404(id)
+    return render_template('purchases/invoice_details.html', invoice=invoice)
+
+@bp.route('/invoices/<int:id>/confirm', methods=['GET', 'POST'])
+@login_required
+def confirm_invoice(id):
+    """Confirm purchase invoice and add stock"""
+    invoice = PurchaseInvoice.query.get_or_404(id)
+
+    if invoice.status != 'draft':
+        flash('لا يمكن تأكيد هذه الفاتورة', 'error')
+        return redirect(url_for('purchases.invoice_details', id=id))
+
+    if request.method == 'POST':
+        try:
+            # Update invoice status
+            invoice.status = 'confirmed'
+            invoice.remaining_amount = invoice.total_amount
+
+            # Add stock for each item
+            for item in invoice.items:
+                # Get or create stock record
+                stock = Stock.query.filter_by(
+                    product_id=item.product_id,
+                    warehouse_id=invoice.warehouse_id
+                ).first()
+
+                if not stock:
+                    stock = Stock(
+                        product_id=item.product_id,
+                        warehouse_id=invoice.warehouse_id,
+                        quantity=0
+                    )
+                    db.session.add(stock)
+
+                # Add quantity
+                stock.quantity += item.quantity
+
+                # Create stock movement record
+                movement = StockMovement(
+                    product_id=item.product_id,
+                    warehouse_id=invoice.warehouse_id,
+                    movement_type='in',
+                    quantity=item.quantity,
+                    reference_type='purchase_invoice',
+                    reference_id=invoice.id,
+                    notes=f'فاتورة شراء رقم {invoice.invoice_number}',
+                    user_id=current_user.id
+                )
+                db.session.add(movement)
+
+            # Update supplier balance
+            invoice.supplier.current_balance += invoice.total_amount
+
+            # Create accounting journal entry
+            try:
+                journal_entry = create_purchase_invoice_journal_entry(invoice)
+                if journal_entry:
+                    flash(f'تم إنشاء القيد المحاسبي رقم {journal_entry.entry_number}', 'info')
+            except Exception as je:
+                # Log the error but don't fail the invoice confirmation
+                flash(f'تحذير: لم يتم إنشاء القيد المحاسبي: {str(je)}', 'warning')
+
+            db.session.commit()
+            flash('تم تأكيد فاتورة الشراء بنجاح', 'success')
+            return redirect(url_for('purchases.invoice_details', id=id))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'حدث خطأ: {str(e)}', 'error')
+            return redirect(url_for('purchases.invoice_details', id=id))
+
+    return render_template('purchases/confirm_invoice.html', invoice=invoice)
+
+@bp.route('/invoices/<int:id>/cancel', methods=['GET', 'POST'])
+@login_required
+def cancel_invoice(id):
+    """Cancel purchase invoice and remove stock"""
+    invoice = PurchaseInvoice.query.get_or_404(id)
+
+    if invoice.status != 'confirmed':
+        flash('لا يمكن إلغاء هذه الفاتورة', 'error')
+        return redirect(url_for('purchases.invoice_details', id=id))
+
+    if request.method == 'POST':
+        try:
+            # Update invoice status
+            invoice.status = 'cancelled'
+
+            # Remove stock for each item
+            for item in invoice.items:
+                stock = Stock.query.filter_by(
+                    product_id=item.product_id,
+                    warehouse_id=invoice.warehouse_id
+                ).first()
+
+                if stock:
+                    stock.quantity -= item.quantity
+
+                    # Create stock movement record
+                    movement = StockMovement(
+                        product_id=item.product_id,
+                        warehouse_id=invoice.warehouse_id,
+                        movement_type='out',
+                        quantity=item.quantity,
+                        reference_type='purchase_invoice_cancel',
+                        reference_id=invoice.id,
+                        notes=f'إلغاء فاتورة شراء رقم {invoice.invoice_number}',
+                        user_id=current_user.id
+                    )
+                    db.session.add(movement)
+
+            # Update supplier balance
+            invoice.supplier.current_balance -= invoice.total_amount
+
+            db.session.commit()
+            flash('تم إلغاء فاتورة الشراء بنجاح', 'success')
+            return redirect(url_for('purchases.invoice_details', id=id))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'حدث خطأ: {str(e)}', 'error')
+            return redirect(url_for('purchases.invoice_details', id=id))
+
+    return render_template('purchases/cancel_invoice.html', invoice=invoice)
+
+@bp.route('/invoices/<int:id>/delete', methods=['GET', 'POST'])
+@login_required
+def delete_invoice(id):
+    """Delete purchase invoice (draft only)"""
+    invoice = PurchaseInvoice.query.get_or_404(id)
+
+    if invoice.status != 'draft':
+        flash('لا يمكن حذف فاتورة مؤكدة. يمكنك إلغاؤها فقط.', 'error')
+        return redirect(url_for('purchases.invoice_details', id=id))
+
+    if request.method == 'POST':
+        try:
+            db.session.delete(invoice)
+            db.session.commit()
+            flash('تم حذف فاتورة الشراء بنجاح', 'success')
+            return redirect(url_for('purchases.invoices'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'حدث خطأ: {str(e)}', 'error')
+            return redirect(url_for('purchases.invoice_details', id=id))
+
+    return render_template('purchases/delete_invoice.html', invoice=invoice)

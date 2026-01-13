@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الفرصة - CRM{% endblock %}
+{% block page_title %}تفاصيل الفرصة{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-bullseye"></i> {{ opportunity.name }}</h3>
+        <p class="text-muted mb-0">الكود: {{ opportunity.code }}</p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.opportunities') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة للقائمة
+        </a>
+    </div>
+</div>
+
+<!-- Main Information -->
+<div class="row mt-3">
+    <div class="col-md-8">
+        <!-- Details Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> معلومات الفرصة</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>الاسم:</strong> {{ opportunity.name }}</p>
+                        <p><strong>الكود:</strong> {{ opportunity.code }}</p>
+                        <p><strong>العميل:</strong> 
+                            {% if opportunity.customer %}
+                                <a href="{{ url_for('customers.customer_details', id=opportunity.customer_id) }}">
+                                    {{ opportunity.customer.name }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                        <p><strong>العميل المحتمل:</strong> 
+                            {% if opportunity.lead %}
+                                <a href="{{ url_for('crm.lead_details', id=opportunity.lead_id) }}">
+                                    {{ opportunity.lead.name }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                        <p><strong>المرحلة:</strong> 
+                            <span class="badge bg-primary">{{ opportunity.stage }}</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>المبلغ:</strong> {{ "%.2f"|format(opportunity.amount) }} ر.س</p>
+                        <p><strong>الاحتمالية:</strong> {{ opportunity.probability }}%</p>
+                        <p><strong>القيمة المتوقعة:</strong> {{ "%.2f"|format(opportunity.amount * opportunity.probability / 100) }} ر.س</p>
+                        <p><strong>تاريخ الإغلاق المتوقع:</strong> 
+                            {{ opportunity.expected_close_date.strftime('%Y-%m-%d') if opportunity.expected_close_date else '-' }}
+                        </p>
+                        <p><strong>المسؤول:</strong> 
+                            {% if opportunity.assigned_user %}
+                                {{ opportunity.assigned_user.full_name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if opportunity.description %}
+                <hr>
+                <p><strong>الوصف:</strong></p>
+                <p>{{ opportunity.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Interactions -->
+        <div class="card mt-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-comments"></i> التفاعلات</h5>
+                <a href="{{ url_for('crm.add_interaction', opportunity_id=opportunity.id) }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus"></i> إضافة تفاعل
+                </a>
+            </div>
+            <div class="card-body">
+                {% if opportunity.interactions %}
+                    <div class="timeline">
+                        {% for interaction in opportunity.interactions %}
+                        <div class="timeline-item mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-{{ 'phone' if interaction.interaction_type == 'call' else 'envelope' if interaction.interaction_type == 'email' else 'handshake' if interaction.interaction_type == 'meeting' else 'sticky-note' }} fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>{{ interaction.subject }}</h6>
+                                    <p class="text-muted mb-1">
+                                        <small>{{ interaction.interaction_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </p>
+                                    {% if interaction.description %}
+                                    <p>{{ interaction.description }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">لا توجد تفاعلات</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-bolt"></i> إجراءات سريعة</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('crm.add_interaction', opportunity_id=opportunity.id) }}" class="btn btn-primary">
+                        <i class="fas fa-comments"></i> إضافة تفاعل
+                    </a>
+                    <a href="{{ url_for('crm.add_task', opportunity_id=opportunity.id) }}" class="btn btn-warning">
+                        <i class="fas fa-tasks"></i> إضافة مهمة
+                    </a>
+                    <button class="btn btn-danger" onclick="deleteOpportunity({{ opportunity.id }})">
+                        <i class="fas fa-trash"></i> حذف الفرصة
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> إحصائيات</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>عدد التفاعلات:</strong> {{ opportunity.interactions|length }}</p>
+                <p><strong>عدد المهام:</strong> {{ opportunity.tasks|length }}</p>
+                <p><strong>تاريخ الإنشاء:</strong> {{ opportunity.created_at.strftime('%Y-%m-%d') }}</p>
+                <p><strong>آخر تحديث:</strong> {{ opportunity.updated_at.strftime('%Y-%m-%d') if opportunity.updated_at else '-' }}</p>
+            </div>
+        </div>
+        
+        <!-- Related Tasks -->
+        <div class="card mt-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-tasks"></i> المهام</h5>
+                <a href="{{ url_for('crm.add_task', opportunity_id=opportunity.id) }}" class="btn btn-sm btn-warning">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if opportunity.tasks %}
+                    <ul class="list-unstyled">
+                        {% for task in opportunity.tasks %}
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-{{ 'success' if task.status == 'completed' else 'warning' }}"></i>
+                            {{ task.title }}
+                            <br><small class="text-muted">{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else 'بدون تاريخ' }}</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted text-center">لا توجد مهام</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteOpportunity(opportunityId) {
+    if (confirm('هل أنت متأكد من حذف هذه الفرصة؟')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/crm/opportunities/${opportunityId}/delete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
+

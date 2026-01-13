@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة الصلاحيات{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-key"></i> إدارة الصلاحيات</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPermissionModal">
+            <i class="fas fa-plus"></i> إضافة صلاحية جديدة
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% set modules = {} %}
+            {% for permission in permissions %}
+                {% if permission.module not in modules %}
+                    {% set _ = modules.update({permission.module: []}) %}
+                {% endif %}
+                {% set _ = modules[permission.module].append(permission) %}
+            {% endfor %}
+            
+            {% for module, perms in modules.items() %}
+            <div class="mb-4">
+                <h4 class="text-primary border-bottom pb-2">
+                    <i class="fas fa-folder"></i> {{ module }}
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>اسم الصلاحية</th>
+                                <th>الاسم بالعربية</th>
+                                <th>الوحدة</th>
+                                <th>عدد الأدوار</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for perm in perms %}
+                            <tr>
+                                <td>{{ perm.id }}</td>
+                                <td><code>{{ perm.name }}</code></td>
+                                <td>{{ perm.name_ar }}</td>
+                                <td><span class="badge bg-info">{{ perm.module }}</span></td>
+                                <td>{{ perm.roles|length }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Permission Modal -->
+<div class="modal fade" id="addPermissionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('settings.add_permission') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة صلاحية جديدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم الصلاحية (بالإنجليزية) *</label>
+                        <input type="text" class="form-control" name="name" required>
+                        <small class="text-muted">مثال: inventory.create</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">اسم الصلاحية (بالعربية) *</label>
+                        <input type="text" class="form-control" name="name_ar" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الوحدة *</label>
+                        <select class="form-select" name="module" required>
+                            <option value="">اختر الوحدة</option>
+                            <option value="inventory">المخزون</option>
+                            <option value="sales">المبيعات</option>
+                            <option value="purchases">المشتريات</option>
+                            <option value="accounting">المحاسبة</option>
+                            <option value="hr">الموارد البشرية</option>
+                            <option value="pos">نقاط البيع</option>
+                            <option value="reports">التقارير</option>
+                            <option value="settings">الإعدادات</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

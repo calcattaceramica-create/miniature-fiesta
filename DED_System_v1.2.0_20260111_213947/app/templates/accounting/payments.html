@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}المدفوعات - نظام إدارة المخزون{% endblock %}
+{% block page_title %}المدفوعات{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-money-bill-wave"></i> المدفوعات والمقبوضات</h4>
+                    <a href="{{ url_for('accounting.add_payment') }}" class="btn btn-dark">
+                        <i class="fas fa-plus"></i> إضافة مدفوعة جديدة
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Filter Tabs -->
+                    <ul class="nav nav-pills mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_type == 'all' %}active{% endif %}" 
+                               href="{{ url_for('accounting.payments', type='all') }}">
+                                <i class="fas fa-list"></i> الكل
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_type == 'receipt' %}active{% endif %}" 
+                               href="{{ url_for('accounting.payments', type='receipt') }}">
+                                <i class="fas fa-arrow-down text-success"></i> مقبوضات
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_type == 'payment' %}active{% endif %}" 
+                               href="{{ url_for('accounting.payments', type='payment') }}">
+                                <i class="fas fa-arrow-up text-danger"></i> مدفوعات
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Payments Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>رقم المدفوعة</th>
+                                    <th>التاريخ</th>
+                                    <th>النوع</th>
+                                    <th>الجهة</th>
+                                    <th>المبلغ</th>
+                                    <th>طريقة الدفع</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments.items %}
+                                <tr>
+                                    <td><strong>{{ payment.payment_number }}</strong></td>
+                                    <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if payment.payment_type == 'receipt' %}
+                                            <span class="badge bg-success">مقبوضات</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">مدفوعات</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if payment.party_type == 'customer' %}
+                                            <span class="badge bg-info">عميل</span>
+                                        {% elif payment.party_type == 'supplier' %}
+                                            <span class="badge bg-warning">مورد</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong class="{% if payment.payment_type == 'receipt' %}text-success{% else %}text-danger{% endif %}">
+                                            {{ "{:,.2f}".format(payment.amount) }} ريال
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        {% if payment.payment_method == 'cash' %}
+                                            <i class="fas fa-money-bill"></i> نقدي
+                                        {% elif payment.payment_method == 'bank' %}
+                                            <i class="fas fa-university"></i> بنك
+                                        {% elif payment.payment_method == 'check' %}
+                                            <i class="fas fa-file-invoice"></i> شيك
+                                        {% elif payment.payment_method == 'card' %}
+                                            <i class="fas fa-credit-card"></i> بطاقة
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if payment.status == 'draft' %}
+                                            <span class="badge bg-secondary">مسودة</span>
+                                        {% elif payment.status == 'posted' %}
+                                            <span class="badge bg-success">مرحّل</span>
+                                        {% elif payment.status == 'cancelled' %}
+                                            <span class="badge bg-danger">ملغي</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('accounting.payment_details', id=payment.id) }}" 
+                                           class="btn btn-sm btn-info" title="التفاصيل">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">لا توجد مدفوعات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if payments.pages > 1 %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if payments.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('accounting.payments', page=payments.prev_num, type=current_type) }}">
+                                    السابق
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for page_num in payments.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                {% if page_num %}
+                                    <li class="page-item {% if page_num == payments.page %}active{% endif %}">
+                                        <a class="page-link" href="{{ url_for('accounting.payments', page=page_num, type=current_type) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if payments.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('accounting.payments', page=payments.next_num, type=current_type) }}">
+                                    التالي
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

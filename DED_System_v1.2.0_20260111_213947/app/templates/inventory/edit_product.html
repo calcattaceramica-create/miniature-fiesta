@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل منتج - نظام إدارة المخزون{% endblock %}
+{% block page_title %}تعديل منتج{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-edit"></i> تعديل منتج: {{ product.name }}</h3>
+        <p class="text-muted mb-0">تعديل بيانات المنتج</p>
+    </div>
+    <div>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+            <i class="fas fa-trash"></i> حذف المنتج
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('inventory.edit_product', id=product.id) }}">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">اسم المنتج <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" value="{{ product.name }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <input type="text" class="form-control" name="name_en" value="{{ product.name_en or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">كود المنتج <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="code" value="{{ product.code }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الباركود</label>
+                        <input type="text" class="form-control" name="barcode" value="{{ product.barcode or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">SKU</label>
+                        <input type="text" class="form-control" name="sku" value="{{ product.sku or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">التصنيف</label>
+                        <select class="form-select" name="category_id">
+                            <option value="">اختر التصنيف</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if product.category_id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الوحدة</label>
+                        <select class="form-select" name="unit_id">
+                            <option value="">اختر الوحدة</option>
+                            {% for unit in units %}
+                            <option value="{{ unit.id }}" {% if product.unit_id == unit.id %}selected{% endif %}>
+                                {{ unit.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="3">{{ product.description or '' }}</textarea>
+                    </div>
+                </div>
+                
+                <!-- Pricing and Stock -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> الأسعار والمخزون</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">سعر التكلفة</label>
+                        <input type="number" step="0.01" class="form-control" name="cost_price" value="{{ product.cost_price }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">سعر البيع</label>
+                        <input type="number" step="0.01" class="form-control" name="selling_price" value="{{ product.selling_price }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحد الأدنى للسعر</label>
+                        <input type="number" step="0.01" class="form-control" name="min_price" value="{{ product.min_price }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحد الأدنى للمخزون</label>
+                        <input type="number" step="0.01" class="form-control" name="min_stock" value="{{ product.min_stock }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحد الأقصى للمخزون</label>
+                        <input type="number" step="0.01" class="form-control" name="max_stock" value="{{ product.max_stock }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نقطة إعادة الطلب</label>
+                        <input type="number" step="0.01" class="form-control" name="reorder_level" value="{{ product.reorder_level }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نسبة الضريبة (%)</label>
+                        <input type="number" step="0.01" class="form-control" name="tax_rate" value="{{ product.tax_rate }}">
+                    </div>
+                    
+                    <h5 class="mb-3 mt-4"><i class="fas fa-cog"></i> الإعدادات</h5>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="is_active" {% if product.is_active %}checked{% endif %}>
+                        <label class="form-check-label">نشط</label>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="is_sellable" {% if product.is_sellable %}checked{% endif %}>
+                        <label class="form-check-label">قابل للبيع</label>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="is_purchasable" {% if product.is_purchasable %}checked{% endif %}>
+                        <label class="form-check-label">قابل للشراء</label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="track_inventory" {% if product.track_inventory %}checked{% endif %}>
+                        <label class="form-check-label">تتبع المخزون</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('inventory.products') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> حفظ التعديلات
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> تأكيد حذف المنتج
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning mb-3">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>تنبيه مهم:</strong>
+                </div>
+
+                <p class="mb-3">هل أنت متأكد من حذف المنتج التالي؟</p>
+
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="mb-2"><strong>{{ product.name }}</strong></h6>
+                        <p class="mb-1 text-muted small">الكود: {{ product.code }}</p>
+                        {% if product.barcode %}
+                        <p class="mb-0 text-muted small">الباركود: {{ product.barcode }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="fas fa-lightbulb"></i>
+                    <small>
+                        <strong>ملاحظة:</strong> إذا كان المنتج مرتبطاً بفواتير أو طلبات، سيتم تعطيله بدلاً من حذفه نهائياً للحفاظ على سلامة البيانات.
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> إلغاء
+                </button>
+                <form method="POST" action="{{ url_for('inventory.delete_product', id=product.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> تأكيد الحذف
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete() {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

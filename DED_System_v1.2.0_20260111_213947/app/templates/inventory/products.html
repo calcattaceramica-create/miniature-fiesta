@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}المنتجات - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إدارة المنتجات{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-boxes"></i> إدارة المنتجات</h3>
+        <p class="text-muted mb-0">عرض وإدارة جميع المنتجات</p>
+    </div>
+    <div>
+        <a href="{{ url_for('inventory.add_product') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> إضافة منتج جديد
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('inventory.products') }}">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="بحث بالاسم، الكود، أو الباركود..." value="{{ search }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> بحث
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" name="category" onchange="this.form.submit()">
+                        <option value="">جميع التصنيفات</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ url_for('inventory.products') }}" class="btn btn-secondary w-100">
+                        <i class="fas fa-redo"></i> إعادة تعيين
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Products Table -->
+<div class="card mt-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>الكود</th>
+                        <th>اسم المنتج</th>
+                        <th>التصنيف</th>
+                        <th>الوحدة</th>
+                        <th>سعر التكلفة</th>
+                        <th>سعر البيع</th>
+                        <th>المخزون</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products.items %}
+                    <tr>
+                        <td><strong>{{ product.code }}</strong></td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.category.name if product.category else '-' }}</td>
+                        <td>{{ product.unit.name if product.unit else '-' }}</td>
+                        <td>{{ "%.2f"|format(product.cost_price) }} ر.س</td>
+                        <td>{{ "%.2f"|format(product.selling_price) }} ر.س</td>
+                        <td>
+                            {% set stock = product.get_stock() %}
+                            {% if stock <= product.min_stock %}
+                                <span class="badge bg-danger">{{ stock }}</span>
+                            {% elif stock <= product.reorder_level %}
+                                <span class="badge bg-warning">{{ stock }}</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if product.is_active %}
+                                <span class="badge bg-success">نشط</span>
+                            {% else %}
+                                <span class="badge bg-secondary">غير نشط</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('inventory.edit_product', id=product.id) }}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="تعديل">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="confirmDelete('{{ product.id }}', '{{ product.name }}')"
+                                        title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                            لا توجد منتجات
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if products.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% if products.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('inventory.products', page=products.prev_num, search=search, category=category_id) }}">السابق</a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == products.page %}
+                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('inventory.products', page=page_num, search=search, category=category_id) }}">{{ page_num }}</a></li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if products.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('inventory.products', page=products.next_num, search=search, category=category_id) }}">التالي</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<div class="card mt-3">
+    <div class="card-body">
+        <p class="mb-0 text-muted">
+            <i class="fas fa-info-circle"></i>
+            عرض {{ products.items|length }} من أصل {{ products.total }} منتج
+        </p>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> تأكيد الحذف
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">هل أنت متأكد من حذف المنتج؟</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>تنبيه:</strong> إذا كان المنتج مرتبطاً بفواتير أو طلبات، سيتم تعطيله بدلاً من حذفه نهائياً.
+                </div>
+                <p class="mb-0"><strong>اسم المنتج:</strong> <span id="productName"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> إلغاء
+                </button>
+                <form id="deleteForm" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> حذف
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(productId, productName) {
+    // Set product name in modal
+    document.getElementById('productName').textContent = productName;
+
+    // Set form action
+    const form = document.getElementById('deleteForm');
+    form.action = `/inventory/products/${productId}/delete`;
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

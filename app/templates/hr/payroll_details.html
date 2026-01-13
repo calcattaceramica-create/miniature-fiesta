@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الراتب{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-invoice"></i> تفاصيل الراتب</h2>
+        <div>
+            <button onclick="window.print()" class="btn btn-info">
+                <i class="fas fa-print"></i> طباعة
+            </button>
+            <a href="{{ url_for('hr.payroll') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right"></i> العودة
+            </a>
+        </div>
+    </div>
+
+    <!-- Payroll Details -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">كشف راتب - {{ payroll.month }}/{{ payroll.year }}</h5>
+        </div>
+        <div class="card-body">
+            <!-- Employee Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted">معلومات الموظف</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">رقم الموظف:</th>
+                            <td>{{ payroll.employee.employee_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>الاسم:</th>
+                            <td>{{ payroll.employee.first_name }} {{ payroll.employee.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>القسم:</th>
+                            <td>{{ payroll.employee.department.name if payroll.employee.department else '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>المنصب:</th>
+                            <td>{{ payroll.employee.position.name if payroll.employee.position else '-' }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted">معلومات الراتب</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <th width="40%">الشهر/السنة:</th>
+                            <td>{{ payroll.month }}/{{ payroll.year }}</td>
+                        </tr>
+                        <tr>
+                            <th>الحالة:</th>
+                            <td>
+                                {% if payroll.status == 'paid' %}
+                                <span class="badge bg-success">مدفوع</span>
+                                {% elif payroll.status == 'approved' %}
+                                <span class="badge bg-info">معتمد</span>
+                                {% else %}
+                                <span class="badge bg-warning">مسودة</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if payroll.payment_date %}
+                        <tr>
+                            <th>تاريخ الدفع:</th>
+                            <td>{{ payroll.payment_date.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Salary Breakdown -->
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <h6 class="text-muted mb-3">تفاصيل الراتب</h6>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th width="60%">الراتب الأساسي</th>
+                                <td class="text-end"><strong>{{ '%.2f'|format(payroll.basic_salary) }} ريال</strong></td>
+                            </tr>
+                            <tr class="table-success">
+                                <th>البدلات</th>
+                                <td class="text-end text-success"><strong>+ {{ '%.2f'|format(payroll.allowances) }} ريال</strong></td>
+                            </tr>
+                            <tr class="table-info">
+                                <th>الساعات الإضافية</th>
+                                <td class="text-end text-info"><strong>+ {{ '%.2f'|format(payroll.overtime) }} ريال</strong></td>
+                            </tr>
+                            <tr class="table-danger">
+                                <th>الخصومات</th>
+                                <td class="text-end text-danger"><strong>- {{ '%.2f'|format(payroll.deductions) }} ريال</strong></td>
+                            </tr>
+                            <tr class="table-primary">
+                                <th><h5 class="mb-0">صافي الراتب</h5></th>
+                                <td class="text-end"><h5 class="mb-0 text-primary"><strong>{{ '%.2f'|format(payroll.net_salary) }} ريال</strong></h5></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            {% if payroll.status != 'paid' %}
+            <div class="text-center mt-4">
+                {% if payroll.status == 'draft' %}
+                <button type="button" class="btn btn-success btn-lg" onclick="approvePayroll({{ payroll.id }})">
+                    <i class="fas fa-check"></i> اعتماد الراتب
+                </button>
+                {% elif payroll.status == 'approved' %}
+                <button type="button" class="btn btn-primary btn-lg" onclick="payPayroll({{ payroll.id }})">
+                    <i class="fas fa-money-bill"></i> تسجيل الدفع
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function approvePayroll(id) {
+    if (confirm('هل أنت متأكد من اعتماد هذا الراتب؟')) {
+        fetch('{{ url_for("hr.approve_payroll", id=0) }}'.replace('0', id), {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function payPayroll(id) {
+    if (confirm('هل أنت متأكد من تسجيل دفع هذا الراتب؟')) {
+        fetch('{{ url_for("hr.pay_payroll", id=0) }}'.replace('0', id), {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
+

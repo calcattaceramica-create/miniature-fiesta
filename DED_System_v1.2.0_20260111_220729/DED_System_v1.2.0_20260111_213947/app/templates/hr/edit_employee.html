@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل موظف{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-edit"></i> تعديل بيانات الموظف</h2>
+        <a href="{{ url_for('hr.employee_details', id=employee.id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة
+        </a>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('hr.edit_employee', id=employee.id) }}">
+        <div class="row">
+            <!-- Personal Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-user"></i> المعلومات الشخصية</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الاسم الأول (عربي) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="first_name" value="{{ employee.first_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">اسم العائلة (عربي) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="last_name" value="{{ employee.last_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الاسم الأول (إنجليزي)</label>
+                                <input type="text" class="form-control" name="first_name_en" value="{{ employee.first_name_en or '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">اسم العائلة (إنجليزي)</label>
+                                <input type="text" class="form-control" name="last_name_en" value="{{ employee.last_name_en or '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">رقم الهوية الوطنية</label>
+                                <input type="text" class="form-control" name="national_id" value="{{ employee.national_id or '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">رقم الجواز</label>
+                                <input type="text" class="form-control" name="passport_number" value="{{ employee.passport_number or '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">تاريخ الميلاد</label>
+                                <input type="date" class="form-control" name="date_of_birth" value="{{ employee.date_of_birth.strftime('%Y-%m-%d') if employee.date_of_birth else '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الجنس</label>
+                                <select class="form-select" name="gender">
+                                    <option value="">اختر...</option>
+                                    <option value="male" {% if employee.gender == 'male' %}selected{% endif %}>ذكر</option>
+                                    <option value="female" {% if employee.gender == 'female' %}selected{% endif %}>أنثى</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الحالة الاجتماعية</label>
+                                <select class="form-select" name="marital_status">
+                                    <option value="">اختر...</option>
+                                    <option value="single" {% if employee.marital_status == 'single' %}selected{% endif %}>أعزب</option>
+                                    <option value="married" {% if employee.marital_status == 'married' %}selected{% endif %}>متزوج</option>
+                                    <option value="divorced" {% if employee.marital_status == 'divorced' %}selected{% endif %}>مطلق</option>
+                                    <option value="widowed" {% if employee.marital_status == 'widowed' %}selected{% endif %}>أرمل</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الجنسية</label>
+                                <input type="text" class="form-control" name="nationality" value="{{ employee.nationality or 'سعودي' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-address-book"></i> معلومات الاتصال</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <input type="email" class="form-control" name="email" value="{{ employee.email or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الهاتف</label>
+                            <input type="text" class="form-control" name="phone" value="{{ employee.phone or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الجوال</label>
+                            <input type="text" class="form-control" name="mobile" value="{{ employee.mobile or '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">العنوان</label>
+                            <textarea class="form-control" name="address" rows="3">{{ employee.address or '' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">المدينة</label>
+                            <input type="text" class="form-control" name="city" value="{{ employee.city or '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-briefcase"></i> معلومات التوظيف</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">القسم</label>
+                            <select class="form-select" name="department_id">
+                                <option value="">اختر القسم...</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if employee.department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">المنصب</label>
+                            <select class="form-select" name="position_id">
+                                <option value="">اختر المنصب...</option>
+                                {% for pos in positions %}
+                                <option value="{{ pos.id }}" {% if employee.position_id == pos.id %}selected{% endif %}>{{ pos.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الفرع</label>
+                            <select class="form-select" name="branch_id">
+                                <option value="">اختر الفرع...</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.id }}" {% if employee.branch_id == branch.id %}selected{% endif %}>{{ branch.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تاريخ التعيين</label>
+                            <input type="date" class="form-control" name="hire_date" value="{{ employee.hire_date.strftime('%Y-%m-%d') if employee.hire_date else '' }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">نوع العقد</label>
+                            <select class="form-select" name="contract_type">
+                                <option value="">اختر...</option>
+                                <option value="permanent" {% if employee.contract_type == 'permanent' %}selected{% endif %}>دائم</option>
+                                <option value="temporary" {% if employee.contract_type == 'temporary' %}selected{% endif %}>مؤقت</option>
+                                <option value="contract" {% if employee.contract_type == 'contract' %}selected{% endif %}>عقد</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">حالة التوظيف</label>
+                            <select class="form-select" name="employment_status">
+                                <option value="active" {% if employee.employment_status == 'active' %}selected{% endif %}>نشط</option>
+                                <option value="resigned" {% if employee.employment_status == 'resigned' %}selected{% endif %}>مستقيل</option>
+                                <option value="terminated" {% if employee.employment_status == 'terminated' %}selected{% endif %}>منتهي</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> معلومات الراتب</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">الراتب الأساسي</label>
+                            <input type="number" class="form-control" name="basic_salary" step="0.01" value="{{ employee.basic_salary }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center mb-4">
+            <button type="submit" class="btn btn-warning btn-lg px-5">
+                <i class="fas fa-save"></i> تحديث
+            </button>
+            <a href="{{ url_for('hr.employee_details', id=employee.id) }}" class="btn btn-secondary btn-lg px-5">
+                <i class="fas fa-times"></i> إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

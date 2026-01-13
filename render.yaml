@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: ded-erp-system
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 run:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ded-database
+          property: connectionString
+    autoDeploy: true
+
+databases:
+  - name: ded-database
+    databaseName: ded_erp
+    user: ded_user
+

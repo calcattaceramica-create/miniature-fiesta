@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}طلب إجازة{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar-plus"></i> طلب إجازة</h2>
+        <a href="{{ url_for('hr.leaves') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة
+        </a>
+    </div>
+
+    <!-- Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-alt"></i> بيانات الإجازة</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('hr.add_leave') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الموظف <span class="text-danger">*</span></label>
+                                <select class="form-select" name="employee_id" required>
+                                    <option value="">اختر الموظف...</option>
+                                    {% for emp in employees %}
+                                    <option value="{{ emp.id }}">{{ emp.employee_number }} - {{ emp.first_name }} {{ emp.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">نوع الإجازة <span class="text-danger">*</span></label>
+                                <select class="form-select" name="leave_type_id" required>
+                                    <option value="">اختر نوع الإجازة...</option>
+                                    {% for lt in leave_types %}
+                                    <option value="{{ lt.id }}">{{ lt.name }} ({{ lt.days_per_year }} يوم/سنة)</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">من تاريخ <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="start_date" id="start_date" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">إلى تاريخ <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="end_date" id="end_date" required>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> عدد الأيام: <strong id="days_count">0</strong> يوم
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">السبب <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="reason" rows="4" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-paper-plane"></i> إرسال الطلب
+                            </button>
+                            <a href="{{ url_for('hr.leaves') }}" class="btn btn-secondary btn-lg px-5">
+                                <i class="fas fa-times"></i> إلغاء
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calculate days count
+function calculateDays() {
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
+    
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        document.getElementById('days_count').textContent = diffDays;
+    }
+}
+
+document.getElementById('start_date').addEventListener('change', calculateDays);
+document.getElementById('end_date').addEventListener('change', calculateDays);
+</script>
+{% endblock %}
+

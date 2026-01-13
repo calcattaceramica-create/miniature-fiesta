@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة تحكم الموارد البشرية{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-users"></i> لوحة تحكم الموارد البشرية</h2>
+        <div>
+            <a href="{{ url_for('hr.add_employee') }}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> إضافة موظف
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">إجمالي الموظفين</h6>
+                            <h2 class="mb-0">{{ stats.total_employees }}</h2>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">الأقسام</h6>
+                            <h2 class="mb-0">{{ stats.total_departments }}</h2>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-info text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">حاضر اليوم</h6>
+                            <h2 class="mb-0">{{ stats.present_today }}</h2>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card bg-gradient-warning text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">طلبات الإجازات</h6>
+                            <h2 class="mb-0">{{ stats.pending_leaves }}</h2>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Recent Data -->
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt"></i> إجراءات سريعة</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('hr.add_employee') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus"></i> إضافة موظف جديد
+                        </a>
+                        <a href="{{ url_for('hr.add_attendance') }}" class="btn btn-outline-success">
+                            <i class="fas fa-clock"></i> تسجيل حضور
+                        </a>
+                        <a href="{{ url_for('hr.add_leave') }}" class="btn btn-outline-info">
+                            <i class="fas fa-calendar-plus"></i> طلب إجازة
+                        </a>
+                        <a href="{{ url_for('hr.generate_payroll') }}" class="btn btn-outline-warning">
+                            <i class="fas fa-money-bill-wave"></i> إنشاء كشف رواتب
+                        </a>
+                        <a href="{{ url_for('hr.reports') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-chart-bar"></i> التقارير
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Employees -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-friends"></i> أحدث الموظفين</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for employee in recent_employees %}
+                        <a href="{{ url_for('hr.employee_details', id=employee.id) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">{{ employee.first_name }} {{ employee.last_name }}</h6>
+                                    <small class="text-muted">{{ employee.employee_number }}</small>
+                                </div>
+                                <span class="badge bg-success">{{ employee.department.name if employee.department else 'بدون قسم' }}</span>
+                            </div>
+                        </a>
+                        {% else %}
+                        <div class="list-group-item text-center text-muted">
+                            لا توجد بيانات
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Leaves -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-hourglass-half"></i> طلبات الإجازات المعلقة</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for leave in pending_leaves %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ leave.employee.first_name }} {{ leave.employee.last_name }}</h6>
+                                    <small class="text-muted">{{ leave.start_date.strftime('%Y-%m-%d') }} - {{ leave.end_date.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <span class="badge bg-warning">{{ leave.days_count }} يوم</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="list-group-item text-center text-muted">
+                            لا توجد طلبات معلقة
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+</style>
+{% endblock %}
+

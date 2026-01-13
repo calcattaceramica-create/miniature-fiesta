@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}التقارير المحاسبية - نظام إدارة المخزون{% endblock %}
+{% block page_title %}التقارير المحاسبية{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-chart-bar"></i> التقارير المحاسبية</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">اختر التقرير المطلوب من القائمة أدناه:</p>
+                </div>
+            </div>
+
+            <!-- Financial Statements -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="fas fa-file-invoice-dollar"></i> القوائم المالية</h5>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-balance-scale fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">ميزان المراجعة</h5>
+                            <p class="card-text text-muted">عرض أرصدة جميع الحسابات المدينة والدائنة</p>
+                            <a href="{{ url_for('accounting.trial_balance') }}" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> عرض التقرير
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-chart-line fa-3x text-success"></i>
+                            </div>
+                            <h5 class="card-title">قائمة الدخل</h5>
+                            <p class="card-text text-muted">الإيرادات والمصروفات وصافي الربح</p>
+                            <a href="{{ url_for('accounting.income_statement') }}" class="btn btn-success">
+                                <i class="fas fa-eye"></i> عرض التقرير
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-file-invoice-dollar fa-3x text-info"></i>
+                            </div>
+                            <h5 class="card-title">الميزانية العمومية</h5>
+                            <p class="card-text text-muted">الأصول والخصوم وحقوق الملكية</p>
+                            <a href="{{ url_for('accounting.balance_sheet') }}" class="btn btn-info">
+                                <i class="fas fa-eye"></i> عرض التقرير
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-money-bill-wave fa-3x text-warning"></i>
+                            </div>
+                            <h5 class="card-title">قائمة التدفقات النقدية</h5>
+                            <p class="card-text text-muted">التدفقات النقدية من الأنشطة المختلفة</p>
+                            <a href="{{ url_for('accounting.cash_flow') }}" class="btn btn-warning">
+                                <i class="fas fa-eye"></i> عرض التقرير
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Reports -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="fas fa-file-alt"></i> التقارير التفصيلية</h5>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-file-alt fa-3x text-secondary"></i>
+                            </div>
+                            <h5 class="card-title">كشف حساب</h5>
+                            <p class="card-text text-muted">حركة حساب معين خلال فترة محددة</p>
+                            <a href="{{ url_for('accounting.account_statement') }}" class="btn btn-secondary">
+                                <i class="fas fa-eye"></i> عرض التقرير
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-calendar-alt fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">تقرير الأعمار</h5>
+                            <p class="card-text text-muted">أعمار الذمم المدينة والدائنة</p>
+                            <a href="{{ url_for('accounting.aging_report', type='receivables') }}" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> عرض التقرير
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-sitemap fa-3x text-dark"></i>
+                            </div>
+                            <h5 class="card-title">تقرير مراكز التكلفة</h5>
+                            <p class="card-text text-muted">الأرباح والخسائر حسب مركز التكلفة</p>
+                            <a href="{{ url_for('accounting.cost_center_report') }}" class="btn btn-dark">
+                                <i class="fas fa-eye"></i> عرض التقرير
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="fas fa-tachometer-alt"></i> ملخص سريع</h5>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">إجمالي الأصول</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(total_assets) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">إجمالي الإيرادات</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(total_revenue) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <h6 class="card-title">إجمالي المصروفات</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(total_expenses) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h6 class="card-title">صافي الربح</h6>
+                            <h3 class="mb-0">{{ "{:,.0f}".format(net_profit) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+</style>
+{% endblock %}
+

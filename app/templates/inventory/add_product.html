@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة منتج - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إضافة منتج جديد{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h3>
+    <p class="text-muted mb-0">أدخل بيانات المنتج الجديد</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('inventory.add_product') }}">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">اسم المنتج <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <input type="text" class="form-control" name="name_en">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">كود المنتج <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="code" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الباركود</label>
+                        <input type="text" class="form-control" name="barcode">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">SKU</label>
+                        <input type="text" class="form-control" name="sku">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">التصنيف</label>
+                        <select class="form-select" name="category_id">
+                            <option value="">اختر التصنيف</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الوحدة</label>
+                        <select class="form-select" name="unit_id">
+                            <option value="">اختر الوحدة</option>
+                            {% for unit in units %}
+                            <option value="{{ unit.id }}">{{ unit.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Pricing and Stock -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> الأسعار والمخزون</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">سعر التكلفة</label>
+                        <input type="number" step="0.01" class="form-control" name="cost_price" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">سعر البيع</label>
+                        <input type="number" step="0.01" class="form-control" name="selling_price" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحد الأدنى للسعر</label>
+                        <input type="number" step="0.01" class="form-control" name="min_price" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحد الأدنى للمخزون</label>
+                        <input type="number" step="0.01" class="form-control" name="min_stock" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحد الأقصى للمخزون</label>
+                        <input type="number" step="0.01" class="form-control" name="max_stock" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نقطة إعادة الطلب</label>
+                        <input type="number" step="0.01" class="form-control" name="reorder_level" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نسبة الضريبة (%)</label>
+                        <input type="number" step="0.01" class="form-control" name="tax_rate" value="15">
+                    </div>
+                    
+                    <h5 class="mb-3 mt-4"><i class="fas fa-cog"></i> الإعدادات</h5>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_active" name="is_active" checked>
+                        <label class="form-check-label" for="is_active">نشط</label>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_sellable" name="is_sellable" checked>
+                        <label class="form-check-label" for="is_sellable">قابل للبيع</label>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_purchasable" name="is_purchasable" checked>
+                        <label class="form-check-label" for="is_purchasable">قابل للشراء</label>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="track_inventory" name="track_inventory" checked>
+                        <label class="form-check-label" for="track_inventory">تتبع المخزون</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Initial Stock Section -->
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="fas fa-warehouse"></i> المخزون الافتتاحي</h5>
+                    <p class="text-muted small">أدخل الكميات الافتتاحية للمنتج في كل مستودع (اختياري)</p>
+
+                    {% if warehouses %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50%;">المستودع</th>
+                                    <th style="width: 30%;">الكود</th>
+                                    <th style="width: 20%;">الكمية الافتتاحية</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for warehouse in warehouses %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-warehouse text-primary"></i>
+                                        {{ warehouse.name }}
+                                        {% if warehouse.name_en %}
+                                        <small class="text-muted">({{ warehouse.name_en }})</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ warehouse.code }}</span>
+                                    </td>
+                                    <td>
+                                        <input type="number"
+                                               step="0.01"
+                                               min="0"
+                                               class="form-control"
+                                               name="warehouse_{{ warehouse.id }}"
+                                               value="0"
+                                               placeholder="0.00">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        لا توجد مستودعات نشطة. يرجى إضافة مستودع أولاً من
+                        <a href="{{ url_for('inventory.warehouses') }}" class="alert-link">إدارة المستودعات</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('inventory.products') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> حفظ المنتج
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table-bordered th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+}
+
+.table input[type="number"] {
+    text-align: center;
+    font-weight: 600;
+}
+
+.table input[type="number"]:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+</style>
+
+{% endblock %}
+

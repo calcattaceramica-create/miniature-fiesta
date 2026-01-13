@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}الموردين - نظام إدارة المخزون{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-truck"></i> قائمة الموردين</h4>
+                    <a href="{{ url_for('purchases.add_supplier') }}" class="btn btn-light">
+                        <i class="fas fa-plus"></i> إضافة مورد جديد
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form method="GET" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="ابحث بالاسم، الكود، أو رقم الهاتف..." 
+                                           value="{{ search }}">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search"></i> بحث
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Suppliers Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>الكود</th>
+                                    <th>اسم المورد</th>
+                                    <th>الهاتف</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>المدينة</th>
+                                    <th>التصنيف</th>
+                                    <th>الرصيد الحالي</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if suppliers.items %}
+                                    {% for supplier in suppliers.items %}
+                                    <tr>
+                                        <td><strong>{{ supplier.code }}</strong></td>
+                                        <td>{{ supplier.name }}</td>
+                                        <td>{{ supplier.phone or '-' }}</td>
+                                        <td>{{ supplier.email or '-' }}</td>
+                                        <td>{{ supplier.city or '-' }}</td>
+                                        <td>
+                                            {% if supplier.category %}
+                                                <span class="badge bg-info">{{ supplier.category }}</span>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if supplier.current_balance > 0 %}
+                                                <span class="text-danger">{{ "%.2f"|format(supplier.current_balance) }} ر.س</span>
+                                            {% elif supplier.current_balance < 0 %}
+                                                <span class="text-success">{{ "%.2f"|format(supplier.current_balance|abs) }} ر.س</span>
+                                            {% else %}
+                                                <span class="text-muted">0.00 ر.س</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if supplier.is_active %}
+                                                <span class="badge bg-success">نشط</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">غير نشط</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-info" title="عرض التفاصيل">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-warning" title="تعديل">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="9" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                                            <p>لا توجد موردين</p>
+                                            <a href="{{ url_for('purchases.add_supplier') }}" class="btn btn-primary">
+                                                <i class="fas fa-plus"></i> إضافة مورد جديد
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if suppliers.pages > 1 %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if suppliers.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('purchases.suppliers', page=suppliers.prev_num, search=search) }}">
+                                    السابق
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for page_num in suppliers.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                {% if page_num %}
+                                    {% if page_num == suppliers.page %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('purchases.suppliers', page=page_num, search=search) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if suppliers.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('purchases.suppliers', page=suppliers.next_num, search=search) }}">
+                                    التالي
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

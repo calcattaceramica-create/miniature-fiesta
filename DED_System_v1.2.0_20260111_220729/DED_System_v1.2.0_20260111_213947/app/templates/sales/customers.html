@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}العملاء - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إدارة العملاء{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-users"></i> إدارة العملاء</h3>
+        <p class="text-muted mb-0">عرض وإدارة جميع العملاء</p>
+    </div>
+    <div>
+        <a href="{{ url_for('sales.add_customer') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> إضافة عميل جديد
+        </a>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="card">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('sales.customers') }}">
+            <div class="row">
+                <div class="col-md-10">
+                    <input type="text" class="form-control" name="search" placeholder="بحث بالاسم، الكود، أو رقم الهاتف..." value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" type="submit">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Customers Table -->
+<div class="card mt-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>الكود</th>
+                        <th>اسم العميل</th>
+                        <th>الهاتف</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>المدينة</th>
+                        <th>الرصيد الحالي</th>
+                        <th>التصنيف</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers.items %}
+                    <tr>
+                        <td><strong>{{ customer.code }}</strong></td>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone or '-' }}</td>
+                        <td>{{ customer.email or '-' }}</td>
+                        <td>{{ customer.city or '-' }}</td>
+                        <td>
+                            {% if customer.current_balance > 0 %}
+                                <span class="text-danger">{{ "%.2f"|format(customer.current_balance) }} ر.س</span>
+                            {% elif customer.current_balance < 0 %}
+                                <span class="text-success">{{ "%.2f"|format(customer.current_balance|abs) }} ر.س</span>
+                            {% else %}
+                                <span class="text-muted">0.00 ر.س</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.category %}
+                                <span class="badge bg-info">{{ customer.category }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.is_active %}
+                                <span class="badge bg-success">نشط</span>
+                            {% else %}
+                                <span class="badge bg-secondary">غير نشط</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                            لا يوجد عملاء
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if customers.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% if customers.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('sales.customers', page=customers.prev_num, search=search) }}">السابق</a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in customers.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == customers.page %}
+                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('sales.customers', page=page_num, search=search) }}">{{ page_num }}</a></li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if customers.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('sales.customers', page=customers.next_num, search=search) }}">التالي</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+

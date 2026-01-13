@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}قائمة الدخل - نظام إدارة المخزون{% endblock %}
+{% block page_title %}قائمة الدخل{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-chart-line"></i> قائمة الدخل</h4>
+                        <button onclick="window.print()" class="btn btn-light">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Report Header -->
+                    <div class="text-center mb-4">
+                        <h3>قائمة الدخل</h3>
+                        <p class="text-muted">Income Statement / Profit & Loss</p>
+                        <p>الفترة: {{ start_date }} إلى {{ end_date }}</p>
+                    </div>
+
+                    <!-- Income Statement Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <!-- Revenue Section -->
+                                <tr class="table-primary">
+                                    <td colspan="2"><strong>الإيرادات (Revenue)</strong></td>
+                                </tr>
+                                {% for account in revenue_accounts %}
+                                <tr>
+                                    <td class="ps-4">{{ account.name }}</td>
+                                    <td class="text-end" width="200">{{ "{:,.2f}".format(account.credit_balance) }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="table-light fw-bold">
+                                    <td>إجمالي الإيرادات</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(total_revenue) }}</td>
+                                </tr>
+
+                                <!-- Cost of Goods Sold -->
+                                <tr class="table-warning">
+                                    <td colspan="2"><strong>تكلفة البضاعة المباعة (Cost of Goods Sold)</strong></td>
+                                </tr>
+                                {% for account in cogs_accounts %}
+                                <tr>
+                                    <td class="ps-4">{{ account.name }}</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(account.debit_balance) }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="table-light fw-bold">
+                                    <td>إجمالي تكلفة البضاعة المباعة</td>
+                                    <td class="text-end text-danger">({{ "{:,.2f}".format(total_cogs) }})</td>
+                                </tr>
+
+                                <!-- Gross Profit -->
+                                <tr class="table-info fw-bold">
+                                    <td>مجمل الربح (Gross Profit)</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(gross_profit) }}</td>
+                                </tr>
+
+                                <!-- Operating Expenses -->
+                                <tr class="table-danger">
+                                    <td colspan="2"><strong>المصروفات التشغيلية (Operating Expenses)</strong></td>
+                                </tr>
+                                {% for account in expense_accounts %}
+                                <tr>
+                                    <td class="ps-4">{{ account.name }}</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(account.debit_balance) }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr class="table-light fw-bold">
+                                    <td>إجمالي المصروفات التشغيلية</td>
+                                    <td class="text-end text-danger">({{ "{:,.2f}".format(total_expenses) }})</td>
+                                </tr>
+
+                                <!-- Net Profit -->
+                                <tr class="table-success fw-bold fs-5">
+                                    <td>صافي الربح (Net Profit)</td>
+                                    <td class="text-end {% if net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(net_profit) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Financial Ratios -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted">هامش مجمل الربح</h6>
+                                    <h3 class="text-primary">
+                                        {% if total_revenue > 0 %}
+                                            {{ "{:.2f}".format((gross_profit / total_revenue) * 100) }}%
+                                        {% else %}
+                                            0.00%
+                                        {% endif %}
+                                    </h3>
+                                    <small class="text-muted">Gross Profit Margin</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted">هامش صافي الربح</h6>
+                                    <h3 class="{% if net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {% if total_revenue > 0 %}
+                                            {{ "{:.2f}".format((net_profit / total_revenue) * 100) }}%
+                                        {% else %}
+                                            0.00%
+                                        {% endif %}
+                                    </h3>
+                                    <small class="text-muted">Net Profit Margin</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted">نسبة المصروفات</h6>
+                                    <h3 class="text-warning">
+                                        {% if total_revenue > 0 %}
+                                            {{ "{:.2f}".format((total_expenses / total_revenue) * 100) }}%
+                                        {% else %}
+                                            0.00%
+                                        {% endif %}
+                                    </h3>
+                                    <small class="text-muted">Expense Ratio</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Indicator -->
+                    <div class="alert {% if net_profit >= 0 %}alert-success{% else %}alert-danger{% endif %} mt-4">
+                        <i class="fas {% if net_profit >= 0 %}fa-thumbs-up{% else %}fa-exclamation-triangle{% endif %}"></i>
+                        {% if net_profit >= 0 %}
+                            <strong>أداء جيد!</strong> حققت الشركة ربحاً صافياً قدره {{ "{:,.2f}".format(net_profit) }} ريال.
+                        {% else %}
+                            <strong>تحذير!</strong> سجلت الشركة خسارة قدرها {{ "{:,.2f}".format(abs(net_profit)) }} ريال.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar { display: none !important; }
+}
+</style>
+{% endblock %}
+

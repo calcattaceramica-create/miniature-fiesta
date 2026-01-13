@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}الرواتب{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-money-bill-wave"></i> الرواتب</h2>
+        <a href="{{ url_for('hr.generate_payroll') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> إنشاء كشف رواتب
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('hr.payroll') }}" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">الموظف</label>
+                    <select class="form-select" name="employee_id">
+                        <option value="">الكل</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}" {% if employee_id == emp.id %}selected{% endif %}>{{ emp.first_name }} {{ emp.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">الشهر</label>
+                    <select class="form-select" name="month">
+                        <option value="">الكل</option>
+                        {% for m in range(1, 13) %}
+                        <option value="{{ m }}" {% if month == m %}selected{% endif %}>{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">السنة</label>
+                    <select class="form-select" name="year">
+                        <option value="">الكل</option>
+                        {% for y in range(2020, 2031) %}
+                        <option value="{{ y }}" {% if year == y %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                    <a href="{{ url_for('hr.payroll') }}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> إعادة تعيين
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payroll Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> كشوف الرواتب ({{ payrolls.total }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>الموظف</th>
+                            <th>الشهر/السنة</th>
+                            <th>الراتب الأساسي</th>
+                            <th>البدلات</th>
+                            <th>الخصومات</th>
+                            <th>الإضافي</th>
+                            <th>صافي الراتب</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pay in payrolls.items %}
+                        <tr>
+                            <td>{{ loop.index + (payrolls.page - 1) * payrolls.per_page }}</td>
+                            <td>
+                                <a href="{{ url_for('hr.employee_details', id=pay.employee.id) }}" class="text-decoration-none">
+                                    {{ pay.employee.first_name }} {{ pay.employee.last_name }}
+                                </a>
+                            </td>
+                            <td><strong>{{ pay.month }}/{{ pay.year }}</strong></td>
+                            <td>{{ '%.2f'|format(pay.basic_salary) }}</td>
+                            <td>{{ '%.2f'|format(pay.allowances) }}</td>
+                            <td>{{ '%.2f'|format(pay.deductions) }}</td>
+                            <td>{{ '%.2f'|format(pay.overtime) }}</td>
+                            <td><strong class="text-success">{{ '%.2f'|format(pay.net_salary) }}</strong></td>
+                            <td>
+                                {% if pay.status == 'paid' %}
+                                <span class="badge bg-success">مدفوع</span>
+                                {% elif pay.status == 'approved' %}
+                                <span class="badge bg-info">معتمد</span>
+                                {% else %}
+                                <span class="badge bg-warning">مسودة</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('hr.payroll_details', id=pay.id) }}" class="btn btn-info" title="التفاصيل">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if pay.status == 'draft' %}
+                                    <button type="button" class="btn btn-success" onclick="approvePayroll({{ pay.id }})" title="اعتماد">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% if pay.status == 'approved' %}
+                                    <button type="button" class="btn btn-primary" onclick="payPayroll({{ pay.id }})" title="دفع">
+                                        <i class="fas fa-money-bill"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا توجد كشوف رواتب
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if payrolls.pages > 1 %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item {% if not payrolls.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('hr.payroll', page=payrolls.prev_num, employee_id=employee_id, month=month, year=year) }}">السابق</a>
+                    </li>
+                    {% for page_num in payrolls.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == payrolls.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('hr.payroll', page=page_num, employee_id=employee_id, month=month, year=year) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not payrolls.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('hr.payroll', page=payrolls.next_num, employee_id=employee_id, month=month, year=year) }}">التالي</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function approvePayroll(id) {
+    if (confirm('هل أنت متأكد من اعتماد هذا الراتب؟')) {
+        fetch('{{ url_for("hr.approve_payroll", id=0) }}'.replace('0', id), {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function payPayroll(id) {
+    if (confirm('هل أنت متأكد من تسجيل دفع هذا الراتب؟')) {
+        fetch('{{ url_for("hr.pay_payroll", id=0) }}'.replace('0', id), {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
+

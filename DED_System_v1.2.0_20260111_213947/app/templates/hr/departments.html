@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}الأقسام{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-sitemap"></i> الأقسام</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
+            <i class="fas fa-plus"></i> إضافة قسم
+        </button>
+    </div>
+
+    <!-- Departments Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> قائمة الأقسام</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>الكود</th>
+                            <th>الاسم</th>
+                            <th>الاسم بالإنجليزية</th>
+                            <th>القسم الرئيسي</th>
+                            <th>المدير</th>
+                            <th>عدد الموظفين</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept in departments %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ dept.code }}</strong></td>
+                            <td>{{ dept.name }}</td>
+                            <td>{{ dept.name_en or '-' }}</td>
+                            <td>{{ dept.parent.name if dept.parent else '-' }}</td>
+                            <td>{{ dept.manager.first_name + ' ' + dept.manager.last_name if dept.manager else '-' }}</td>
+                            <td><span class="badge bg-info">{{ dept.employees|length }}</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-warning" onclick="editDepartment({{ dept.id }}, '{{ dept.name }}', '{{ dept.name_en or '' }}', {{ dept.parent_id or 'null' }}, {{ dept.manager_id or 'null' }}, '{{ dept.description or '' }}')" title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger" onclick="deleteDepartment({{ dept.id }}, '{{ dept.name }}')" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا توجد أقسام
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Department Modal -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-plus"></i> إضافة قسم جديد</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('hr.add_department') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم القسم <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <input type="text" class="form-control" name="name_en">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">القسم الرئيسي</label>
+                        <select class="form-select" name="parent_id">
+                            <option value="">لا يوجد</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Department Modal -->
+<div class="modal fade" id="editDepartmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> تعديل القسم</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="editDepartmentForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم القسم <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" id="edit_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <input type="text" class="form-control" name="name_en" id="edit_name_en">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">القسم الرئيسي</label>
+                        <select class="form-select" name="parent_id" id="edit_parent_id">
+                            <option value="">لا يوجد</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" id="edit_description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning">تحديث</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editDepartment(id, name, name_en, parent_id, manager_id, description) {
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_name_en').value = name_en;
+    document.getElementById('edit_parent_id').value = parent_id || '';
+    document.getElementById('edit_description').value = description;
+    document.getElementById('editDepartmentForm').action = '{{ url_for("hr.edit_department", id=0) }}'.replace('0', id);
+    new bootstrap.Modal(document.getElementById('editDepartmentModal')).show();
+}
+
+function deleteDepartment(id, name) {
+    if (confirm('هل أنت متأكد من حذف القسم: ' + name + '؟')) {
+        fetch('{{ url_for("hr.delete_department", id=0) }}'.replace('0', id), {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
+

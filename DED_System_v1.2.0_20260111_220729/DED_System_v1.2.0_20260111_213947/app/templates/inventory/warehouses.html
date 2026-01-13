@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة المستودعات{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-warehouse"></i> إدارة المستودعات</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWarehouseModal">
+            <i class="fas fa-plus"></i> إضافة مستودع جديد
+        </button>
+    </div>
+
+    <!-- Warehouses Grid -->
+    <div class="row">
+        {% for warehouse in warehouses %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 {% if not warehouse.is_active %}border-danger{% endif %}">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-warehouse"></i> {{ warehouse.name }}
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-light" onclick="editWarehouse({{ warehouse.id }}, '{{ warehouse.name }}', '{{ warehouse.name_en or '' }}', '{{ warehouse.code }}', {{ warehouse.branch_id or 'null' }}, '{{ warehouse.address or '' }}', {{ warehouse.manager_id or 'null' }}, {{ 'true' if warehouse.is_active else 'false' }})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteWarehouse({{ warehouse.id }}, '{{ warehouse.name }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>الكود:</strong> <span class="badge bg-secondary">{{ warehouse.code }}</span>
+                    </div>
+                    
+                    {% if warehouse.name_en %}
+                    <div class="mb-2">
+                        <strong>الاسم بالإنجليزية:</strong> {{ warehouse.name_en }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if warehouse.branch %}
+                    <div class="mb-2">
+                        <strong>الفرع:</strong> {{ warehouse.branch.name }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if warehouse.address %}
+                    <div class="mb-2">
+                        <strong>العنوان:</strong> {{ warehouse.address }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if warehouse.manager_id %}
+                    <div class="mb-2">
+                        <strong>المدير:</strong> 
+                        {% set manager = users|selectattr('id', 'equalto', warehouse.manager_id)|first %}
+                        {{ manager.full_name if manager else 'غير محدد' }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-2">
+                        <strong>الحالة:</strong>
+                        {% if warehouse.is_active %}
+                        <span class="badge bg-success">نشط</span>
+                        {% else %}
+                        <span class="badge bg-danger">غير نشط</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong>عدد المنتجات:</strong> 
+                        <span class="badge bg-info">{{ warehouse.stocks|length }}</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('inventory.warehouse_details', id=warehouse.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye"></i> عرض التفاصيل
+                    </a>
+                    <small class="text-muted float-end">
+                        {{ warehouse.created_at.strftime('%Y-%m-%d') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if not warehouses %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> لا توجد مستودعات مسجلة. قم بإضافة مستودع جديد.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Warehouse Modal -->
+<div class="modal fade" id="addWarehouseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('inventory.add_warehouse') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة مستودع جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم المستودع *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <input type="text" class="form-control" name="name_en">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الكود *</label>
+                        <input type="text" class="form-control" name="code" required>
+                        <small class="text-muted">مثال: WH-001</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الفرع</label>
+                        <select class="form-select" name="branch_id">
+                            <option value="">اختر الفرع</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">العنوان</label>
+                        <textarea class="form-control" name="address" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">المدير</label>
+                        <select class="form-select" name="manager_id">
+                            <option value="">اختر المدير</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="add_is_active" checked>
+                        <label class="form-check-label" for="add_is_active">نشط</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Warehouse Modal -->
+<div class="modal fade" id="editWarehouseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="editWarehouseForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">تعديل مستودع</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم المستودع *</label>
+                        <input type="text" class="form-control" name="name" id="edit_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <input type="text" class="form-control" name="name_en" id="edit_name_en">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الكود *</label>
+                        <input type="text" class="form-control" name="code" id="edit_code" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الفرع</label>
+                        <select class="form-select" name="branch_id" id="edit_branch_id">
+                            <option value="">اختر الفرع</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">العنوان</label>
+                        <textarea class="form-control" name="address" id="edit_address" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">المدير</label>
+                        <select class="form-select" name="manager_id" id="edit_manager_id">
+                            <option value="">اختر المدير</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="edit_is_active">
+                        <label class="form-check-label" for="edit_is_active">نشط</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Warehouse Modal -->
+<div class="modal fade" id="deleteWarehouseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="deleteWarehouseForm">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من حذف المستودع <strong id="delete_warehouse_name"></strong>؟</p>
+                    <p class="text-danger">هذا الإجراء لا يمكن التراجع عنه!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editWarehouse(id, name, name_en, code, branch_id, address, manager_id, is_active) {
+    document.getElementById('editWarehouseForm').action = "{{ url_for('inventory.edit_warehouse', id=0) }}".replace('0', id);
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_name_en').value = name_en;
+    document.getElementById('edit_code').value = code;
+    document.getElementById('edit_branch_id').value = branch_id || '';
+    document.getElementById('edit_address').value = address;
+    document.getElementById('edit_manager_id').value = manager_id || '';
+    document.getElementById('edit_is_active').checked = is_active;
+
+    var modal = new bootstrap.Modal(document.getElementById('editWarehouseModal'));
+    modal.show();
+}
+
+function deleteWarehouse(id, name) {
+    document.getElementById('deleteWarehouseForm').action = "{{ url_for('inventory.delete_warehouse', id=0) }}".replace('0', id);
+    document.getElementById('delete_warehouse_name').textContent = name;
+
+    var modal = new bootstrap.Modal(document.getElementById('deleteWarehouseModal'));
+    modal.show();
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}تقرير المنتجات منخفضة المخزون - نظام إدارة المخزون{% endblock %}
+{% block page_title %}تقرير المنتجات منخفضة المخزون{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-exclamation-triangle text-danger"></i> تقرير المنتجات منخفضة المخزون</h3>
+    <p class="text-muted mb-0">المنتجات التي وصلت أو تجاوزت حد المخزون الأدنى</p>
+</div>
+
+<div class="card shadow">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-list"></i> قائمة المنتجات</h5>
+        <div>
+            <button onclick="window.print()" class="btn btn-sm btn-primary">
+                <i class="fas fa-print"></i> طباعة
+            </button>
+            <a href="{{ url_for('reports.index') }}" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrow-right"></i> رجوع
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if low_stock_products %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>تنبيه:</strong> يوجد {{ low_stock_products|length }} منتج منخفض المخزون
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>كود المنتج</th>
+                        <th>اسم المنتج</th>
+                        <th>المخزون الحالي</th>
+                        <th>الحد الأدنى</th>
+                        <th>النقص</th>
+                        <th>الحالة</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in low_stock_products %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.product.code }}</td>
+                        <td>{{ item.product.name }}</td>
+                        <td>
+                            <span class="badge bg-danger">{{ item.current_stock }}</span>
+                        </td>
+                        <td>{{ item.min_stock }}</td>
+                        <td>
+                            <span class="text-danger fw-bold">{{ item.shortage }}</span>
+                        </td>
+                        <td>
+                            {% if item.current_stock == 0 %}
+                                <span class="badge bg-danger">نفذ المخزون</span>
+                            {% else %}
+                                <span class="badge bg-warning">منخفض</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('purchases.add_invoice') }}" class="btn btn-sm btn-primary" title="إنشاء طلب شراء">
+                                <i class="fas fa-shopping-cart"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-success text-center">
+            <i class="fas fa-check-circle fa-3x mb-3"></i>
+            <h5>ممتاز! جميع المنتجات في المخزون الآمن</h5>
+            <p class="mb-0">لا توجد منتجات منخفضة المخزون حالياً</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+@media print {
+    .btn, .page-header p, .sidebar, .navbar {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
+

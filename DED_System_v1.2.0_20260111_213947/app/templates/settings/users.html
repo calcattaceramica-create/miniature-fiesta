@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة المستخدمين{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-users"></i> إدارة المستخدمين</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <i class="fas fa-plus"></i> إضافة مستخدم جديد
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم المستخدم</th>
+                            <th>الاسم الكامل</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الدور</th>
+                            <th>الفرع</th>
+                            <th>الحالة</th>
+                            <th>آخر دخول</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>
+                                {{ user.username }}
+                                {% if user.is_admin %}
+                                <span class="badge bg-danger">مدير</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.role.name_ar if user.role else '-' }}</td>
+                            <td>{{ user.branch.name if user.branch else '-' }}</td>
+                            <td>
+                                {% if user.is_active %}
+                                <span class="badge bg-success">نشط</span>
+                                {% else %}
+                                <span class="badge bg-secondary">غير نشط</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else '-' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="editUser({{ user.id }}, '{{ user.username }}', '{{ user.full_name }}', '{{ user.email }}', '{{ user.phone or '' }}', {{ user.role_id or 'null' }}, {{ user.branch_id or 'null' }}, {{ 'true' if user.is_active else 'false' }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% if user.id != current_user.id %}
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser({{ user.id }}, '{{ user.username }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('settings.add_user') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة مستخدم جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم المستخدم *</label>
+                        <input type="text" class="form-control" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني *</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور *</label>
+                        <input type="password" class="form-control" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم الكامل</label>
+                        <input type="text" class="form-control" name="full_name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">رقم الهاتف</label>
+                        <input type="text" class="form-control" name="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الدور</label>
+                        <select class="form-select" name="role_id">
+                            <option value="">اختر الدور</option>
+                            {% for role in roles %}
+                            <option value="{{ role.id }}">{{ role.name_ar }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الفرع</label>
+                        <select class="form-select" name="branch_id">
+                            <option value="">اختر الفرع</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="is_active_add" checked>
+                        <label class="form-check-label" for="is_active_add">نشط</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="editUserForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">تعديل مستخدم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اسم المستخدم</label>
+                        <input type="text" class="form-control" id="edit_username" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني *</label>
+                        <input type="email" class="form-control" name="email" id="edit_email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور الجديدة (اتركها فارغة إذا لم ترد التغيير)</label>
+                        <input type="password" class="form-control" name="password" id="edit_password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم الكامل</label>
+                        <input type="text" class="form-control" name="full_name" id="edit_full_name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">رقم الهاتف</label>
+                        <input type="text" class="form-control" name="phone" id="edit_phone">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الدور</label>
+                        <select class="form-select" name="role_id" id="edit_role_id">
+                            <option value="">اختر الدور</option>
+                            {% for role in roles %}
+                            <option value="{{ role.id }}">{{ role.name_ar }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الفرع</label>
+                        <select class="form-select" name="branch_id" id="edit_branch_id">
+                            <option value="">اختر الفرع</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="edit_is_active">
+                        <label class="form-check-label" for="edit_is_active">نشط</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="deleteUserForm">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من حذف المستخدم <strong id="delete_username"></strong>؟</p>
+                    <p class="text-danger">هذا الإجراء لا يمكن التراجع عنه!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editUser(id, username, full_name, email, phone, role_id, branch_id, is_active) {
+    document.getElementById('editUserForm').action = "{{ url_for('settings.edit_user', id=0) }}".replace('0', id);
+    document.getElementById('edit_username').value = username;
+    document.getElementById('edit_full_name').value = full_name;
+    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_phone').value = phone || '';
+    document.getElementById('edit_role_id').value = role_id || '';
+    document.getElementById('edit_branch_id').value = branch_id || '';
+    document.getElementById('edit_is_active').checked = is_active;
+    document.getElementById('edit_password').value = '';
+
+    var modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    modal.show();
+}
+
+function deleteUser(id, username) {
+    document.getElementById('deleteUserForm').action = "{{ url_for('settings.delete_user', id=0) }}".replace('0', id);
+    document.getElementById('delete_username').textContent = username;
+
+    var modal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+    modal.show();
+}
+</script>
+{% endblock %}
+

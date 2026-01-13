@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة فرصة تجارية - CRM{% endblock %}
+{% block page_title %}إضافة فرصة تجارية{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-bullseye"></i> إضافة فرصة تجارية جديدة</h3>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('crm.add_opportunity') }}">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">اسم الفرصة <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">العميل <span class="text-danger">*</span></label>
+                        <select class="form-select" name="customer_id" required>
+                            <option value="">اختر العميل</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">العميل المحتمل</label>
+                        <select class="form-select" name="lead_id">
+                            <option value="">اختر العميل المحتمل</option>
+                            {% for lead in leads %}
+                            <option value="{{ lead.id }}">{{ lead.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المرحلة</label>
+                        <select class="form-select" name="stage">
+                            <option value="prospecting">استكشاف</option>
+                            <option value="qualification">تأهيل</option>
+                            <option value="proposal">عرض</option>
+                            <option value="negotiation">تفاوض</option>
+                            <option value="closed_won">مغلقة - فوز</option>
+                            <option value="closed_lost">مغلقة - خسارة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المسؤول</label>
+                        <select class="form-select" name="assigned_to">
+                            <option value="">اختر المسؤول</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Sales Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> معلومات المبيعات</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المبلغ (ر.س) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" name="amount" 
+                               step="0.01" value="0" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الاحتمالية (%)</label>
+                        <input type="number" class="form-control" name="probability" 
+                               min="0" max="100" value="50">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ الإغلاق المتوقع</label>
+                        <input type="date" class="form-control" name="expected_close_date">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نوع الفرصة</label>
+                        <select class="form-select" name="opportunity_type">
+                            <option value="">اختر النوع</option>
+                            <option value="new_business">عمل جديد</option>
+                            <option value="existing_business">عمل قائم</option>
+                            <option value="renewal">تجديد</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المصدر</label>
+                        <select class="form-select" name="source">
+                            <option value="">اختر المصدر</option>
+                            <option value="website">الموقع الإلكتروني</option>
+                            <option value="referral">إحالة</option>
+                            <option value="cold_call">اتصال بارد</option>
+                            <option value="social_media">وسائل التواصل</option>
+                            <option value="event">حدث</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <a href="{{ url_for('crm.opportunities') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

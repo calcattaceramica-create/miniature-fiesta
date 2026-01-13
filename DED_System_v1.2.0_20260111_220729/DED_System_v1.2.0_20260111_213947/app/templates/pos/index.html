@@ -1,0 +1,607 @@
+{% extends "base.html" %}
+
+{% block title %}نقطة البيع - POS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pos-container {
+        height: calc(100vh - 100px);
+        overflow: hidden;
+    }
+    
+    .products-section {
+        height: 100%;
+        overflow-y: auto;
+        padding: 15px;
+        background-color: #f8f9fa;
+    }
+    
+    .cart-section {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-left: 2px solid #dee2e6;
+    }
+    
+    .product-card {
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        border-color: #0d6efd;
+    }
+    
+    .product-image {
+        height: 120px;
+        object-fit: cover;
+        background-color: #e9ecef;
+    }
+    
+    .cart-items {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+    
+    .cart-item {
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px 0;
+    }
+    
+    .cart-summary {
+        border-top: 2px solid #dee2e6;
+        padding: 15px;
+        background-color: #f8f9fa;
+    }
+    
+    .session-info {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .search-box {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #f8f9fa;
+        padding: 15px;
+        margin: -15px -15px 15px -15px;
+    }
+    
+    .qty-control {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .qty-control button {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+    }
+    
+    .qty-control input {
+        width: 60px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid pos-container">
+    <div class="row h-100">
+        <!-- قسم المنتجات -->
+        <div class="col-md-7 products-section">
+            <!-- معلومات الوردية -->
+            <div class="session-info">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-cash-register"></i> وردية: {{ session.session_number }}</h5>
+                        <p class="mb-0"><i class="fas fa-user"></i> {{ current_user.username }}</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <p class="mb-0"><i class="fas fa-warehouse"></i> {{ session.warehouse.name }}</p>
+                        <p class="mb-0"><i class="fas fa-clock"></i> <span id="session-time"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- البحث -->
+            <div class="search-box">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="product-search" 
+                           placeholder="ابحث عن منتج (الاسم، الباركود، الكود)...">
+                    <button class="btn btn-outline-secondary" type="button" id="clear-search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- شبكة المنتجات -->
+            <div class="row" id="products-grid">
+                {% for product in products %}
+                <div class="col-md-4 col-lg-3 mb-3 product-item" 
+                     data-name="{{ product.name }}" 
+                     data-code="{{ product.code }}" 
+                     data-barcode="{{ product.barcode or '' }}">
+                    <div class="card product-card" onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.selling_price }})">
+                        <div class="product-image d-flex align-items-center justify-content-center">
+                            {% if product.image_url %}
+                            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                            <i class="fas fa-box fa-3x text-muted"></i>
+                            {% endif %}
+                        </div>
+                        <div class="card-body p-2">
+                            <h6 class="card-title mb-1" style="font-size: 0.9rem;">{{ product.name }}</h6>
+                            <p class="text-muted mb-1" style="font-size: 0.8rem;">{{ product.code }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-success">{{ product.selling_price }} ريال</span>
+                                <small class="text-muted">متوفر: {{ product.get_stock() }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- قسم السلة -->
+        <div class="col-md-5 cart-section">
+            <!-- رأس السلة -->
+            <div class="p-3 bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-shopping-cart"></i> سلة المشتريات</h4>
+            </div>
+
+            <!-- العميل -->
+            <div class="p-3 border-bottom">
+                <label class="form-label">العميل (اختياري)</label>
+                <select class="form-select" id="customer-select">
+                    <option value="">عميل عادي</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.id }}">{{ customer.name }} - {{ customer.phone }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- عناصر السلة -->
+            <div class="cart-items" id="cart-items">
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                    <p>السلة فارغة</p>
+                    <p class="small">اضغط على المنتجات لإضافتها</p>
+                </div>
+            </div>
+
+            <!-- ملخص السلة -->
+            <div class="cart-summary">
+                <div class="row mb-2">
+                    <div class="col-6">المجموع الفرعي:</div>
+                    <div class="col-6 text-end"><strong id="subtotal">0.00</strong> ريال</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <label class="form-label mb-0">الخصم (%):</label>
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="form-control form-control-sm" id="discount-percent"
+                               value="0" min="0" max="100" step="0.1" onchange="updateTotals()">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">مبلغ الخصم:</div>
+                    <div class="col-6 text-end text-danger"><strong id="discount-amount">0.00</strong> ريال</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">الضريبة (15%):</div>
+                    <div class="col-6 text-end"><strong id="tax-amount">0.00</strong> ريال</div>
+                </div>
+                <div class="row mb-3 border-top pt-2">
+                    <div class="col-6"><h5>الإجمالي:</h5></div>
+                    <div class="col-6 text-end"><h5 class="text-primary"><strong id="total">0.00</strong> ريال</h5></div>
+                </div>
+
+                <!-- طريقة الدفع -->
+                <div class="mb-3">
+                    <label class="form-label">طريقة الدفع</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="payment-method" id="payment-cash" value="cash" checked>
+                        <label class="btn btn-outline-success" for="payment-cash">
+                            <i class="fas fa-money-bill-wave"></i> نقدي
+                        </label>
+
+                        <input type="radio" class="btn-check" name="payment-method" id="payment-card" value="card">
+                        <label class="btn btn-outline-primary" for="payment-card">
+                            <i class="fas fa-credit-card"></i> بطاقة
+                        </label>
+
+                        <input type="radio" class="btn-check" name="payment-method" id="payment-mixed" value="mixed">
+                        <label class="btn btn-outline-info" for="payment-mixed">
+                            <i class="fas fa-exchange-alt"></i> مختلط
+                        </label>
+                    </div>
+                </div>
+
+                <!-- تفاصيل الدفع المختلط -->
+                <div id="mixed-payment-details" style="display: none;">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <label class="form-label mb-0">نقدي:</label>
+                            <input type="number" class="form-control form-control-sm" id="cash-amount"
+                                   value="0" min="0" step="0.01">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label mb-0">بطاقة:</label>
+                            <input type="number" class="form-control form-control-sm" id="card-amount"
+                                   value="0" min="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- أزرار الإجراءات -->
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success btn-lg" onclick="processPayment()" id="pay-button" disabled>
+                        <i class="fas fa-check-circle"></i> إتمام البيع
+                    </button>
+                    <button class="btn btn-warning" onclick="holdOrder()">
+                        <i class="fas fa-pause"></i> تعليق الطلب
+                    </button>
+                    <button class="btn btn-danger" onclick="clearCart()">
+                        <i class="fas fa-trash"></i> مسح السلة
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeSession()">
+                        <i class="fas fa-door-closed"></i> إغلاق الوردية
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// متغيرات عامة
+let cart = [];
+const TAX_RATE = 0.15;
+const SESSION_ID = {{ session.id }};
+
+// إضافة منتج للسلة
+function addToCart(productId, productName, price) {
+    const existingItem = cart.find(item => item.productId === productId);
+
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        cart.push({
+            productId: productId,
+            productName: productName,
+            price: price,
+            quantity: 1
+        });
+    }
+
+    renderCart();
+    updateTotals();
+}
+
+// عرض السلة
+function renderCart() {
+    const cartItemsDiv = document.getElementById('cart-items');
+
+    if (cart.length === 0) {
+        cartItemsDiv.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                <p>السلة فارغة</p>
+                <p class="small">اضغط على المنتجات لإضافتها</p>
+            </div>
+        `;
+        document.getElementById('pay-button').disabled = true;
+        return;
+    }
+
+    document.getElementById('pay-button').disabled = false;
+
+    let html = '';
+    cart.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        html += `
+            <div class="cart-item">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">${item.productName}</h6>
+                        <small class="text-muted">${item.price.toFixed(2)} ريال</small>
+                    </div>
+                    <button class="btn btn-sm btn-danger" onclick="removeFromCart(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="qty-control">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="decreaseQty(${index})">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="form-control form-control-sm" value="${item.quantity}"
+                               min="1" onchange="updateQty(${index}, this.value)">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="increaseQty(${index})">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <strong>${itemTotal.toFixed(2)} ريال</strong>
+                </div>
+            </div>
+        `;
+    });
+
+    cartItemsDiv.innerHTML = html;
+}
+
+// حذف من السلة
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    renderCart();
+    updateTotals();
+}
+
+// زيادة الكمية
+function increaseQty(index) {
+    cart[index].quantity++;
+    renderCart();
+    updateTotals();
+}
+
+// تقليل الكمية
+function decreaseQty(index) {
+    if (cart[index].quantity > 1) {
+        cart[index].quantity--;
+        renderCart();
+        updateTotals();
+    }
+}
+
+// تحديث الكمية
+function updateQty(index, newQty) {
+    const qty = parseInt(newQty);
+    if (qty > 0) {
+        cart[index].quantity = qty;
+        renderCart();
+        updateTotals();
+    }
+}
+
+// تحديث الإجماليات
+function updateTotals() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const discountPercent = parseFloat(document.getElementById('discount-percent').value) || 0;
+    const discountAmount = subtotal * (discountPercent / 100);
+    const afterDiscount = subtotal - discountAmount;
+    const taxAmount = afterDiscount * TAX_RATE;
+    const total = afterDiscount + taxAmount;
+
+    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('discount-amount').textContent = discountAmount.toFixed(2);
+    document.getElementById('tax-amount').textContent = taxAmount.toFixed(2);
+    document.getElementById('total').textContent = total.toFixed(2);
+}
+
+// مسح السلة
+function clearCart() {
+    if (cart.length === 0) return;
+
+    if (confirm('هل أنت متأكد من مسح السلة؟')) {
+        cart = [];
+        renderCart();
+        updateTotals();
+        document.getElementById('customer-select').value = '';
+        document.getElementById('discount-percent').value = 0;
+    }
+}
+
+// إتمام البيع
+async function processPayment() {
+    if (cart.length === 0) {
+        alert('السلة فارغة!');
+        return;
+    }
+
+    const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+    const customerId = document.getElementById('customer-select').value || null;
+    const discountPercent = parseFloat(document.getElementById('discount-percent').value) || 0;
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const discountAmount = subtotal * (discountPercent / 100);
+    const afterDiscount = subtotal - discountAmount;
+    const taxAmount = afterDiscount * TAX_RATE;
+    const total = afterDiscount + taxAmount;
+
+    let cashAmount = 0;
+    let cardAmount = 0;
+
+    if (paymentMethod === 'cash') {
+        cashAmount = total;
+    } else if (paymentMethod === 'card') {
+        cardAmount = total;
+    } else {
+        cashAmount = parseFloat(document.getElementById('cash-amount').value) || 0;
+        cardAmount = parseFloat(document.getElementById('card-amount').value) || 0;
+
+        if (cashAmount + cardAmount < total) {
+            alert('المبلغ المدفوع أقل من الإجمالي!');
+            return;
+        }
+    }
+
+    const orderData = {
+        session_id: SESSION_ID,
+        customer_id: customerId,
+        items: cart,
+        subtotal: subtotal,
+        discount_amount: discountAmount,
+        tax_amount: taxAmount,
+        total_amount: total,
+        payment_method: paymentMethod,
+        cash_amount: cashAmount,
+        card_amount: cardAmount
+    };
+
+    try {
+        const response = await fetch('/pos/create-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('تم إتمام البيع بنجاح!\nرقم الطلب: ' + result.order_number);
+            clearCart();
+
+            // طباعة الفاتورة (اختياري)
+            if (confirm('هل تريد طباعة الفاتورة؟')) {
+                window.open('/pos/print-receipt/' + result.order_id, '_blank');
+            }
+        } else {
+            alert('خطأ: ' + result.message);
+        }
+    } catch (error) {
+        alert('حدث خطأ في الاتصال بالخادم');
+        console.error(error);
+    }
+}
+
+// تعليق الطلب
+function holdOrder() {
+    if (cart.length === 0) {
+        alert('السلة فارغة!');
+        return;
+    }
+
+    const orderName = prompt('أدخل اسم للطلب المعلق:');
+    if (orderName) {
+        const heldOrders = JSON.parse(localStorage.getItem('heldOrders') || '[]');
+        heldOrders.push({
+            name: orderName,
+            cart: cart,
+            customer: document.getElementById('customer-select').value,
+            discount: document.getElementById('discount-percent').value,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('heldOrders', JSON.stringify(heldOrders));
+        alert('تم تعليق الطلب بنجاح');
+        clearCart();
+    }
+}
+
+// إغلاق الوردية
+function closeSession() {
+    if (cart.length > 0) {
+        alert('يجب إتمام أو مسح الطلب الحالي قبل إغلاق الوردية');
+        return;
+    }
+
+    if (confirm('هل أنت متأكد من إغلاق الوردية؟')) {
+        const closingBalance = prompt('أدخل الرصيد الختامي (النقدي في الدرج):');
+        if (closingBalance !== null) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/pos/close-session/' + SESSION_ID;
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'closing_balance';
+            input.value = closingBalance;
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+}
+
+// البحث عن المنتجات
+document.getElementById('product-search').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const productItems = document.querySelectorAll('.product-item');
+
+    productItems.forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const code = item.dataset.code.toLowerCase();
+        const barcode = item.dataset.barcode.toLowerCase();
+
+        if (name.includes(searchTerm) || code.includes(searchTerm) || barcode.includes(searchTerm)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+});
+
+// مسح البحث
+document.getElementById('clear-search').addEventListener('click', function() {
+    document.getElementById('product-search').value = '';
+    document.querySelectorAll('.product-item').forEach(item => {
+        item.style.display = '';
+    });
+});
+
+// إظهار/إخفاء تفاصيل الدفع المختلط
+document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const mixedDetails = document.getElementById('mixed-payment-details');
+        if (this.value === 'mixed') {
+            mixedDetails.style.display = 'block';
+        } else {
+            mixedDetails.style.display = 'none';
+        }
+    });
+});
+
+// عرض وقت الوردية
+function updateSessionTime() {
+    const now = new Date();
+    const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    document.getElementById('session-time').textContent = now.toLocaleTimeString('ar-SA', options);
+}
+
+updateSessionTime();
+setInterval(updateSessionTime, 1000);
+
+// اختصارات لوحة المفاتيح
+document.addEventListener('keydown', function(e) {
+    // F1 - البحث
+    if (e.key === 'F1') {
+        e.preventDefault();
+        document.getElementById('product-search').focus();
+    }
+    // F2 - إتمام البيع
+    if (e.key === 'F2') {
+        e.preventDefault();
+        if (!document.getElementById('pay-button').disabled) {
+            processPayment();
+        }
+    }
+    // F3 - مسح السلة
+    if (e.key === 'F3') {
+        e.preventDefault();
+        clearCart();
+    }
+    // ESC - مسح البحث
+    if (e.key === 'Escape') {
+        document.getElementById('product-search').value = '';
+        document.getElementById('clear-search').click();
+    }
+});
+</script>
+{% endblock %}
+

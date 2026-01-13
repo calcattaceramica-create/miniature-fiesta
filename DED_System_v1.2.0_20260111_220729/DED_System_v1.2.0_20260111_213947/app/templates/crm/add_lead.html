@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة عميل محتمل - CRM{% endblock %}
+{% block page_title %}إضافة عميل محتمل{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-user-plus"></i> إضافة عميل محتمل جديد</h3>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('crm.add_lead') }}">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الاسم <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الشركة</label>
+                        <input type="text" class="form-control" name="company">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المسمى الوظيفي</label>
+                        <input type="text" class="form-control" name="title">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" name="email">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الهاتف</label>
+                        <input type="text" class="form-control" name="phone">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الجوال</label>
+                        <input type="text" class="form-control" name="mobile">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الموقع الإلكتروني</label>
+                        <input type="url" class="form-control" name="website">
+                    </div>
+                </div>
+                
+                <!-- Additional Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-map-marker-alt"></i> العنوان والمعلومات الإضافية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">العنوان</label>
+                        <textarea class="form-control" name="address" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المدينة</label>
+                        <input type="text" class="form-control" name="city">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الدولة</label>
+                        <input type="text" class="form-control" name="country">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المصدر</label>
+                        <select class="form-select" name="source">
+                            <option value="">اختر المصدر</option>
+                            <option value="website">الموقع الإلكتروني</option>
+                            <option value="referral">إحالة</option>
+                            <option value="cold_call">اتصال بارد</option>
+                            <option value="social_media">وسائل التواصل</option>
+                            <option value="event">حدث</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحالة</label>
+                        <select class="form-select" name="status">
+                            <option value="new">جديد</option>
+                            <option value="contacted">تم الاتصال</option>
+                            <option value="qualified">مؤهل</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">التقييم</label>
+                        <select class="form-select" name="rating">
+                            <option value="0">بدون تقييم</option>
+                            <option value="1">⭐</option>
+                            <option value="2">⭐⭐</option>
+                            <option value="3">⭐⭐⭐</option>
+                            <option value="4">⭐⭐⭐⭐</option>
+                            <option value="5">⭐⭐⭐⭐⭐</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">المسؤول</label>
+                        <select class="form-select" name="assigned_to">
+                            <option value="">اختر المسؤول</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sales Information -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> معلومات المبيعات</h5>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">الإيراد المتوقع (ر.س)</label>
+                        <input type="number" class="form-control" name="expected_revenue" 
+                               step="0.01" value="0">
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">الاحتمالية (%)</label>
+                        <input type="number" class="form-control" name="probability" 
+                               min="0" max="100" value="0">
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ الإغلاق المتوقع</label>
+                        <input type="date" class="form-control" name="expected_close_date">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <a href="{{ url_for('crm.leads') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

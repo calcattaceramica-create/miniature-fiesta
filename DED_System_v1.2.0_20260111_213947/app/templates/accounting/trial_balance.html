@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}ميزان المراجعة - نظام إدارة المخزون{% endblock %}
+{% block page_title %}ميزان المراجعة{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-balance-scale"></i> ميزان المراجعة</h4>
+                        <button onclick="window.print()" class="btn btn-light">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Report Header -->
+                    <div class="text-center mb-4">
+                        <h3>ميزان المراجعة</h3>
+                        <p class="text-muted">Trial Balance Report</p>
+                        <p>التاريخ: {{ today }}</p>
+                    </div>
+
+                    <!-- Trial Balance Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th rowspan="2" class="align-middle">رمز الحساب</th>
+                                    <th rowspan="2" class="align-middle">اسم الحساب</th>
+                                    <th colspan="2" class="text-center">الأرصدة</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">مدين</th>
+                                    <th class="text-center">دائن</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for account in accounts %}
+                                {% if account.debit_balance > 0 or account.credit_balance > 0 %}
+                                <tr>
+                                    <td><strong>{{ account.code }}</strong></td>
+                                    <td>{{ account.name }}</td>
+                                    <td class="text-end text-success">
+                                        {% if account.debit_balance > 0 %}
+                                            {{ "{:,.2f}".format(account.debit_balance) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end text-danger">
+                                        {% if account.credit_balance > 0 %}
+                                            {{ "{:,.2f}".format(account.credit_balance) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr class="fw-bold">
+                                    <td colspan="2" class="text-end">الإجمالي:</td>
+                                    <td class="text-end text-success">{{ "{:,.2f}".format(total_debit) }}</td>
+                                    <td class="text-end text-danger">{{ "{:,.2f}".format(total_credit) }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td colspan="2" class="text-end">الفرق:</td>
+                                    <td colspan="2" class="text-center {% if total_debit == total_credit %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(total_debit - total_credit) }}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Balance Status -->
+                    <div class="alert {% if total_debit == total_credit %}alert-success{% else %}alert-danger{% endif %} mt-4">
+                        <i class="fas {% if total_debit == total_credit %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                        {% if total_debit == total_credit %}
+                            <strong>الميزان متوازن!</strong> إجمالي المدين يساوي إجمالي الدائن.
+                        {% else %}
+                            <strong>تحذير!</strong> الميزان غير متوازن. يوجد فرق بمقدار {{ "{:,.2f}".format(abs(total_debit - total_credit)) }} ريال.
+                        {% endif %}
+                    </div>
+
+                    <!-- Summary by Account Type -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">ملخص الأرصدة المدينة</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <th>الأصول:</th>
+                                            <td class="text-end">
+                                                {{ "{:,.2f}".format(accounts|selectattr('account_type', 'equalto', 'asset')|map(attribute='debit_balance')|sum) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>المصروفات:</th>
+                                            <td class="text-end">
+                                                {{ "{:,.2f}".format(accounts|selectattr('account_type', 'equalto', 'expense')|map(attribute='debit_balance')|sum) }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-danger text-white">
+                                    <h6 class="mb-0">ملخص الأرصدة الدائنة</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <th>الخصوم:</th>
+                                            <td class="text-end">
+                                                {{ "{:,.2f}".format(accounts|selectattr('account_type', 'equalto', 'liability')|map(attribute='credit_balance')|sum) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>حقوق الملكية:</th>
+                                            <td class="text-end">
+                                                {{ "{:,.2f}".format(accounts|selectattr('account_type', 'equalto', 'equity')|map(attribute='credit_balance')|sum) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>الإيرادات:</th>
+                                            <td class="text-end">
+                                                {{ "{:,.2f}".format(accounts|selectattr('account_type', 'equalto', 'revenue')|map(attribute='credit_balance')|sum) }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar { display: none !important; }
+}
+</style>
+{% endblock %}
+

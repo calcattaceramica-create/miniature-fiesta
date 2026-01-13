@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة مدفوعة - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إضافة مدفوعة{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> إضافة مدفوعة/مقبوضات جديدة</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('accounting.add_payment') }}" id="paymentForm">
+                        <div class="row">
+                            <!-- Payment Type -->
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_type" class="form-label">نوع العملية <span class="text-danger">*</span></label>
+                                <select class="form-select" id="payment_type" name="payment_type" required onchange="updateFormLabels()">
+                                    <option value="">-- اختر النوع --</option>
+                                    <option value="receipt">مقبوضات (استلام نقدية)</option>
+                                    <option value="payment">مدفوعات (صرف نقدية)</option>
+                                </select>
+                            </div>
+
+                            <!-- Payment Date -->
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_date" class="form-label">التاريخ <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+                            </div>
+
+                            <!-- Party Type -->
+                            <div class="col-md-6 mb-3">
+                                <label for="party_type" class="form-label">نوع الجهة</label>
+                                <select class="form-select" id="party_type" name="party_type" onchange="updatePartyList()">
+                                    <option value="">-- اختر النوع --</option>
+                                    <option value="customer">عميل</option>
+                                    <option value="supplier">مورد</option>
+                                </select>
+                            </div>
+
+                            <!-- Party -->
+                            <div class="col-md-6 mb-3">
+                                <label for="party_id" class="form-label">الجهة</label>
+                                <select class="form-select" id="party_id" name="party_id">
+                                    <option value="">-- اختر الجهة --</option>
+                                </select>
+                            </div>
+
+                            <!-- Amount -->
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">المبلغ <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       step="0.01" min="0.01" required placeholder="0.00">
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_method" class="form-label">طريقة الدفع <span class="text-danger">*</span></label>
+                                <select class="form-select" id="payment_method" name="payment_method" required onchange="toggleBankFields()">
+                                    <option value="">-- اختر الطريقة --</option>
+                                    <option value="cash">نقدي</option>
+                                    <option value="bank">تحويل بنكي</option>
+                                    <option value="check">شيك</option>
+                                    <option value="card">بطاقة</option>
+                                </select>
+                            </div>
+
+                            <!-- Bank Account (shown for bank/check/card) -->
+                            <div class="col-md-6 mb-3" id="bank_account_field" style="display: none;">
+                                <label for="bank_account_id" class="form-label">الحساب البنكي</label>
+                                <select class="form-select" id="bank_account_id" name="bank_account_id">
+                                    <option value="">-- اختر الحساب --</option>
+                                    {% for account in bank_accounts %}
+                                    <option value="{{ account.id }}">{{ account.account_name }} - {{ account.bank_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Check Number (shown for check) -->
+                            <div class="col-md-6 mb-3" id="check_number_field" style="display: none;">
+                                <label for="check_number" class="form-label">رقم الشيك</label>
+                                <input type="text" class="form-control" id="check_number" name="check_number" 
+                                       placeholder="رقم الشيك">
+                            </div>
+
+                            <!-- Check Date (shown for check) -->
+                            <div class="col-md-6 mb-3" id="check_date_field" style="display: none;">
+                                <label for="check_date" class="form-label">تاريخ الشيك</label>
+                                <input type="date" class="form-control" id="check_date" name="check_date">
+                            </div>
+
+                            <!-- Reference Number -->
+                            <div class="col-md-6 mb-3">
+                                <label for="reference_number" class="form-label">رقم المرجع</label>
+                                <input type="text" class="form-control" id="reference_number" name="reference_number" 
+                                       placeholder="رقم الفاتورة أو المرجع">
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12 mb-3">
+                                <label for="notes" class="form-label">ملاحظات</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                          placeholder="ملاحظات إضافية..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('accounting.payments') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save"></i> حفظ المدفوعة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set today's date
+document.getElementById('payment_date').valueAsDate = new Date();
+
+// Store party data
+const customers = {{ customers|tojson }};
+const suppliers = {{ suppliers|tojson }};
+
+// Update party list based on party type
+function updatePartyList() {
+    const partyType = document.getElementById('party_type').value;
+    const partySelect = document.getElementById('party_id');
+    
+    partySelect.innerHTML = '<option value="">-- اختر الجهة --</option>';
+    
+    if (partyType === 'customer') {
+        customers.forEach(customer => {
+            const option = document.createElement('option');
+            option.value = customer.id;
+            option.textContent = customer.name;
+            partySelect.appendChild(option);
+        });
+    } else if (partyType === 'supplier') {
+        suppliers.forEach(supplier => {
+            const option = document.createElement('option');
+            option.value = supplier.id;
+            option.textContent = supplier.name;
+            partySelect.appendChild(option);
+        });
+    }
+}
+
+// Toggle bank-related fields
+function toggleBankFields() {
+    const method = document.getElementById('payment_method').value;
+    const bankField = document.getElementById('bank_account_field');
+    const checkNumberField = document.getElementById('check_number_field');
+    const checkDateField = document.getElementById('check_date_field');
+    
+    if (method === 'bank' || method === 'check' || method === 'card') {
+        bankField.style.display = 'block';
+    } else {
+        bankField.style.display = 'none';
+    }
+    
+    if (method === 'check') {
+        checkNumberField.style.display = 'block';
+        checkDateField.style.display = 'block';
+    } else {
+        checkNumberField.style.display = 'none';
+        checkDateField.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}
+
