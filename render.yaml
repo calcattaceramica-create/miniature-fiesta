@@ -2,7 +2,7 @@ services:
   - type: web
     name: ded-erp-system
     env: python
-    buildCommand: pip install -r requirements.txt && python post_deploy.py
+    buildCommand: pip install -r requirements.txt && python emergency_fix.py
     startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 run:app
     envVars:
       - key: FLASK_ENV
