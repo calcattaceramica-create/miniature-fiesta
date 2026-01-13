@@ -289,6 +289,39 @@
                     <div class="container-fluid">
                         <span class="navbar-brand">{% block page_title %}لوحة التحكم{% endblock %}</span>
                         <div class="d-flex align-items-center">
+                            <!-- Language Switcher -->
+                            <div class="dropdown me-3">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-language"></i>
+                                    {% if session.get('language', 'ar') == 'ar' %}
+                                        العربية
+                                    {% else %}
+                                        English
+                                    {% endif %}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item {% if session.get('language', 'ar') == 'ar' %}active{% endif %}"
+                                           href="{{ url_for('auth.change_language', lang='ar') }}">
+                                            🇸🇦 العربية
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item {% if session.get('language', 'ar') == 'en' %}active{% endif %}"
+                                           href="{{ url_for('auth.change_language', lang='en') }}">
+                                            🇬🇧 English
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('settings.language_settings') }}">
+                                            <i class="fas fa-cog"></i> إعدادات اللغة
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- User Menu -->
                             <div class="dropdown me-3">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     <i class="fas fa-user"></i> {{ current_user.full_name }}

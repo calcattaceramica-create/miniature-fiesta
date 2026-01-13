@@ -424,6 +424,10 @@ def profile():
         current_user.phone = request.form.get('phone')
         current_user.language = request.form.get('language', 'ar')
 
+        # Update session language
+        from flask import session
+        session['language'] = current_user.language
+
         # Change password if provided
         new_password = request.form.get('new_password')
         if new_password:
@@ -434,6 +438,46 @@ def profile():
         return redirect(url_for('settings.profile'))
 
     return render_template('settings/profile.html')
+
+@bp.route('/language')
+@login_required
+def language_settings():
+    """Language settings page"""
+    from flask import current_app
+    available_languages = current_app.config.get('LANGUAGES', ['ar', 'en'])
+    return render_template('settings/language.html', available_languages=available_languages)
+
+@bp.route('/language/change', methods=['POST'])
+@login_required
+def change_language():
+    """Change application language"""
+    try:
+        language = request.form.get('language', 'ar')
+
+        # Validate language
+        from flask import current_app
+        available_languages = current_app.config.get('LANGUAGES', ['ar', 'en'])
+
+        if language not in available_languages:
+            flash('اللغة المحددة غير مدعومة', 'danger')
+            return redirect(url_for('settings.language_settings'))
+
+        # Update user language
+        current_user.language = language
+
+        # Update session
+        from flask import session
+        session['language'] = language
+
+        db.session.commit()
+
+        flash('تم تغيير اللغة بنجاح' if language == 'ar' else 'Language changed successfully', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'حدث خطأ: {str(e)}', 'danger')
+
+    return redirect(url_for('settings.language_settings'))
 
 @bp.route('/accounting-settings')
 @login_required
