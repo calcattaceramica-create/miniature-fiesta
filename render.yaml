@@ -1,7 +1,8 @@
 services:
   - type: web
     name: ded-erp-system
-    env: python
+    runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt && python init_database.py
     startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 run:app
     envVars:
@@ -16,10 +17,10 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.0
     autoDeploy: true
-    healthCheckPath: /
 
 databases:
   - name: ded-database
+    plan: free
     databaseName: ded_erp
     user: ded_user
 
