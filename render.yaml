@@ -3,7 +3,8 @@ services:
     name: ded-erp-system
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt && python init_database.py
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 run:app
     envVars:
       - key: FLASK_ENV
@@ -21,6 +22,8 @@ services:
 databases:
   - name: ded-database
     plan: free
+    region: frankfurt
     databaseName: ded_erp
     user: ded_user
+    postgresMajorVersion: 16
 
