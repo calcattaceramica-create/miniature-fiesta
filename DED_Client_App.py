@@ -60,6 +60,12 @@ class SimpleLicenseManager:
 # Initialize manager
 manager = SimpleLicenseManager()
 
+# Debug: Show license file status (only in development)
+# Uncomment for debugging:
+# st.sidebar.write("📁 License file exists:", os.path.exists('licenses.json'))
+# st.sidebar.write("📊 Total licenses:", len(manager.licenses))
+# st.sidebar.write("🔑 License keys:", list(manager.licenses.keys()))
+
 # Initialize session state
 if 'client_authenticated' not in st.session_state:
     st.session_state.client_authenticated = False
@@ -147,16 +153,29 @@ if not st.session_state.client_authenticated:
 
             if submitted:
                 if license_key and username and password:
-                    is_valid, result = manager.verify_license(license_key, username, password)
+                    try:
+                        # Debug info
+                        st.info(f"🔍 جاري التحقق من الترخيص...")
 
-                    if is_valid:
-                        st.session_state.client_authenticated = True
-                        st.session_state.client_license_key = license_key
-                        st.session_state.client_license_data = result
-                        st.success(f"✅ مرحباً {result.get('company')}!")
-                        st.rerun()
-                    else:
-                        st.error(result)
+                        is_valid, result = manager.verify_license(license_key, username, password)
+
+                        if is_valid:
+                            st.session_state.client_authenticated = True
+                            st.session_state.client_license_key = license_key
+                            st.session_state.client_license_data = result
+                            st.success(f"✅ مرحباً {result.get('company')}!")
+                            st.rerun()
+                        else:
+                            st.error(result)
+                    except Exception as e:
+                        st.error(f"❌ خطأ: {str(e)}")
+                        st.error(f"🔍 التفاصيل: {type(e).__name__}")
+                        # Show debug info
+                        with st.expander("🔧 معلومات التشخيص"):
+                            st.write("المفتاح المدخل:", license_key)
+                            st.write("المستخدم المدخل:", username)
+                            st.write("عدد التراخيص المتاحة:", len(manager.licenses))
+                            st.write("مفاتيح التراخيص:", list(manager.licenses.keys()))
                 else:
                     st.error("❌ الرجاء إدخال جميع البيانات - Please fill all fields")
 
