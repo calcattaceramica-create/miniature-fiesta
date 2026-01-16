@@ -233,22 +233,28 @@ st.markdown("### 📋 معلومات الترخيص - License Information")
 col1, col2 = st.columns(2)
 
 with col1:
+    # Get phone number from different possible fields
+    phone = lic.get('phone') or lic.get('contact_phone', 'غير محدد')
+
     st.markdown(f"""
     <div class="feature-card">
         <h4>🏢 معلومات الشركة - Company Info</h4>
-        <p><strong>الشركة:</strong> {lic.get('company')}</p>
-        <p><strong>اسم المستخدم:</strong> {lic.get('username')}</p>
-        <p><strong>رقم الهاتف:</strong> {lic.get('phone', 'غير محدد')}</p>
+        <p><strong>الشركة:</strong> {lic.get('company', 'غير محدد')}</p>
+        <p><strong>اسم المستخدم:</strong> {lic.get('username', 'غير محدد')}</p>
+        <p><strong>رقم الهاتف:</strong> {phone}</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
+    # Get creation date from different possible fields
+    created_date = lic.get('created_at') or lic.get('created', 'غير محدد')
+
     st.markdown(f"""
     <div class="feature-card">
         <h4>🔑 معلومات الترخيص - License Details</h4>
         <p><strong>المفتاح:</strong> <code>{st.session_state.client_license_key}</code></p>
-        <p><strong>تاريخ الإنشاء:</strong> {lic.get('created_at')}</p>
-        <p><strong>الحالة:</strong> {lic.get('status')}</p>
+        <p><strong>تاريخ الإنشاء:</strong> {created_date}</p>
+        <p><strong>الحالة:</strong> {lic.get('status', 'نشط')}</p>
     </div>
     """, unsafe_allow_html=True)
 
