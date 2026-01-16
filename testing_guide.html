@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل الاختبار - Testing Guide</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .content {
+            padding: 40px;
+        }
+        .step-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-right: 5px solid #667eea;
+        }
+        .code-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            direction: ltr;
+            text-align: left;
+        }
+        .test-checklist {
+            background: #e7f3ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        .checklist-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            border-right: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="font-size: 4em; margin-bottom: 20px;">🧪</div>
+            <h1>دليل اختبار الترجمة</h1>
+            <p style="font-size: 1.2em;">Testing Guide for Translation Updates</p>
+        </div>
+
+        <div class="content">
+            <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 15px; padding: 25px; margin-bottom: 30px;">
+                <h4><i class="fas fa-exclamation-triangle"></i> ملاحظة مهمة:</h4>
+                <p style="font-size: 1.1em; margin: 10px 0;">
+                    يبدو أن السيرفر غير مشغل حالياً. تحتاج إلى تشغيل التطبيق أولاً!
+                </p>
+            </div>
+
+            <h2><i class="fas fa-play-circle"></i> خطوات الاختبار:</h2>
+
+            <div class="step-box">
+                <h4>الخطوة 1: تشغيل السيرفر</h4>
+                <p>افتح Terminal وشغل الأمر التالي:</p>
+                <div class="code-box">
+                    python run.py
+                </div>
+                <p style="margin-top: 15px; color: #666;">
+                    <strong>أو</strong> إذا كان السيرفر يعمل بالفعل، تأكد من أنه يعمل على المنفذ 5000
+                </p>
+            </div>
+
+            <div class="step-box">
+                <h4>الخطوة 2: فتح التطبيق</h4>
+                <p>افتح المتصفح واذهب إلى:</p>
+                <div class="code-box">
+                    http://localhost:5000
+                </div>
+                <p style="margin-top: 15px; color: #666;">
+                    سجل الدخول إذا لم تكن مسجلاً
+                </p>
+            </div>
+
+            <div class="step-box">
+                <h4>الخطوة 3: تغيير اللغة</h4>
+                <p>في القائمة العلوية، ابحث عن زر تغيير اللغة:</p>
+                <ul style="margin-top: 15px;">
+                    <li>إذا كانت اللغة الحالية <strong>عربي</strong>، اضغط على <strong>English</strong></li>
+                    <li>إذا كانت اللغة الحالية <strong>English</strong>، اضغط على <strong>عربي</strong></li>
+                </ul>
+            </div>
+
+            <div class="step-box">
+                <h4>الخطوة 4: اختبار الصفحات المحدثة</h4>
+                <p>قم بزيارة الصفحات التالية وتحقق من الترجمة:</p>
+                <div style="margin-top: 20px;">
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong>1. صفحة التصنيفات</strong>
+                        <div class="code-box" style="margin-top: 10px;">
+                            http://localhost:5000/inventory/categories
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong>2. صفحة المنتجات</strong>
+                        <div class="code-box" style="margin-top: 10px;">
+                            http://localhost:5000/inventory/products
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong>3. صفحة المستودعات</strong>
+                        <div class="code-box" style="margin-top: 10px;">
+                            http://localhost:5000/inventory/warehouses
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong>4. صفحة المخزون</strong>
+                        <div class="code-box" style="margin-top: 10px;">
+                            http://localhost:5000/inventory/stock
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 40px;"><i class="fas fa-clipboard-check"></i> قائمة التحقق:</h2>
+            <div class="test-checklist">
+                <div class="checklist-item">
+                    <input type="checkbox" id="check1">
+                    <label for="check1" style="margin-right: 10px;">
+                        <strong>القائمة الجانبية</strong> - جميع عناصر القائمة تتحول بين العربية والإنجليزية
+                    </label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check2">
+                    <label for="check2" style="margin-right: 10px;">
+                        <strong>صفحة التصنيفات</strong> - العنوان، الأزرار، الجدول، النماذج
+                    </label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check3">
+                    <label for="check3" style="margin-right: 10px;">
+                        <strong>صفحة المنتجات</strong> - البحث، الفلاتر، عناوين الجدول، الحالات
+                    </label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check4">
+                    <label for="check4" style="margin-right: 10px;">
+                        <strong>صفحة المستودعات</strong> - البطاقات، النماذج، رسائل التأكيد
+                    </label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check5">
+                    <label for="check5" style="margin-right: 10px;">
+                        <strong>صفحة المخزون</strong> - الإحصائيات، الفلاتر، الجدول، الترقيم
+                    </label>
+                </div>
+            </div>
+
+            <div style="background: #d4edda; border: 2px solid #28a745; border-radius: 15px; padding: 25px; margin-top: 30px;">
+                <h4><i class="fas fa-lightbulb"></i> نصائح للاختبار:</h4>
+                <ul style="margin-top: 15px;">
+                    <li>جرب تغيير اللغة عدة مرات للتأكد من الاستقرار</li>
+                    <li>تحقق من النماذج (إضافة، تعديل، حذف)</li>
+                    <li>تأكد من أن الرسائل والتنبيهات تتحول أيضاً</li>
+                    <li>افحص الأزرار والقوائم المنسدلة</li>
+                    <li>تحقق من أن اتجاه النص يتغير (RTL/LTR)</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 15px;">
+                <h4><i class="fas fa-question-circle"></i> بعد الاختبار...</h4>
+                <p style="margin: 20px 0; font-size: 1.1em;">
+                    إذا كان كل شيء يعمل بشكل صحيح، أخبرني لأكمل باقي الصفحات!
+                </p>
+                <p style="color: #666;">
+                    إذا وجدت أي مشاكل، أخبرني بالتفاصيل وسأصلحها فوراً 🔧
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

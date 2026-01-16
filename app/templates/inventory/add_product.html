@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}إضافة منتج - نظام إدارة المخزون{% endblock %}
-{% block page_title %}إضافة منتج جديد{% endblock %}
+{% block title %}{{ _('Add Product') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Add New Product') }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h3><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h3>
-    <p class="text-muted mb-0">أدخل بيانات المنتج الجديد</p>
+    <h3><i class="fas fa-plus-circle"></i> {{ _('Add New Product') }}</h3>
+    <p class="text-muted mb-0">{{ _('Enter new product details') }}</p>
 </div>
 
 <div class="card">
@@ -15,118 +15,118 @@
             <div class="row">
                 <!-- Basic Information -->
                 <div class="col-md-6">
-                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
-                    
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> {{ _('Basic Information') }}</h5>
+
                     <div class="mb-3">
-                        <label class="form-label">اسم المنتج <span class="text-danger">*</span></label>
+                        <label class="form-label">{{ _('Product Name') }} <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="name" required>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <label class="form-label">{{ _('English Name') }}</label>
                         <input type="text" class="form-control" name="name_en">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">كود المنتج <span class="text-danger">*</span></label>
+                        <label class="form-label">{{ _('Product Code') }} <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="code" required>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الباركود</label>
+                        <label class="form-label">{{ _('Barcode') }}</label>
                         <input type="text" class="form-control" name="barcode">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">SKU</label>
+                        <label class="form-label">{{ _('SKU') }}</label>
                         <input type="text" class="form-control" name="sku">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">التصنيف</label>
+                        <label class="form-label">{{ _('Category') }}</label>
                         <select class="form-select" name="category_id">
-                            <option value="">اختر التصنيف</option>
+                            <option value="">{{ _('Select Category') }}</option>
                             {% for category in categories %}
                             <option value="{{ category.id }}">{{ category.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الوحدة</label>
+                        <label class="form-label">{{ _('Unit') }}</label>
                         <select class="form-select" name="unit_id">
-                            <option value="">اختر الوحدة</option>
+                            <option value="">{{ _('Select Unit') }}</option>
                             {% for unit in units %}
                             <option value="{{ unit.id }}">{{ unit.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الوصف</label>
+                        <label class="form-label">{{ _('Description') }}</label>
                         <textarea class="form-control" name="description" rows="3"></textarea>
                     </div>
                 </div>
                 
                 <!-- Pricing and Stock -->
                 <div class="col-md-6">
-                    <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> الأسعار والمخزون</h5>
-                    
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> {{ _('Pricing and Stock') }}</h5>
+
                     <div class="mb-3">
-                        <label class="form-label">سعر التكلفة</label>
+                        <label class="form-label">{{ _('Cost Price') }}</label>
                         <input type="number" step="0.01" class="form-control" name="cost_price" value="0">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">سعر البيع</label>
+                        <label class="form-label">{{ _('Selling Price') }}</label>
                         <input type="number" step="0.01" class="form-control" name="selling_price" value="0">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الحد الأدنى للسعر</label>
+                        <label class="form-label">{{ _('Minimum Price') }}</label>
                         <input type="number" step="0.01" class="form-control" name="min_price" value="0">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الحد الأدنى للمخزون</label>
+                        <label class="form-label">{{ _('Minimum Stock') }}</label>
                         <input type="number" step="0.01" class="form-control" name="min_stock" value="0">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الحد الأقصى للمخزون</label>
+                        <label class="form-label">{{ _('Maximum Stock') }}</label>
                         <input type="number" step="0.01" class="form-control" name="max_stock" value="0">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">نقطة إعادة الطلب</label>
+                        <label class="form-label">{{ _('Reorder Level') }}</label>
                         <input type="number" step="0.01" class="form-control" name="reorder_level" value="0">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">نسبة الضريبة (%)</label>
+                        <label class="form-label">{{ _('Tax Rate') }} (%)</label>
                         <input type="number" step="0.01" class="form-control" name="tax_rate" value="15">
                     </div>
-                    
-                    <h5 class="mb-3 mt-4"><i class="fas fa-cog"></i> الإعدادات</h5>
-                    
+
+                    <h5 class="mb-3 mt-4"><i class="fas fa-cog"></i> {{ _('Settings') }}</h5>
+
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="is_active" name="is_active" checked>
-                        <label class="form-check-label" for="is_active">نشط</label>
+                        <label class="form-check-label" for="is_active">{{ _('Active') }}</label>
                     </div>
-                    
+
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="is_sellable" name="is_sellable" checked>
-                        <label class="form-check-label" for="is_sellable">قابل للبيع</label>
+                        <label class="form-check-label" for="is_sellable">{{ _('Sellable') }}</label>
                     </div>
-                    
+
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="is_purchasable" name="is_purchasable" checked>
-                        <label class="form-check-label" for="is_purchasable">قابل للشراء</label>
+                        <label class="form-check-label" for="is_purchasable">{{ _('Purchasable') }}</label>
                     </div>
-                    
+
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="track_inventory" name="track_inventory" checked>
-                        <label class="form-check-label" for="track_inventory">تتبع المخزون</label>
+                        <label class="form-check-label" for="track_inventory">{{ _('Track Inventory') }}</label>
                     </div>
                 </div>
             </div>
@@ -136,17 +136,17 @@
             <!-- Initial Stock Section -->
             <div class="row">
                 <div class="col-12">
-                    <h5 class="mb-3"><i class="fas fa-warehouse"></i> المخزون الافتتاحي</h5>
-                    <p class="text-muted small">أدخل الكميات الافتتاحية للمنتج في كل مستودع (اختياري)</p>
+                    <h5 class="mb-3"><i class="fas fa-warehouse"></i> {{ _('Initial Stock') }}</h5>
+                    <p class="text-muted small">{{ _('Enter initial quantities for each warehouse (optional)') }}</p>
 
                     {% if warehouses %}
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 50%;">المستودع</th>
-                                    <th style="width: 30%;">الكود</th>
-                                    <th style="width: 20%;">الكمية الافتتاحية</th>
+                                    <th style="width: 50%;">{{ _('Warehouse') }}</th>
+                                    <th style="width: 30%;">{{ _('Code') }}</th>
+                                    <th style="width: 20%;">{{ _('Initial Quantity') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -179,8 +179,8 @@
                     {% else %}
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle"></i>
-                        لا توجد مستودعات نشطة. يرجى إضافة مستودع أولاً من
-                        <a href="{{ url_for('inventory.warehouses') }}" class="alert-link">إدارة المستودعات</a>
+                        {{ _('No active warehouses. Please add a warehouse first from') }}
+                        <a href="{{ url_for('inventory.warehouses') }}" class="alert-link">{{ _('Warehouse Management') }}</a>
                     </div>
                     {% endif %}
                 </div>
@@ -190,10 +190,10 @@
 
             <div class="d-flex justify-content-between">
                 <a href="{{ url_for('inventory.products') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> إلغاء
+                    <i class="fas fa-times"></i> {{ _('Cancel') }}
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> حفظ المنتج
+                    <i class="fas fa-save"></i> {{ _('Save Product') }}
                 </button>
             </div>
         </form>

@@ -22,10 +22,11 @@ class Config:
 
     # Application
     APP_NAME = os.environ.get('APP_NAME') or 'نظام إدارة المخزون المتكامل'
-    DEFAULT_LANGUAGE = os.environ.get('DEFAULT_LANGUAGE') or 'ar'
+    DEFAULT_LANGUAGE = 'ar'  # Arabic only
     BABEL_DEFAULT_LOCALE = 'ar'
     BABEL_DEFAULT_TIMEZONE = 'Asia/Riyadh'
-    LANGUAGES = ['ar', 'en']
+    BABEL_TRANSLATION_DIRECTORIES = 'translations'
+    LANGUAGES = ['ar']  # Arabic only - no language switching
 
     # Session Security
     PERMANENT_SESSION_LIFETIME = timedelta(hours=2)  # Session expires after 2 hours

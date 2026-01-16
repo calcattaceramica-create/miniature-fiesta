@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}إضافة فاتورة مبيعات - نظام إدارة المخزون{% endblock %}
-{% block page_title %}إضافة فاتورة مبيعات{% endblock %}
+{% block title %}{{ _('Add Sales Invoice') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Add Sales Invoice') }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h3><i class="fas fa-file-invoice"></i> إضافة فاتورة مبيعات جديدة</h3>
-    <p class="text-muted mb-0">أدخل بيانات الفاتورة والمنتجات</p>
+    <h3><i class="fas fa-file-invoice"></i> {{ _('Add New Sales Invoice') }}</h3>
+    <p class="text-muted mb-0">{{ _('Enter invoice and product details') }}</p>
 </div>
 
 <form method="POST" action="{{ url_for('sales.add_invoice') }}" id="invoiceForm">
@@ -15,21 +15,21 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات الفاتورة</h5>
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ _('Invoice Information') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="mb-3">
-                                <label class="form-label">تاريخ الفاتورة <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ _('Invoice Date') }} <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="invoice_date" value="{{ today }}" required>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label">العميل <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ _('Customer') }} <span class="text-danger">*</span></label>
                                 <select class="form-select" name="customer_id" required>
-                                    <option value="">اختر العميل</option>
+                                    <option value="">{{ _('Select Customer') }}</option>
                                     {% for customer in customers %}
                                     <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.code }})</option>
                                     {% endfor %}
@@ -38,9 +38,9 @@
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label">المستودع <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ _('Warehouse') }} <span class="text-danger">*</span></label>
                                 <select class="form-select" name="warehouse_id" required>
-                                    <option value="">اختر المستودع</option>
+                                    <option value="">{{ _('Select Warehouse') }}</option>
                                     {% for warehouse in warehouses %}
                                     <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
                                     {% endfor %}
@@ -49,7 +49,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="form-label">ملاحظات</label>
+                                <label class="form-label">{{ _('Notes') }}</label>
                                 <textarea class="form-control" name="notes" rows="2"></textarea>
                             </div>
                         </div>
@@ -62,9 +62,9 @@
         <div class="col-md-12 mt-3">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-list"></i> المنتجات</h5>
+                    <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Products') }}</h5>
                     <button type="button" class="btn btn-sm btn-primary" onclick="addItem()">
-                        <i class="fas fa-plus"></i> إضافة منتج
+                        <i class="fas fa-plus"></i> {{ _('Add Product') }}
                     </button>
                 </div>
                 <div class="card-body">
@@ -72,13 +72,13 @@
                         <table class="table table-bordered" id="itemsTable">
                             <thead>
                                 <tr>
-                                    <th style="width: 30%;">المنتج</th>
-                                    <th style="width: 10%;">الكمية</th>
-                                    <th style="width: 15%;">سعر الوحدة</th>
-                                    <th style="width: 10%;">الخصم %</th>
-                                    <th style="width: 15%;">الإجمالي قبل الضريبة</th>
-                                    <th style="width: 10%;">الضريبة</th>
-                                    <th style="width: 15%;">الإجمالي</th>
+                                    <th style="width: 30%;">{{ _('Product') }}</th>
+                                    <th style="width: 10%;">{{ _('Quantity') }}</th>
+                                    <th style="width: 15%;">{{ _('Unit Price') }}</th>
+                                    <th style="width: 10%;">{{ _('Discount %') }}</th>
+                                    <th style="width: 15%;">{{ _('Subtotal Before Tax') }}</th>
+                                    <th style="width: 10%;">{{ _('Tax') }}</th>
+                                    <th style="width: 15%;">{{ _('Total') }}</th>
                                     <th style="width: 5%;"></th>
                                 </tr>
                             </thead>
@@ -100,16 +100,16 @@
                         <div class="col-md-4">
                             <table class="table table-sm">
                                 <tr>
-                                    <th>الإجمالي قبل الضريبة:</th>
-                                    <td class="text-end"><strong id="subtotalDisplay">0.00 ر.س</strong></td>
+                                    <th>{{ _('Subtotal Before Tax') }}:</th>
+                                    <td class="text-end"><strong id="subtotalDisplay">0.00 {{ _('SAR') }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <th>الضريبة (15%):</th>
-                                    <td class="text-end"><strong id="taxDisplay">0.00 ر.س</strong></td>
+                                    <th>{{ _('Tax (15%)') }}:</th>
+                                    <td class="text-end"><strong id="taxDisplay">0.00 {{ _('SAR') }}</strong></td>
                                 </tr>
                                 <tr class="table-primary">
-                                    <th>الإجمالي النهائي:</th>
-                                    <td class="text-end"><strong id="totalDisplay">0.00 ر.س</strong></td>
+                                    <th>{{ _('Grand Total') }}:</th>
+                                    <td class="text-end"><strong id="totalDisplay">0.00 {{ _('SAR') }}</strong></td>
                                 </tr>
                             </table>
                         </div>
@@ -121,10 +121,10 @@
 
     <div class="d-flex justify-content-between mt-3">
         <a href="{{ url_for('sales.invoices') }}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> إلغاء
+            <i class="fas fa-times"></i> {{ _('Cancel') }}
         </a>
         <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i> حفظ الفاتورة
+            <i class="fas fa-save"></i> {{ _('Save Invoice') }}
         </button>
     </div>
 </form>
@@ -141,7 +141,7 @@ function addItem() {
     row.innerHTML = `
         <td>
             <select class="form-select form-select-sm" name="product_id_${itemCounter}" onchange="updateItemPrice(${itemCounter})" required>
-                <option value="">اختر المنتج</option>
+                <option value="">{{ _('Select Product') }}</option>
                 ${products.map(p => `<option value="${p.id}" data-price="${p.selling_price}" data-tax="${p.tax_rate}">${p.name}</option>`).join('')}
             </select>
         </td>
@@ -160,9 +160,18 @@ function addItem() {
 
 function updateItemPrice(index) {
     const select = document.querySelector(`select[name="product_id_${index}"]`);
+    if (!select) return;
+
     const option = select.options[select.selectedIndex];
-    const price = option.getAttribute('data-price') || 0;
-    document.querySelector(`input[name="unit_price_${index}"]`).value = price;
+    if (!option || !option.value) {
+        // Reset if no product selected
+        document.querySelector(`input[name="unit_price_${index}"]`).value = 0;
+        calculateItem(index);
+        return;
+    }
+
+    const price = parseFloat(option.getAttribute('data-price')) || 0;
+    document.querySelector(`input[name="unit_price_${index}"]`).value = price.toFixed(2);
     calculateItem(index);
 }
 

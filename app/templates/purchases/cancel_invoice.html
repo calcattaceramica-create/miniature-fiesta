@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}إلغاء فاتورة الشراء - نظام إدارة المخزون{% endblock %}
+{% block title %}{{ _('Cancel Purchase Invoice') }} - {{ _('Inventory Management System') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-4">
@@ -8,57 +8,57 @@
         <div class="col-lg-8">
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0"><i class="fas fa-ban"></i> إلغاء فاتورة الشراء</h4>
+                    <h4 class="mb-0"><i class="fas fa-ban"></i> {{ _('Cancel Purchase Invoice') }}</h4>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <strong>تحذير:</strong> عند إلغاء الفاتورة سيتم:
+                        <strong>{{ _('Warning') }}:</strong> {{ _('When canceling the invoice, the following will happen') }}:
                         <ul class="mb-0 mt-2">
-                            <li>خصم الكميات من المخزون</li>
-                            <li>تسجيل حركة مخزنية عكسية لكل صنف</li>
-                            <li>خصم المبلغ من رصيد المورد</li>
-                            <li>لن تتمكن من التراجع عن الإلغاء</li>
+                            <li>{{ _('Deduct quantities from inventory') }}</li>
+                            <li>{{ _('Record reverse inventory movement for each item') }}</li>
+                            <li>{{ _('Deduct amount from supplier balance') }}</li>
+                            <li>{{ _('You will not be able to undo the cancellation') }}</li>
                         </ul>
                     </div>
 
                     <!-- Invoice Summary -->
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5 class="border-bottom pb-2">معلومات الفاتورة</h5>
+                            <h5 class="border-bottom pb-2">{{ _('Invoice Information') }}</h5>
                             <table class="table table-sm">
                                 <tr>
-                                    <th style="width: 40%">رقم الفاتورة:</th>
+                                    <th style="width: 40%">{{ _('Invoice Number') }}:</th>
                                     <td><strong>{{ invoice.invoice_number }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <th>التاريخ:</th>
+                                    <th>{{ _('Date') }}:</th>
                                     <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>المورد:</th>
+                                    <th>{{ _('Supplier') }}:</th>
                                     <td>{{ invoice.supplier.name }}</td>
                                 </tr>
                                 <tr>
-                                    <th>المستودع:</th>
+                                    <th>{{ _('Warehouse') }}:</th>
                                     <td>{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
                                 </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <h5 class="border-bottom pb-2">الملخص المالي</h5>
+                            <h5 class="border-bottom pb-2">{{ _('Financial Summary') }}</h5>
                             <table class="table table-sm">
                                 <tr>
-                                    <th style="width: 40%">الإجمالي:</th>
-                                    <td><strong class="text-danger">{{ "%.2f"|format(invoice.total_amount) }} ر.س</strong></td>
+                                    <th style="width: 40%">{{ _('Total') }}:</th>
+                                    <td><strong class="text-danger">{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <th>المدفوع:</th>
-                                    <td>{{ "%.2f"|format(invoice.paid_amount) }} ر.س</td>
+                                    <th>{{ _('Paid') }}:</th>
+                                    <td>{{ "%.2f"|format(invoice.paid_amount) }} {{ _('SAR') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>المتبقي:</th>
-                                    <td>{{ "%.2f"|format(invoice.remaining_amount) }} ر.س</td>
+                                    <th>{{ _('Remaining') }}:</th>
+                                    <td>{{ "%.2f"|format(invoice.remaining_amount) }} {{ _('SAR') }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -67,15 +67,15 @@
                     <!-- Items Summary -->
                     <div class="row mb-4">
                         <div class="col-12">
-                            <h5 class="border-bottom pb-2">الأصناف التي سيتم خصمها من المخزون</h5>
+                            <h5 class="border-bottom pb-2">{{ _('Items to be deducted from inventory') }}</h5>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-sm">
                                     <thead class="table-light">
                                         <tr>
                                             <th>#</th>
-                                            <th>الصنف</th>
-                                            <th>الكمية</th>
-                                            <th>المستودع</th>
+                                            <th>{{ _('Item') }}</th>
+                                            <th>{{ _('Quantity') }}</th>
+                                            <th>{{ _('Warehouse') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -100,14 +100,14 @@
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="confirmCheck" required>
                                     <label class="form-check-label" for="confirmCheck">
-                                        أؤكد أنني أريد إلغاء هذه الفاتورة وأفهم التغييرات التي ستحدث
+                                        {{ _('I confirm that I want to cancel this invoice and understand the changes that will occur') }}
                                     </label>
                                 </div>
                                 <button type="submit" class="btn btn-danger">
-                                    <i class="fas fa-ban"></i> إلغاء الفاتورة
+                                    <i class="fas fa-ban"></i> {{ _('Cancel Invoice') }}
                                 </button>
                                 <a href="{{ url_for('purchases.invoice_details', id=invoice.id) }}" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> رجوع
+                                    <i class="fas fa-times"></i> {{ _('Back') }}
                                 </a>
                             </div>
                         </div>

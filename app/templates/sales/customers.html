@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}العملاء - نظام إدارة المخزون{% endblock %}
-{% block page_title %}إدارة العملاء{% endblock %}
+{% block title %}{{ _('Customers') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Customer Management') }}{% endblock %}
 
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
     <div>
-        <h3><i class="fas fa-users"></i> إدارة العملاء</h3>
-        <p class="text-muted mb-0">عرض وإدارة جميع العملاء</p>
+        <h3><i class="fas fa-users"></i> {{ _('Customer Management') }}</h3>
+        <p class="text-muted mb-0">{{ _('View and manage all customers') }}</p>
     </div>
     <div>
         <a href="{{ url_for('sales.add_customer') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> إضافة عميل جديد
+            <i class="fas fa-plus"></i> {{ _('Add New Customer') }}
         </a>
     </div>
 </div>
@@ -22,11 +22,11 @@
         <form method="GET" action="{{ url_for('sales.customers') }}">
             <div class="row">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" name="search" placeholder="بحث بالاسم، الكود، أو رقم الهاتف..." value="{{ search }}">
+                    <input type="text" class="form-control" name="search" placeholder="{{ _('Search by name, code, or phone...') }}" value="{{ search }}">
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-primary w-100" type="submit">
-                        <i class="fas fa-search"></i> بحث
+                        <i class="fas fa-search"></i> {{ _('Search') }}
                     </button>
                 </div>
             </div>
@@ -41,15 +41,15 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>الكود</th>
-                        <th>اسم العميل</th>
-                        <th>الهاتف</th>
-                        <th>البريد الإلكتروني</th>
-                        <th>المدينة</th>
-                        <th>الرصيد الحالي</th>
-                        <th>التصنيف</th>
-                        <th>الحالة</th>
-                        <th>الإجراءات</th>
+                        <th>{{ _('Code') }}</th>
+                        <th>{{ _('Customer Name') }}</th>
+                        <th>{{ _('Phone') }}</th>
+                        <th>{{ _('Email') }}</th>
+                        <th>{{ _('City') }}</th>
+                        <th>{{ _('Current Balance') }}</th>
+                        <th>{{ _('Category') }}</th>
+                        <th>{{ _('Status') }}</th>
+                        <th>{{ _('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,11 +62,11 @@
                         <td>{{ customer.city or '-' }}</td>
                         <td>
                             {% if customer.current_balance > 0 %}
-                                <span class="text-danger">{{ "%.2f"|format(customer.current_balance) }} ر.س</span>
+                                <span class="text-danger">{{ "%.2f"|format(customer.current_balance) }} {{ _('SAR') }}</span>
                             {% elif customer.current_balance < 0 %}
-                                <span class="text-success">{{ "%.2f"|format(customer.current_balance|abs) }} ر.س</span>
+                                <span class="text-success">{{ "%.2f"|format(customer.current_balance|abs) }} {{ _('SAR') }}</span>
                             {% else %}
-                                <span class="text-muted">0.00 ر.س</span>
+                                <span class="text-muted">0.00 {{ _('SAR') }}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -78,9 +78,9 @@
                         </td>
                         <td>
                             {% if customer.is_active %}
-                                <span class="badge bg-success">نشط</span>
+                                <span class="badge bg-success">{{ _('Active') }}</span>
                             {% else %}
-                                <span class="badge bg-secondary">غير نشط</span>
+                                <span class="badge bg-secondary">{{ _('Inactive') }}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -96,7 +96,7 @@
                     <tr>
                         <td colspan="9" class="text-center text-muted py-4">
                             <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                            لا يوجد عملاء
+                            {{ _('No customers found') }}
                         </td>
                     </tr>
                     {% endfor %}
@@ -112,10 +112,10 @@
     <ul class="pagination justify-content-center">
         {% if customers.has_prev %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('sales.customers', page=customers.prev_num, search=search) }}">السابق</a>
+            <a class="page-link" href="{{ url_for('sales.customers', page=customers.prev_num, search=search) }}">{{ _('Previous') }}</a>
         </li>
         {% endif %}
-        
+
         {% for page_num in customers.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
             {% if page_num %}
                 {% if page_num == customers.page %}
@@ -127,10 +127,10 @@
                 <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
             {% endif %}
         {% endfor %}
-        
+
         {% if customers.has_next %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('sales.customers', page=customers.next_num, search=search) }}">التالي</a>
+            <a class="page-link" href="{{ url_for('sales.customers', page=customers.next_num, search=search) }}">{{ _('Next') }}</a>
         </li>
         {% endif %}
     </ul>

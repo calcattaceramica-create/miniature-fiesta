@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}إضافة عرض سعر - نظام إدارة المخزون{% endblock %}
-{% block page_title %}إضافة عرض سعر{% endblock %}
+{% block title %}{{ _('Add Quotation') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Add Quotation') }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h3><i class="fas fa-file-contract"></i> إضافة عرض سعر جديد</h3>
-    <p class="text-muted mb-0">أدخل بيانات عرض السعر والمنتجات</p>
+    <h3><i class="fas fa-file-contract"></i> {{ _('Add New Quotation') }}</h3>
+    <p class="text-muted mb-0">{{ _('Enter quotation data and products') }}</p>
 </div>
 
 <form method="POST" action="{{ url_for('sales.add_quotation') }}" id="quotationForm">
@@ -15,27 +15,27 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات عرض السعر</h5>
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ _('Quotation Information') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="mb-3">
-                                <label class="form-label">تاريخ العرض <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ _('Quotation Date') }} <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="quotation_date" value="{{ today }}" required>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="mb-3">
-                                <label class="form-label">صالح لمدة (أيام) <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ _('Valid for (days)') }} <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" name="valid_days" value="30" min="1" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">العميل <span class="text-danger">*</span></label>
+                                <label class="form-label">{{ _('Customer') }} <span class="text-danger">*</span></label>
                                 <select class="form-select" name="customer_id" required>
-                                    <option value="">اختر العميل</option>
+                                    <option value="">{{ _('Select Customer') }}</option>
                                     {% for customer in customers %}
                                     <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.code }})</option>
                                     {% endfor %}
@@ -44,8 +44,8 @@
                         </div>
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label class="form-label">ملاحظات</label>
-                                <textarea class="form-control" name="notes" rows="2" placeholder="شروط وأحكام عرض السعر..."></textarea>
+                                <label class="form-label">{{ _('Notes') }}</label>
+                                <textarea class="form-control" name="notes" rows="2" placeholder="{{ _('Quotation terms and conditions...') }}"></textarea>
                             </div>
                         </div>
                     </div>
@@ -57,9 +57,9 @@
         <div class="col-md-12 mt-3">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-list"></i> المنتجات</h5>
+                    <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Products') }}</h5>
                     <button type="button" class="btn btn-sm btn-primary" onclick="addItem()">
-                        <i class="fas fa-plus"></i> إضافة منتج
+                        <i class="fas fa-plus"></i> {{ _('Add Product') }}
                     </button>
                 </div>
                 <div class="card-body">
@@ -67,13 +67,13 @@
                         <table class="table table-bordered" id="itemsTable">
                             <thead>
                                 <tr>
-                                    <th style="width: 30%;">المنتج</th>
-                                    <th style="width: 10%;">الكمية</th>
-                                    <th style="width: 15%;">سعر الوحدة</th>
-                                    <th style="width: 10%;">الخصم %</th>
-                                    <th style="width: 15%;">الإجمالي قبل الضريبة</th>
-                                    <th style="width: 10%;">الضريبة</th>
-                                    <th style="width: 15%;">الإجمالي</th>
+                                    <th style="width: 30%;">{{ _('Product') }}</th>
+                                    <th style="width: 10%;">{{ _('Quantity') }}</th>
+                                    <th style="width: 15%;">{{ _('Unit Price') }}</th>
+                                    <th style="width: 10%;">{{ _('Discount') }} %</th>
+                                    <th style="width: 15%;">{{ _('Subtotal') }}</th>
+                                    <th style="width: 10%;">{{ _('Tax') }}</th>
+                                    <th style="width: 15%;">{{ _('Total') }}</th>
                                     <th style="width: 5%;"></th>
                                 </tr>
                             </thead>
@@ -95,16 +95,16 @@
                         <div class="col-md-4">
                             <table class="table table-sm">
                                 <tr>
-                                    <th>الإجمالي قبل الضريبة:</th>
-                                    <td class="text-end"><strong id="subtotalDisplay">0.00 ر.س</strong></td>
+                                    <th>{{ _('Subtotal') }}:</th>
+                                    <td class="text-end"><strong id="subtotalDisplay">0.00 {{ _('SAR') }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <th>الضريبة (15%):</th>
-                                    <td class="text-end"><strong id="taxDisplay">0.00 ر.س</strong></td>
+                                    <th>{{ _('Tax') }} (15%):</th>
+                                    <td class="text-end"><strong id="taxDisplay">0.00 {{ _('SAR') }}</strong></td>
                                 </tr>
                                 <tr class="table-primary">
-                                    <th>الإجمالي النهائي:</th>
-                                    <td class="text-end"><strong id="totalDisplay">0.00 ر.س</strong></td>
+                                    <th>{{ _('Grand Total') }}:</th>
+                                    <td class="text-end"><strong id="totalDisplay">0.00 {{ _('SAR') }}</strong></td>
                                 </tr>
                             </table>
                         </div>
@@ -116,10 +116,10 @@
 
     <div class="d-flex justify-content-between mt-3">
         <a href="{{ url_for('sales.quotations') }}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> إلغاء
+            <i class="fas fa-times"></i> {{ _('Cancel') }}
         </a>
         <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i> حفظ عرض السعر
+            <i class="fas fa-save"></i> {{ _('Save Quotation') }}
         </button>
     </div>
 </form>
@@ -132,11 +132,11 @@ function addItem() {
     const tbody = document.getElementById('itemsBody');
     const row = document.createElement('tr');
     row.id = `item-${itemCounter}`;
-    
+
     row.innerHTML = `
         <td>
             <select class="form-select form-select-sm" name="product_id_${itemCounter}" onchange="updateItemPrice(${itemCounter})" required>
-                <option value="">اختر المنتج</option>
+                <option value="">{{ _('Select Product') }}</option>
                 ${products.map(p => `<option value="${p.id}" data-price="${p.selling_price}" data-tax="${p.tax_rate}">${p.name}</option>`).join('')}
             </select>
         </td>
@@ -148,7 +148,7 @@ function addItem() {
         <td><strong><span id="total_${itemCounter}">0.00</span></strong></td>
         <td><button type="button" class="btn btn-sm btn-danger" onclick="removeItem(${itemCounter})"><i class="fas fa-trash"></i></button></td>
     `;
-    
+
     tbody.appendChild(row);
     itemCounter++;
 }
@@ -204,13 +204,13 @@ function calculateTotals() {
 
     const total = subtotal + tax;
 
-    document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2) + ' ر.س';
-    document.getElementById('taxDisplay').textContent = tax.toFixed(2) + ' ر.س';
-    document.getElementById('totalDisplay').textContent = total.toFixed(2) + ' ر.س';
+    document.getElementById('subtotalDisplay').textContent = subtotal.toFixed(2) + ' {{ _('SAR') }}';
+    document.getElementById('taxDisplay').textContent = tax.toFixed(2) + ' {{ _('SAR') }}';
+    document.getElementById('totalDisplay').textContent = total.toFixed(2) + ' {{ _('SAR') }}';
 }
 
 // Form submission
-document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+document.getElementById('quotationForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const items = [];
@@ -227,7 +227,7 @@ document.getElementById('invoiceForm').addEventListener('submit', function(e) {
     }
 
     if (items.length === 0) {
-        alert('يرجى إضافة منتج واحد على الأقل');
+        alert('{{ _('Please add at least one product') }}');
         return;
     }
 

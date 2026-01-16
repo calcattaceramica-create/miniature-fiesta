@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}فواتير المبيعات - نظام إدارة المخزون{% endblock %}
-{% block page_title %}فواتير المبيعات{% endblock %}
+{% block title %}{{ _('Sales Invoices') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Sales Invoices') }}{% endblock %}
 
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
     <div>
-        <h3><i class="fas fa-file-invoice"></i> فواتير المبيعات</h3>
-        <p class="text-muted mb-0">عرض وإدارة جميع فواتير المبيعات</p>
+        <h3><i class="fas fa-file-invoice"></i> {{ _('Sales Invoices') }}</h3>
+        <p class="text-muted mb-0">{{ _('View and manage all sales invoices') }}</p>
     </div>
     <div>
         <a href="{{ url_for('sales.add_invoice') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> إضافة فاتورة جديدة
+            <i class="fas fa-plus"></i> {{ _('Add New Invoice') }}
         </a>
     </div>
 </div>
@@ -22,20 +22,20 @@
         <form method="GET" action="{{ url_for('sales.invoices') }}">
             <div class="row">
                 <div class="col-md-6">
-                    <input type="text" class="form-control" name="search" placeholder="بحث برقم الفاتورة..." value="{{ search }}">
+                    <input type="text" class="form-control" name="search" placeholder="{{ _('Search by invoice number...') }}" value="{{ search }}">
                 </div>
                 <div class="col-md-4">
                     <select class="form-select" name="status">
-                        <option value="">جميع الحالات</option>
-                        <option value="draft" {% if status == 'draft' %}selected{% endif %}>مسودة</option>
-                        <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>مؤكدة</option>
-                        <option value="paid" {% if status == 'paid' %}selected{% endif %}>مدفوعة</option>
-                        <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>ملغاة</option>
+                        <option value="">{{ _('All Statuses') }}</option>
+                        <option value="draft" {% if status == 'draft' %}selected{% endif %}>{{ _('Draft') }}</option>
+                        <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>{{ _('Confirmed') }}</option>
+                        <option value="paid" {% if status == 'paid' %}selected{% endif %}>{{ _('Paid') }}</option>
+                        <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>{{ _('Cancelled') }}</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-primary w-100" type="submit">
-                        <i class="fas fa-search"></i> بحث
+                        <i class="fas fa-search"></i> {{ _('Search') }}
                     </button>
                 </div>
             </div>
@@ -50,16 +50,16 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>رقم الفاتورة</th>
-                        <th>التاريخ</th>
-                        <th>العميل</th>
-                        <th>المستودع</th>
-                        <th>المبلغ الإجمالي</th>
-                        <th>المبلغ المدفوع</th>
-                        <th>المبلغ المتبقي</th>
-                        <th>الحالة</th>
-                        <th>حالة الدفع</th>
-                        <th>الإجراءات</th>
+                        <th>{{ _('Invoice Number') }}</th>
+                        <th>{{ _('Date') }}</th>
+                        <th>{{ _('Customer') }}</th>
+                        <th>{{ _('Warehouse') }}</th>
+                        <th>{{ _('Total Amount') }}</th>
+                        <th>{{ _('Paid Amount') }}</th>
+                        <th>{{ _('Remaining Amount') }}</th>
+                        <th>{{ _('Status') }}</th>
+                        <th>{{ _('Payment Status') }}</th>
+                        <th>{{ _('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,53 +69,53 @@
                         <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
                         <td>{{ invoice.customer.name }}</td>
                         <td>{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
-                        <td><strong>{{ "%.2f"|format(invoice.total_amount) }} ر.س</strong></td>
-                        <td>{{ "%.2f"|format(invoice.paid_amount) }} ر.س</td>
+                        <td><strong>{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
+                        <td>{{ "%.2f"|format(invoice.paid_amount) }} {{ _('SAR') }}</td>
                         <td>
                             {% if invoice.remaining_amount > 0 %}
-                                <span class="text-danger">{{ "%.2f"|format(invoice.remaining_amount) }} ر.س</span>
+                                <span class="text-danger">{{ "%.2f"|format(invoice.remaining_amount) }} {{ _('SAR') }}</span>
                             {% else %}
-                                <span class="text-success">0.00 ر.س</span>
+                                <span class="text-success">0.00 {{ _('SAR') }}</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if invoice.status == 'draft' %}
-                                <span class="badge bg-secondary">مسودة</span>
+                                <span class="badge bg-secondary">{{ _('Draft') }}</span>
                             {% elif invoice.status == 'confirmed' %}
-                                <span class="badge bg-primary">مؤكدة</span>
+                                <span class="badge bg-primary">{{ _('Confirmed') }}</span>
                             {% elif invoice.status == 'paid' %}
-                                <span class="badge bg-success">مدفوعة</span>
+                                <span class="badge bg-success">{{ _('Paid') }}</span>
                             {% elif invoice.status == 'cancelled' %}
-                                <span class="badge bg-danger">ملغاة</span>
+                                <span class="badge bg-danger">{{ _('Cancelled') }}</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if invoice.payment_status == 'unpaid' %}
-                                <span class="badge bg-danger">غير مدفوعة</span>
+                                <span class="badge bg-danger">{{ _('Unpaid') }}</span>
                             {% elif invoice.payment_status == 'partial' %}
-                                <span class="badge bg-warning">مدفوعة جزئياً</span>
+                                <span class="badge bg-warning">{{ _('Partially Paid') }}</span>
                             {% elif invoice.payment_status == 'paid' %}
-                                <span class="badge bg-success">مدفوعة</span>
+                                <span class="badge bg-success">{{ _('Paid') }}</span>
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ url_for('sales.invoice_details', id=invoice.id) }}" class="btn btn-sm btn-outline-info" title="عرض التفاصيل">
+                            <a href="{{ url_for('sales.invoice_details', id=invoice.id) }}" class="btn btn-sm btn-outline-info" title="{{ _('View Details') }}">
                                 <i class="fas fa-eye"></i>
                             </a>
                             {% if invoice.status == 'draft' %}
-                            <a href="{{ url_for('sales.confirm_invoice', id=invoice.id) }}" class="btn btn-sm btn-outline-success" title="تأكيد الفاتورة">
+                            <a href="{{ url_for('sales.confirm_invoice', id=invoice.id) }}" class="btn btn-sm btn-outline-success" title="{{ _('Confirm Invoice') }}">
                                 <i class="fas fa-check"></i>
                             </a>
-                            <a href="{{ url_for('sales.delete_invoice', id=invoice.id) }}" class="btn btn-sm btn-outline-danger" title="حذف" onclick="return confirm('هل أنت متأكد من حذف هذه الفاتورة؟')">
+                            <a href="{{ url_for('sales.delete_invoice', id=invoice.id) }}" class="btn btn-sm btn-outline-danger" title="{{ _('Delete') }}" onclick="return confirm('{{ _('Are you sure you want to delete this invoice?') }}')">
                                 <i class="fas fa-trash"></i>
                             </a>
                             {% endif %}
                             {% if invoice.status == 'confirmed' and invoice.payment_status != 'paid' %}
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="إضافة دفعة">
+                            <a href="#" class="btn btn-sm btn-outline-primary" title="{{ _('Add Payment') }}">
                                 <i class="fas fa-money-bill"></i>
                             </a>
                             {% endif %}
-                            <a href="#" class="btn btn-sm btn-outline-secondary" title="طباعة">
+                            <a href="#" class="btn btn-sm btn-outline-secondary" title="{{ _('Print') }}">
                                 <i class="fas fa-print"></i>
                             </a>
                         </td>
@@ -124,7 +124,7 @@
                     <tr>
                         <td colspan="10" class="text-center text-muted py-4">
                             <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                            لا توجد فواتير
+                            {{ _('No invoices found') }}
                         </td>
                     </tr>
                     {% endfor %}
@@ -140,10 +140,10 @@
     <ul class="pagination justify-content-center">
         {% if invoices.has_prev %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('sales.invoices', page=invoices.prev_num, search=search, status=status) }}">السابق</a>
+            <a class="page-link" href="{{ url_for('sales.invoices', page=invoices.prev_num, search=search, status=status) }}">{{ _('Previous') }}</a>
         </li>
         {% endif %}
-        
+
         {% for page_num in invoices.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
             {% if page_num %}
                 {% if page_num == invoices.page %}
@@ -158,7 +158,7 @@
 
         {% if invoices.has_next %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('sales.invoices', page=invoices.next_num, search=search, status=status) }}">التالي</a>
+            <a class="page-link" href="{{ url_for('sales.invoices', page=invoices.next_num, search=search, status=status) }}">{{ _('Next') }}</a>
         </li>
         {% endif %}
     </ul>

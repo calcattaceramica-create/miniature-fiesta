@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}إضافة فاتورة شراء - نظام إدارة المخزون{% endblock %}
+{% block title %}{{ _('Add Purchase Invoice') }} - {{ _('Inventory Management System') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-4">
@@ -8,37 +8,37 @@
         <div class="col-12">
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
-                    <h4 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> إضافة فاتورة شراء جديدة</h4>
+                    <h4 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> {{ _('Add New Purchase Invoice') }}</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('purchases.add_invoice') }}" id="invoiceForm">
                         <!-- Invoice Header -->
                         <div class="row mb-4">
                             <div class="col-md-3 mb-3">
-                                <label for="invoice_date" class="form-label">تاريخ الفاتورة <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="invoice_date" name="invoice_date" 
+                                <label for="invoice_date" class="form-label">{{ _('Invoice Date') }} <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="invoice_date" name="invoice_date"
                                        value="{{ today }}" required>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="supplier_id" class="form-label">المورد <span class="text-danger">*</span></label>
+                                <label for="supplier_id" class="form-label">{{ _('Supplier') }} <span class="text-danger">*</span></label>
                                 <select class="form-select" id="supplier_id" name="supplier_id" required>
-                                    <option value="">اختر المورد</option>
+                                    <option value="">{{ _('Select Supplier') }}</option>
                                     {% for supplier in suppliers %}
                                     <option value="{{ supplier.id }}">{{ supplier.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="warehouse_id" class="form-label">المستودع <span class="text-danger">*</span></label>
+                                <label for="warehouse_id" class="form-label">{{ _('Warehouse') }} <span class="text-danger">*</span></label>
                                 <select class="form-select" id="warehouse_id" name="warehouse_id" required>
-                                    <option value="">اختر المستودع</option>
+                                    <option value="">{{ _('Select Warehouse') }}</option>
                                     {% for warehouse in warehouses %}
                                     <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="reference_number" class="form-label">رقم المرجع</label>
+                                <label for="reference_number" class="form-label">{{ _('Reference Number') }}</label>
                                 <input type="text" class="form-control" id="reference_number" name="reference_number">
                             </div>
                         </div>
@@ -46,17 +46,17 @@
                         <!-- Invoice Items -->
                         <div class="row mb-4">
                             <div class="col-12">
-                                <h5 class="border-bottom pb-2"><i class="fas fa-list"></i> أصناف الفاتورة</h5>
+                                <h5 class="border-bottom pb-2"><i class="fas fa-list"></i> {{ _('Invoice Items') }}</h5>
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="itemsTable">
                                         <thead class="table-light">
                                             <tr>
-                                                <th style="width: 35%">الصنف</th>
-                                                <th style="width: 15%">الكمية</th>
-                                                <th style="width: 15%">السعر</th>
-                                                <th style="width: 10%">الخصم %</th>
-                                                <th style="width: 10%">الضريبة %</th>
-                                                <th style="width: 15%">الإجمالي</th>
+                                                <th style="width: 35%">{{ _('Item') }}</th>
+                                                <th style="width: 15%">{{ _('Quantity') }}</th>
+                                                <th style="width: 15%">{{ _('Price') }}</th>
+                                                <th style="width: 10%">{{ _('Discount') }} %</th>
+                                                <th style="width: 10%">{{ _('Tax') }} %</th>
+                                                <th style="width: 15%">{{ _('Total') }}</th>
                                                 <th style="width: 5%"></th>
                                             </tr>
                                         </thead>
@@ -64,7 +64,7 @@
                                             <tr class="item-row">
                                                 <td>
                                                     <select class="form-select product-select" name="product_id[]" required>
-                                                        <option value="">اختر الصنف</option>
+                                                        <option value="">{{ _('Select Item') }}</option>
                                                         {% for product in products %}
                                                         <option value="{{ product.id }}" 
                                                                 data-price="{{ product.purchase_price or 0 }}">
@@ -102,7 +102,7 @@
                                     </table>
                                 </div>
                                 <button type="button" class="btn btn-sm btn-primary" id="addRowBtn">
-                                    <i class="fas fa-plus"></i> إضافة صنف
+                                    <i class="fas fa-plus"></i> {{ _('Add Item') }}
                                 </button>
                             </div>
                         </div>
@@ -110,28 +110,28 @@
                         <!-- Invoice Totals -->
                         <div class="row mb-4">
                             <div class="col-md-8">
-                                <label for="notes" class="form-label">ملاحظات</label>
+                                <label for="notes" class="form-label">{{ _('Notes') }}</label>
                                 <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
                             </div>
                             <div class="col-md-4">
                                 <div class="card bg-light">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span>المجموع الفرعي:</span>
-                                            <strong id="subtotal">0.00 ر.س</strong>
+                                            <span>{{ _('Subtotal') }}:</span>
+                                            <strong id="subtotal">0.00 {{ _('SAR') }}</strong>
                                         </div>
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span>الخصم:</span>
-                                            <strong id="totalDiscount">0.00 ر.س</strong>
+                                            <span>{{ _('Discount') }}:</span>
+                                            <strong id="totalDiscount">0.00 {{ _('SAR') }}</strong>
                                         </div>
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span>الضريبة:</span>
-                                            <strong id="totalTax">0.00 ر.س</strong>
+                                            <span>{{ _('Tax') }}:</span>
+                                            <strong id="totalTax">0.00 {{ _('SAR') }}</strong>
                                         </div>
                                         <hr>
                                         <div class="d-flex justify-content-between">
-                                            <h5>الإجمالي:</h5>
-                                            <h5 class="text-success" id="grandTotal">0.00 ر.س</h5>
+                                            <h5>{{ _('Total') }}:</h5>
+                                            <h5 class="text-success" id="grandTotal">0.00 {{ _('SAR') }}</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -142,10 +142,10 @@
                         <div class="row">
                             <div class="col-12">
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-save"></i> حفظ الفاتورة
+                                    <i class="fas fa-save"></i> {{ _('Save Invoice') }}
                                 </button>
                                 <a href="{{ url_for('purchases.invoices') }}" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> إلغاء
+                                    <i class="fas fa-times"></i> {{ _('Cancel') }}
                                 </a>
                             </div>
                         </div>
@@ -176,7 +176,7 @@ $(document).ready(function() {
             $(this).closest('tr').remove();
             calculateTotals();
         } else {
-            alert('يجب أن يكون هناك صنف واحد على الأقل');
+            alert('{{ _('At least one item is required') }}');
         }
     });
 
@@ -231,10 +231,10 @@ $(document).ready(function() {
 
         var grandTotal = subtotal - totalDiscount + totalTax;
 
-        $('#subtotal').text(subtotal.toFixed(2) + ' ر.س');
-        $('#totalDiscount').text(totalDiscount.toFixed(2) + ' ر.س');
-        $('#totalTax').text(totalTax.toFixed(2) + ' ر.س');
-        $('#grandTotal').text(grandTotal.toFixed(2) + ' ر.س');
+        $('#subtotal').text(subtotal.toFixed(2) + ' {{ _('SAR') }}');
+        $('#totalDiscount').text(totalDiscount.toFixed(2) + ' {{ _('SAR') }}');
+        $('#totalTax').text(totalTax.toFixed(2) + ' {{ _('SAR') }}');
+        $('#grandTotal').text(grandTotal.toFixed(2) + ' {{ _('SAR') }}');
     }
 
     // Initial calculation

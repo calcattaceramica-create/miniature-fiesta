@@ -184,9 +184,9 @@
                             <td>{{ "%.2f"|format(stock.product.cost_price) }} ر.س</td>
                             <td>{{ "%.2f"|format(stock.quantity * stock.product.cost_price) }} ر.س</td>
                             <td>
-                                {% if stock.quantity <= stock.product.min_stock_level %}
+                                {% if stock.product.min_stock and stock.quantity <= stock.product.min_stock %}
                                 <span class="badge bg-danger">منخفض</span>
-                                {% elif stock.quantity >= stock.product.max_stock_level %}
+                                {% elif stock.product.max_stock and stock.quantity >= stock.product.max_stock %}
                                 <span class="badge bg-warning">مرتفع</span>
                                 {% else %}
                                 <span class="badge bg-success">جيد</span>

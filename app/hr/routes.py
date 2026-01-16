@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
+from flask_babel import gettext as _
 from app.hr import bp
 from app import db
 from app.models import Employee, Department, Position, Attendance, Leave, LeaveType, Payroll, Branch

@@ -11,9 +11,21 @@ login_manager = LoginManager()
 migrate = Migrate()
 babel = Babel()
 
+def get_locale():
+    """Get user's preferred language - ALWAYS ARABIC"""
+    # Always return Arabic - no language switching
+    return 'ar'
+
 def create_app(config_name='default'):
     """Application factory pattern"""
-    app = Flask(__name__)
+    # Get the absolute path to the app directory
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    template_dir = os.path.join(app_dir, 'templates')
+    static_dir = os.path.join(app_dir, 'static')
+
+    app = Flask(__name__,
+                template_folder=template_dir,
+                static_folder=static_dir)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     
@@ -21,7 +33,15 @@ def create_app(config_name='default'):
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
-    babel.init_app(app, locale_selector=get_locale)
+
+    # Initialize Babel with proper configuration
+    babel.init_app(
+        app,
+        default_locale='ar',
+        default_timezone='Asia/Riyadh',
+        default_translation_directories='translations',
+        locale_selector=get_locale
+    )
     
     # Login manager settings
     login_manager.login_view = 'auth.login'
@@ -73,29 +93,17 @@ def create_app(config_name='default'):
     # from app.license_middleware import init_license_middleware
     # init_license_middleware(app)
 
+    # Add context processor for translations
+    @app.context_processor
+    def inject_locale():
+        from flask_babel import get_locale, gettext
+        return {
+            'get_locale': get_locale,
+            'current_locale': str(get_locale()),
+            '_': gettext
+        }
+
     return app
-
-def get_locale():
-    """Get user's preferred language"""
-    from flask_login import current_user
-
-    # 1. Try to get language from session (highest priority)
-    if 'language' in session:
-        return session['language']
-
-    # 2. Try to get from user settings (if logged in)
-    if current_user and current_user.is_authenticated:
-        if hasattr(current_user, 'language') and current_user.language:
-            session['language'] = current_user.language
-            return current_user.language
-
-    # 3. Try browser's accept language
-    browser_lang = request.accept_languages.best_match(['ar', 'en'])
-    if browser_lang:
-        return browser_lang
-
-    # 4. Default to Arabic
-    return 'ar'
 
 from app import models
 from app import models_license

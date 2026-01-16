@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}مستويات المخزون - نظام إدارة المخزون{% endblock %}
-{% block page_title %}مستويات المخزون{% endblock %}
+{% block title %}{{ _('Stock Levels') }}{% endblock %}
+{% block page_title %}{{ _('Stock Levels') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="page-header mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h2><i class="fas fa-boxes"></i> مستويات المخزون</h2>
-                <p class="text-muted mb-0">عرض وإدارة مستويات المخزون في جميع المستودعات</p>
+                <h2><i class="fas fa-boxes"></i> {{ _('Stock Levels') }}</h2>
+                <p class="text-muted mb-0">{{ _('View and manage stock levels in all warehouses') }}</p>
             </div>
             <div>
                 <a href="{{ url_for('inventory.stock_transfer') }}" class="btn btn-primary">
-                    <i class="fas fa-exchange-alt"></i> نقل مخزون
+                    <i class="fas fa-exchange-alt"></i> {{ _('Stock Transfer') }}
                 </a>
                 <a href="{{ url_for('inventory.warehouses') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-warehouse"></i> المستودعات
+                    <i class="fas fa-warehouse"></i> {{ _('Warehouses') }}
                 </a>
             </div>
         </div>
@@ -27,9 +27,9 @@
         <div class="card-body">
             <form method="GET" action="{{ url_for('inventory.stock') }}" class="row g-3">
                 <div class="col-md-4">
-                    <label for="warehouse" class="form-label">المستودع</label>
+                    <label for="warehouse" class="form-label">{{ _('Warehouse') }}</label>
                     <select name="warehouse" id="warehouse" class="form-select" onchange="this.form.submit()">
-                        <option value="">جميع المستودعات</option>
+                        <option value="">{{ _('All Warehouses') }}</option>
                         {% for warehouse in warehouses %}
                         <option value="{{ warehouse.id }}" {% if warehouse_id == warehouse.id %}selected{% endif %}>
                             {{ warehouse.name }}
@@ -38,19 +38,19 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label for="status" class="form-label">الحالة</label>
+                    <label for="status" class="form-label">{{ _('Status') }}</label>
                     <select name="status" id="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">جميع الحالات</option>
-                        <option value="low">مخزون منخفض</option>
-                        <option value="normal">مخزون طبيعي</option>
-                        <option value="high">مخزون مرتفع</option>
+                        <option value="">{{ _('All Statuses') }}</option>
+                        <option value="low">{{ _('Low Stock') }}</option>
+                        <option value="normal">{{ _('Normal Stock') }}</option>
+                        <option value="high">{{ _('High Stock') }}</option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">&nbsp;</label>
                     <div>
                         <a href="{{ url_for('inventory.stock') }}" class="btn btn-secondary">
-                            <i class="fas fa-redo"></i> إعادة تعيين
+                            <i class="fas fa-redo"></i> {{ _('Reset') }}
                         </a>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
         <div class="col-md-3">
             <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <h6 class="card-title">إجمالي المنتجات</h6>
+                    <h6 class="card-title">{{ _('Total Products') }}</h6>
                     <h3 class="mb-0">{{ stocks.total }}</h3>
                 </div>
             </div>
@@ -71,9 +71,15 @@
         <div class="col-md-3">
             <div class="card bg-danger text-white">
                 <div class="card-body">
-                    <h6 class="card-title">مخزون منخفض</h6>
+                    <h6 class="card-title">{{ _('Low Stock') }}</h6>
                     <h3 class="mb-0">
-                        {{ stocks.items|selectattr('quantity', 'le', stocks.items|map(attribute='product.min_stock_level')|list)|list|length }}
+                        {% set low_stock_count = namespace(value=0) %}
+                        {% for stock in stocks.items %}
+                            {% if stock.product.min_stock and stock.quantity <= stock.product.min_stock %}
+                                {% set low_stock_count.value = low_stock_count.value + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ low_stock_count.value }}
                     </h3>
                 </div>
             </div>
@@ -81,9 +87,15 @@
         <div class="col-md-3">
             <div class="card bg-success text-white">
                 <div class="card-body">
-                    <h6 class="card-title">مخزون طبيعي</h6>
+                    <h6 class="card-title">{{ _('Normal Stock') }}</h6>
                     <h3 class="mb-0">
-                        {{ stocks.items|length }}
+                        {% set normal_stock_count = namespace(value=0) %}
+                        {% for stock in stocks.items %}
+                            {% if (not stock.product.min_stock or stock.quantity > stock.product.min_stock) and (not stock.product.max_stock or stock.quantity < stock.product.max_stock) %}
+                                {% set normal_stock_count.value = normal_stock_count.value + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ normal_stock_count.value }}
                     </h3>
                 </div>
             </div>
@@ -91,9 +103,15 @@
         <div class="col-md-3">
             <div class="card bg-warning text-white">
                 <div class="card-body">
-                    <h6 class="card-title">مخزون مرتفع</h6>
+                    <h6 class="card-title">{{ _('High Stock') }}</h6>
                     <h3 class="mb-0">
-                        {{ stocks.items|selectattr('quantity', 'ge', stocks.items|map(attribute='product.max_stock_level')|list)|list|length }}
+                        {% set high_stock_count = namespace(value=0) %}
+                        {% for stock in stocks.items %}
+                            {% if stock.product.max_stock and stock.quantity >= stock.product.max_stock %}
+                                {% set high_stock_count.value = high_stock_count.value + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ high_stock_count.value }}
                     </h3>
                 </div>
             </div>
@@ -103,7 +121,7 @@
     <!-- Stock Table -->
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fas fa-list"></i> قائمة المخزون</h5>
+            <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Stock List') }}</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -111,16 +129,16 @@
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
-                            <th>المنتج</th>
-                            <th>الكود</th>
-                            <th>المستودع</th>
-                            <th>الكمية الكلية</th>
-                            <th>محجوز</th>
-                            <th>متاح</th>
-                            <th>الحد الأدنى</th>
-                            <th>الحد الأقصى</th>
-                            <th>الحالة</th>
-                            <th>القيمة</th>
+                            <th>{{ _('Product') }}</th>
+                            <th>{{ _('Code') }}</th>
+                            <th>{{ _('Warehouse') }}</th>
+                            <th>{{ _('Total Quantity') }}</th>
+                            <th>{{ _('Reserved') }}</th>
+                            <th>{{ _('Available') }}</th>
+                            <th>{{ _('Min Level') }}</th>
+                            <th>{{ _('Max Level') }}</th>
+                            <th>{{ _('Status') }}</th>
+                            <th>{{ _('Value') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -142,33 +160,33 @@
                             <td><strong class="text-primary">{{ stock.quantity }}</strong></td>
                             <td>{{ stock.reserved_quantity }}</td>
                             <td>{{ stock.available_quantity }}</td>
-                            <td>{{ stock.product.min_stock_level }}</td>
-                            <td>{{ stock.product.max_stock_level }}</td>
+                            <td>{{ stock.product.min_stock }}</td>
+                            <td>{{ stock.product.max_stock }}</td>
                             <td>
-                                {% if stock.quantity <= stock.product.min_stock_level %}
+                                {% if stock.product.min_stock and stock.quantity <= stock.product.min_stock %}
                                 <span class="badge bg-danger">
-                                    <i class="fas fa-exclamation-triangle"></i> منخفض
+                                    <i class="fas fa-exclamation-triangle"></i> {{ _('Low') }}
                                 </span>
-                                {% elif stock.quantity >= stock.product.max_stock_level %}
+                                {% elif stock.product.max_stock and stock.quantity >= stock.product.max_stock %}
                                 <span class="badge bg-warning">
-                                    <i class="fas fa-exclamation-circle"></i> مرتفع
+                                    <i class="fas fa-exclamation-circle"></i> {{ _('High') }}
                                 </span>
                                 {% else %}
                                 <span class="badge bg-success">
-                                    <i class="fas fa-check-circle"></i> طبيعي
+                                    <i class="fas fa-check-circle"></i> {{ _('Normal') }}
                                 </span>
                                 {% endif %}
                             </td>
                             <td>
-                                <strong>{{ "%.2f"|format(stock.quantity * stock.product.cost_price) }}</strong> ر.س
+                                <strong>{{ "%.2f"|format(stock.quantity * stock.product.cost_price) }}</strong> {{ _('SAR') }}
                             </td>
                         </tr>
                         {% else %}
                         <tr>
                             <td colspan="11" class="text-center text-muted py-5">
                                 <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                                <h5>لا يوجد مخزون</h5>
-                                <p>لم يتم العثور على أي مخزون في المستودعات</p>
+                                <h5>{{ _('No stock found') }}</h5>
+                                <p>{{ _('No stock found in warehouses') }}</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -185,7 +203,7 @@
                     {% if stocks.has_prev %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url_for('inventory.stock', page=stocks.prev_num, warehouse=warehouse_id) }}">
-                            <i class="fas fa-chevron-right"></i> السابق
+                            <i class="fas fa-chevron-right"></i> {{ _('Previous') }}
                         </a>
                     </li>
                     {% endif %}
@@ -205,7 +223,7 @@
                     {% if stocks.has_next %}
                     <li class="page-item">
                         <a class="page-link" href="{{ url_for('inventory.stock', page=stocks.next_num, warehouse=warehouse_id) }}">
-                            التالي <i class="fas fa-chevron-left"></i>
+                            {{ _('Next') }} <i class="fas fa-chevron-left"></i>
                         </a>
                     </li>
                     {% endif %}

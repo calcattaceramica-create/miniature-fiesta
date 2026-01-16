@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
+from flask_babel import gettext as _
 from app.sales import bp
 from app import db
 from app.models import Customer, SalesInvoice, SalesInvoiceItem, Product, Warehouse, Stock, StockMovement
@@ -61,7 +62,7 @@ def add_customer():
         db.session.add(customer)
         db.session.commit()
         
-        flash('تم إضافة العميل بنجاح', 'success')
+        flash(_('Customer added successfully'), 'success')
         return redirect(url_for('sales.customers'))
     
     return render_template('sales/add_customer.html')
@@ -168,7 +169,7 @@ def add_invoice():
         
         db.session.commit()
         
-        flash('تم إضافة الفاتورة بنجاح', 'success')
+        flash(_('Invoice added successfully'), 'success')
         return redirect(url_for('sales.invoices'))
     
     customers = Customer.query.filter_by(is_active=True).all()
@@ -199,7 +200,7 @@ def confirm_invoice(id):
     invoice = SalesInvoice.query.get_or_404(id)
 
     if invoice.status != 'draft':
-        flash('لا يمكن تأكيد هذه الفاتورة', 'error')
+        flash(_('Cannot confirm this invoice'), 'error')
         return redirect(url_for('sales.invoice_details', id=id))
 
     try:
@@ -215,13 +216,13 @@ def confirm_invoice(id):
             ).first()
 
             if not stock:
-                flash(f'المنتج {item.product.name} غير موجود في المستودع', 'error')
+                flash(_('Product %(name)s not found in warehouse', name=item.product.name), 'error')
                 db.session.rollback()
                 return redirect(url_for('sales.invoice_details', id=id))
 
             # Check if enough quantity available
             if stock.quantity < item.quantity:
-                flash(f'الكمية المتاحة من {item.product.name} غير كافية. المتاح: {stock.quantity}', 'error')
+                flash(_('Insufficient quantity of %(name)s available. Available: %(qty)s', name=item.product.name, qty=stock.quantity), 'error')
                 db.session.rollback()
                 return redirect(url_for('sales.invoice_details', id=id))
 
@@ -248,17 +249,17 @@ def confirm_invoice(id):
         try:
             journal_entry = create_sales_invoice_journal_entry(invoice)
             if journal_entry:
-                flash(f'تم إنشاء القيد المحاسبي رقم {journal_entry.entry_number}', 'info')
+                flash(_('Journal entry number %(number)s created', number=journal_entry.entry_number), 'info')
         except Exception as je:
             # Log the error but don't fail the invoice confirmation
-            flash(f'تحذير: لم يتم إنشاء القيد المحاسبي: {str(je)}', 'warning')
+            flash(_('Warning: Journal entry was not created: %(error)s', error=str(je)), 'warning')
 
         db.session.commit()
-        flash('تم تأكيد الفاتورة بنجاح', 'success')
+        flash(_('Invoice confirmed successfully'), 'success')
 
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ أثناء تأكيد الفاتورة: {str(e)}', 'error')
+        flash(_('An error occurred while confirming the invoice: %(error)s', error=str(e)), 'error')
 
     return redirect(url_for('sales.invoice_details', id=id))
 
@@ -269,16 +270,16 @@ def delete_invoice(id):
     invoice = SalesInvoice.query.get_or_404(id)
 
     if invoice.status != 'draft':
-        flash('لا يمكن حذف فاتورة مؤكدة', 'error')
+        flash(_('Cannot delete a confirmed invoice'), 'error')
         return redirect(url_for('sales.invoice_details', id=id))
 
     try:
         db.session.delete(invoice)
         db.session.commit()
-        flash('تم حذف الفاتورة بنجاح', 'success')
+        flash(_('Invoice deleted successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ أثناء حذف الفاتورة: {str(e)}', 'error')
+        flash(_('An error occurred while deleting the invoice: %(error)s', error=str(e)), 'error')
 
     return redirect(url_for('sales.invoices'))
 
@@ -289,7 +290,7 @@ def cancel_invoice(id):
     invoice = SalesInvoice.query.get_or_404(id)
 
     if invoice.status not in ['confirmed', 'draft']:
-        flash('لا يمكن إلغاء هذه الفاتورة', 'error')
+        flash(_('Cannot cancel this invoice'), 'error')
         return redirect(url_for('sales.invoice_details', id=id))
 
     try:
@@ -325,11 +326,11 @@ def cancel_invoice(id):
         invoice.payment_status = 'unpaid'
 
         db.session.commit()
-        flash('تم إلغاء الفاتورة بنجاح', 'success')
+        flash(_('Invoice cancelled successfully'), 'success')
 
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ أثناء إلغاء الفاتورة: {str(e)}', 'error')
+        flash(_('An error occurred while cancelling the invoice: %(error)s', error=str(e)), 'error')
 
     return redirect(url_for('sales.invoice_details', id=id))
 
@@ -446,7 +447,7 @@ def add_quotation():
 
         db.session.commit()
 
-        flash('تم إضافة عرض السعر بنجاح', 'success')
+        flash(_('Quotation added successfully'), 'success')
         return redirect(url_for('sales.quotations'))
 
     customers = Customer.query.filter_by(is_active=True).all()
@@ -483,7 +484,7 @@ def convert_quotation_to_invoice(id):
     quotation = Quotation.query.get_or_404(id)
 
     if quotation.status not in ['draft', 'sent', 'accepted']:
-        flash('لا يمكن تحويل هذا العرض إلى فاتورة', 'error')
+        flash(_('Cannot convert this quotation to invoice'), 'error')
         return redirect(url_for('sales.quotation_details', id=id))
 
     try:
@@ -539,12 +540,12 @@ def convert_quotation_to_invoice(id):
         quotation.status = 'accepted'
 
         db.session.commit()
-        flash('تم تحويل عرض السعر إلى فاتورة بنجاح', 'success')
+        flash(_('Quotation converted to invoice successfully'), 'success')
         return redirect(url_for('sales.invoice_details', id=invoice.id))
 
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ أثناء تحويل عرض السعر: {str(e)}', 'error')
+        flash(_('An error occurred while converting quotation: %(error)s', error=str(e)), 'error')
         return redirect(url_for('sales.quotation_details', id=id))
 
 @bp.route('/quotations/<int:id>/update_status', methods=['POST'])
@@ -557,9 +558,9 @@ def update_quotation_status(id):
     if new_status in ['draft', 'sent', 'accepted', 'rejected', 'expired']:
         quotation.status = new_status
         db.session.commit()
-        flash('تم تحديث حالة عرض السعر بنجاح', 'success')
+        flash(_('Quotation status updated successfully'), 'success')
     else:
-        flash('حالة غير صالحة', 'error')
+        flash(_('Invalid status'), 'error')
 
     return redirect(url_for('sales.quotation_details', id=id))
 
@@ -570,15 +571,15 @@ def delete_quotation(id):
     quotation = Quotation.query.get_or_404(id)
 
     if quotation.status == 'accepted':
-        flash('لا يمكن حذف عرض سعر مقبول', 'error')
+        flash(_('Cannot delete an accepted quotation'), 'error')
         return redirect(url_for('sales.quotation_details', id=id))
 
     try:
         db.session.delete(quotation)
         db.session.commit()
-        flash('تم حذف عرض السعر بنجاح', 'success')
+        flash(_('Quotation deleted successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ أثناء حذف عرض السعر: {str(e)}', 'error')
+        flash(_('An error occurred while deleting quotation: %(error)s', error=str(e)), 'error')
 
     return redirect(url_for('sales.quotations'))

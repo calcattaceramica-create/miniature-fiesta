@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
+from flask_babel import gettext as _
 from app.purchases import bp
 from app import db
 from app.models import Supplier, PurchaseInvoice, PurchaseInvoiceItem, Product, Warehouse, Stock, StockMovement
@@ -59,7 +60,7 @@ def add_supplier():
         db.session.add(supplier)
         db.session.commit()
         
-        flash('تم إضافة المورد بنجاح', 'success')
+        flash(_('Supplier added successfully'), 'success')
         return redirect(url_for('purchases.suppliers'))
     
     return render_template('purchases/add_supplier.html')
@@ -121,7 +122,7 @@ def add_invoice():
         db.session.add(invoice)
         db.session.commit()
         
-        flash('تم إضافة فاتورة الشراء بنجاح', 'success')
+        flash(_('Purchase invoice added successfully'), 'success')
         return redirect(url_for('purchases.invoices'))
     
     suppliers = Supplier.query.filter_by(is_active=True).all()
@@ -147,7 +148,7 @@ def confirm_invoice(id):
     invoice = PurchaseInvoice.query.get_or_404(id)
 
     if invoice.status != 'draft':
-        flash('لا يمكن تأكيد هذه الفاتورة', 'error')
+        flash(_('Cannot confirm this invoice'), 'error')
         return redirect(url_for('purchases.invoice_details', id=id))
 
     if request.method == 'POST':
@@ -195,18 +196,18 @@ def confirm_invoice(id):
             try:
                 journal_entry = create_purchase_invoice_journal_entry(invoice)
                 if journal_entry:
-                    flash(f'تم إنشاء القيد المحاسبي رقم {journal_entry.entry_number}', 'info')
+                    flash(_('Journal entry number %(number)s created', number=journal_entry.entry_number), 'info')
             except Exception as je:
                 # Log the error but don't fail the invoice confirmation
-                flash(f'تحذير: لم يتم إنشاء القيد المحاسبي: {str(je)}', 'warning')
+                flash(_('Warning: Journal entry was not created: %(error)s', error=str(je)), 'warning')
 
             db.session.commit()
-            flash('تم تأكيد فاتورة الشراء بنجاح', 'success')
+            flash(_('Purchase invoice confirmed successfully'), 'success')
             return redirect(url_for('purchases.invoice_details', id=id))
 
         except Exception as e:
             db.session.rollback()
-            flash(f'حدث خطأ: {str(e)}', 'error')
+            flash(_('An error occurred: %(error)s', error=str(e)), 'error')
             return redirect(url_for('purchases.invoice_details', id=id))
 
     return render_template('purchases/confirm_invoice.html', invoice=invoice)
@@ -218,7 +219,7 @@ def cancel_invoice(id):
     invoice = PurchaseInvoice.query.get_or_404(id)
 
     if invoice.status != 'confirmed':
-        flash('لا يمكن إلغاء هذه الفاتورة', 'error')
+        flash(_('Cannot cancel this invoice'), 'error')
         return redirect(url_for('purchases.invoice_details', id=id))
 
     if request.method == 'POST':
@@ -253,12 +254,12 @@ def cancel_invoice(id):
             invoice.supplier.current_balance -= invoice.total_amount
 
             db.session.commit()
-            flash('تم إلغاء فاتورة الشراء بنجاح', 'success')
+            flash(_('Purchase invoice cancelled successfully'), 'success')
             return redirect(url_for('purchases.invoice_details', id=id))
 
         except Exception as e:
             db.session.rollback()
-            flash(f'حدث خطأ: {str(e)}', 'error')
+            flash(_('An error occurred: %(error)s', error=str(e)), 'error')
             return redirect(url_for('purchases.invoice_details', id=id))
 
     return render_template('purchases/cancel_invoice.html', invoice=invoice)
@@ -270,18 +271,18 @@ def delete_invoice(id):
     invoice = PurchaseInvoice.query.get_or_404(id)
 
     if invoice.status != 'draft':
-        flash('لا يمكن حذف فاتورة مؤكدة. يمكنك إلغاؤها فقط.', 'error')
+        flash(_('Cannot delete a confirmed invoice. You can only cancel it.'), 'error')
         return redirect(url_for('purchases.invoice_details', id=id))
 
     if request.method == 'POST':
         try:
             db.session.delete(invoice)
             db.session.commit()
-            flash('تم حذف فاتورة الشراء بنجاح', 'success')
+            flash(_('Purchase invoice deleted successfully'), 'success')
             return redirect(url_for('purchases.invoices'))
         except Exception as e:
             db.session.rollback()
-            flash(f'حدث خطأ: {str(e)}', 'error')
+            flash(_('An error occurred: %(error)s', error=str(e)), 'error')
             return redirect(url_for('purchases.invoice_details', id=id))
 
     return render_template('purchases/delete_invoice.html', invoice=invoice)

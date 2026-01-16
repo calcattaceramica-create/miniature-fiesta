@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}التصنيفات - Categories{% endblock %}
+{% block title %}{{ _('Categories') }}{% endblock %}
+{% block page_title %}{{ _('Categories') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-md-6">
-            <h2><i class="fas fa-tags"></i> التصنيفات</h2>
+            <h2><i class="fas fa-tags"></i> {{ _('Categories') }}</h2>
         </div>
         <div class="col-md-6 text-end">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                <i class="fas fa-plus"></i> إضافة تصنيف جديد
+                <i class="fas fa-plus"></i> {{ _('Add New Category') }}
             </button>
         </div>
     </div>
@@ -23,11 +24,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>الاسم</th>
-                            <th>الوصف</th>
-                            <th>عدد المنتجات</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
+                            <th>{{ _('Name') }}</th>
+                            <th>{{ _('Description') }}</th>
+                            <th>{{ _('Product Count') }}</th>
+                            <th>{{ _('Status') }}</th>
+                            <th>{{ _('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,22 +39,22 @@
                             <td>{{ category.description or '-' }}</td>
                             <td>
                                 <span class="badge bg-info">
-                                    {{ category.products|length }} منتج
+                                    {{ category.products|length }} {{ _('Product') if category.products|length == 1 else _('Products') }}
                                 </span>
                             </td>
                             <td>
                                 {% if category.is_active %}
-                                <span class="badge bg-success">نشط</span>
+                                <span class="badge bg-success">{{ _('Active') }}</span>
                                 {% else %}
-                                <span class="badge bg-secondary">غير نشط</span>
+                                <span class="badge bg-secondary">{{ _('Inactive') }}</span>
                                 {% endif %}
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-warning" 
+                                <button class="btn btn-sm btn-warning"
                                         onclick="editCategory({{ category.id }}, '{{ category.name }}', '{{ category.description or '' }}', {{ category.is_active|lower }})">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" 
+                                <button class="btn btn-sm btn-danger"
                                         onclick="deleteCategory({{ category.id }}, '{{ category.name }}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -61,7 +62,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="6" class="text-center">لا توجد تصنيفات</td>
+                            <td colspan="6" class="text-center">{{ _('No categories found') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -76,27 +77,27 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">إضافة تصنيف جديد</h5>
+                <h5 class="modal-title">{{ _('Add New Category') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('inventory.add_category') }}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">الاسم *</label>
+                        <label class="form-label">{{ _('Name') }} *</label>
                         <input type="text" class="form-control" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">الوصف</label>
+                        <label class="form-label">{{ _('Description') }}</label>
                         <textarea class="form-control" name="description" rows="3"></textarea>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="is_active" checked>
-                        <label class="form-check-label">نشط</label>
+                        <label class="form-check-label">{{ _('Active') }}</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">حفظ</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ _('Save') }}</button>
                 </div>
             </form>
         </div>
@@ -108,27 +109,27 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">تعديل التصنيف</h5>
+                <h5 class="modal-title">{{ _('Edit Category') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="editCategoryForm">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">الاسم *</label>
+                        <label class="form-label">{{ _('Name') }} *</label>
                         <input type="text" class="form-control" name="name" id="edit_name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">الوصف</label>
+                        <label class="form-label">{{ _('Description') }}</label>
                         <textarea class="form-control" name="description" id="edit_description" rows="3"></textarea>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="is_active" id="edit_is_active">
-                        <label class="form-check-label">نشط</label>
+                        <label class="form-check-label">{{ _('Active') }}</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ _('Save Changes') }}</button>
                 </div>
             </form>
         </div>
@@ -145,7 +146,7 @@ function editCategory(id, name, description, isActive) {
 }
 
 function deleteCategory(id, name) {
-    if (confirm(`هل أنت متأكد من حذف التصنيف "${name}"؟`)) {
+    if (confirm(`{{ _('Are you sure you want to delete the category') }} "${name}"?`)) {
         fetch(`/inventory/delete_category/${id}`, {
             method: 'POST'
         }).then(response => {

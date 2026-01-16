@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
+from flask_babel import gettext as _
 from app.inventory import bp
 from app import db
 from app.models import Product, Category, Unit, Warehouse, Stock, StockMovement, Branch, User
@@ -55,7 +56,7 @@ def add_product():
             if code:
                 existing_code = Product.query.filter_by(code=code).first()
                 if existing_code:
-                    flash(f'كود المنتج {code} موجود مسبقاً للمنتج: {existing_code.name}', 'error')
+                    flash(_('Product code %(code)s already exists for product: %(name)s', code=code, name=existing_code.name), 'error')
                     categories = Category.query.filter_by(is_active=True).all()
                     units = Unit.query.filter_by(is_active=True).all()
                     warehouses = Warehouse.query.filter_by(is_active=True).all()
@@ -68,7 +69,7 @@ def add_product():
             if barcode:
                 existing_barcode = Product.query.filter_by(barcode=barcode).first()
                 if existing_barcode:
-                    flash(f'الباركود {barcode} موجود مسبقاً للمنتج: {existing_barcode.name}', 'error')
+                    flash(_('Barcode %(barcode)s already exists for product: %(name)s', barcode=barcode, name=existing_barcode.name), 'error')
                     categories = Category.query.filter_by(is_active=True).all()
                     units = Unit.query.filter_by(is_active=True).all()
                     warehouses = Warehouse.query.filter_by(is_active=True).all()
@@ -81,7 +82,7 @@ def add_product():
             if sku:
                 existing_sku = Product.query.filter_by(sku=sku).first()
                 if existing_sku:
-                    flash(f'SKU {sku} موجود مسبقاً للمنتج: {existing_sku.name}', 'error')
+                    flash(_('SKU %(sku)s already exists for product: %(name)s', sku=sku, name=existing_sku.name), 'error')
                     categories = Category.query.filter_by(is_active=True).all()
                     units = Unit.query.filter_by(is_active=True).all()
                     warehouses = Warehouse.query.filter_by(is_active=True).all()
@@ -148,15 +149,15 @@ def add_product():
             db.session.commit()
 
             if stock_added:
-                flash('تم إضافة المنتج والمخزون بنجاح', 'success')
+                flash(_('Product and stock added successfully'), 'success')
             else:
-                flash('تم إضافة المنتج بنجاح', 'success')
+                flash(_('Product added successfully'), 'success')
 
             return redirect(url_for('inventory.products'))
 
         except Exception as e:
             db.session.rollback()
-            flash(f'حدث خطأ: {str(e)}', 'error')
+            flash(_('An error occurred: %(error)s', error=str(e)), 'error')
 
     categories = Category.query.filter_by(is_active=True).all()
     units = Unit.query.filter_by(is_active=True).all()
@@ -184,7 +185,7 @@ def edit_product(id):
             if code and code != product.code:
                 existing_code = Product.query.filter_by(code=code).first()
                 if existing_code and existing_code.id != product.id:
-                    flash(f'كود المنتج {code} موجود مسبقاً للمنتج: {existing_code.name}', 'error')
+                    flash(_('Product code %(code)s already exists for product: %(name)s', code=code, name=existing_code.name), 'error')
                     categories = Category.query.filter_by(is_active=True).all()
                     units = Unit.query.filter_by(is_active=True).all()
                     return render_template('inventory/edit_product.html',
@@ -196,7 +197,7 @@ def edit_product(id):
             if barcode and barcode != product.barcode:
                 existing_barcode = Product.query.filter_by(barcode=barcode).first()
                 if existing_barcode and existing_barcode.id != product.id:
-                    flash(f'الباركود {barcode} موجود مسبقاً للمنتج: {existing_barcode.name}', 'error')
+                    flash(_('Barcode %(barcode)s already exists for product: %(name)s', barcode=barcode, name=existing_barcode.name), 'error')
                     categories = Category.query.filter_by(is_active=True).all()
                     units = Unit.query.filter_by(is_active=True).all()
                     return render_template('inventory/edit_product.html',
@@ -208,7 +209,7 @@ def edit_product(id):
             if sku and sku != product.sku:
                 existing_sku = Product.query.filter_by(sku=sku).first()
                 if existing_sku and existing_sku.id != product.id:
-                    flash(f'SKU {sku} موجود مسبقاً للمنتج: {existing_sku.name}', 'error')
+                    flash(_('SKU %(sku)s already exists for product: %(name)s', sku=sku, name=existing_sku.name), 'error')
                     categories = Category.query.filter_by(is_active=True).all()
                     units = Unit.query.filter_by(is_active=True).all()
                     return render_template('inventory/edit_product.html',
@@ -239,12 +240,12 @@ def edit_product(id):
 
             db.session.commit()
 
-            flash('تم تحديث المنتج بنجاح', 'success')
+            flash(_('Product updated successfully'), 'success')
             return redirect(url_for('inventory.products'))
 
         except Exception as e:
             db.session.rollback()
-            flash(f'حدث خطأ: {str(e)}', 'error')
+            flash(_('An error occurred: %(error)s', error=str(e)), 'error')
     
     categories = Category.query.filter_by(is_active=True).all()
     units = Unit.query.filter_by(is_active=True).all()
@@ -308,7 +309,7 @@ def delete_product(id):
         # If there are relations and not forcing delete
         if relations and not force_delete:
             relations_text = '، '.join(relations)
-            flash(f'لا يمكن حذف المنتج "{product.name}" لأنه مرتبط بـ: {relations_text}. سيتم تعطيل المنتج بدلاً من حذفه.', 'warning')
+            flash(_('Cannot delete product "%(name)s" because it is linked to: %(relations)s. The product will be deactivated instead.', name=product.name, relations=relations_text), 'warning')
             product.is_active = False
             db.session.commit()
             return redirect(url_for('inventory.products'))
@@ -324,20 +325,20 @@ def delete_product(id):
             POSOrderItem.query.filter_by(product_id=id).delete()
             Stock.query.filter_by(product_id=id).delete()
             StockMovement.query.filter_by(product_id=id).delete()
-            flash(f'تم حذف المنتج "{product.name}" وجميع السجلات المرتبطة به نهائياً', 'success')
+            flash(_('Product "%(name)s" and all related records have been permanently deleted', name=product.name), 'success')
 
         # Delete the product
         db.session.delete(product)
         db.session.commit()
 
         if not force_delete:
-            flash(f'تم حذف المنتج "{product.name}" بنجاح', 'success')
+            flash(_('Product "%(name)s" deleted successfully', name=product.name), 'success')
 
         return redirect(url_for('inventory.products'))
 
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ أثناء حذف المنتج: {str(e)}', 'error')
+        flash(_('An error occurred while deleting the product: %(error)s', error=str(e)), 'error')
         return redirect(url_for('inventory.products'))
 
 @bp.route('/categories')
@@ -348,7 +349,7 @@ def categories():
         categories = Category.query.order_by(Category.name).all()
         return render_template('inventory/categories.html', categories=categories)
     except Exception as e:
-        flash(f'خطأ في تحميل الصفحة: {str(e)}', 'error')
+        flash(_('Error loading page: %(error)s', error=str(e)), 'error')
         return redirect(url_for('inventory.products'))
 
 @bp.route('/add_category', methods=['POST'])
@@ -363,10 +364,10 @@ def add_category():
         )
         db.session.add(category)
         db.session.commit()
-        flash('تم إضافة التصنيف بنجاح', 'success')
+        flash(_('Category added successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ: {str(e)}', 'error')
+        flash(_('An error occurred: %(error)s', error=str(e)), 'error')
     return redirect(url_for('inventory.categories'))
 
 @bp.route('/edit_category/<int:id>', methods=['POST'])
@@ -379,10 +380,10 @@ def edit_category(id):
         category.description = request.form.get('description')
         category.is_active = bool(request.form.get('is_active'))
         db.session.commit()
-        flash('تم تحديث التصنيف بنجاح', 'success')
+        flash(_('Category updated successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ: {str(e)}', 'error')
+        flash(_('An error occurred: %(error)s', error=str(e)), 'error')
     return redirect(url_for('inventory.categories'))
 
 @bp.route('/delete_category/<int:id>', methods=['POST'])
@@ -393,14 +394,14 @@ def delete_category(id):
         category = Category.query.get_or_404(id)
         # Check if category has products
         if category.products:
-            flash('لا يمكن حذف التصنيف لأنه يحتوي على منتجات', 'error')
+            flash(_('Cannot delete category because it contains products'), 'error')
         else:
             db.session.delete(category)
             db.session.commit()
-            flash('تم حذف التصنيف بنجاح', 'success')
+            flash(_('Category deleted successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ: {str(e)}', 'error')
+        flash(_('An error occurred: %(error)s', error=str(e)), 'error')
     return redirect(url_for('inventory.categories'))
 
 @bp.route('/stock')
@@ -456,10 +457,10 @@ def add_warehouse():
         db.session.add(warehouse)
         db.session.commit()
 
-        flash('تم إضافة المستودع بنجاح', 'success')
+        flash(_('Warehouse added successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ: {str(e)}', 'danger')
+        flash(_('An error occurred: %(error)s', error=str(e)), 'danger')
 
     return redirect(url_for('inventory.warehouses'))
 
@@ -479,10 +480,10 @@ def edit_warehouse(id):
         warehouse.is_active = bool(request.form.get('is_active'))
 
         db.session.commit()
-        flash('تم تحديث المستودع بنجاح', 'success')
+        flash(_('Warehouse updated successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ: {str(e)}', 'danger')
+        flash(_('An error occurred: %(error)s', error=str(e)), 'danger')
 
     return redirect(url_for('inventory.warehouses'))
 
@@ -494,16 +495,16 @@ def delete_warehouse(id):
 
     # Check if warehouse has stock
     if warehouse.stocks:
-        flash('لا يمكن حذف المستودع لأنه يحتوي على مخزون', 'danger')
+        flash(_('Cannot delete warehouse because it contains stock'), 'danger')
         return redirect(url_for('inventory.warehouses'))
 
     try:
         db.session.delete(warehouse)
         db.session.commit()
-        flash('تم حذف المستودع بنجاح', 'success')
+        flash(_('Warehouse deleted successfully'), 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ: {str(e)}', 'danger')
+        flash(_('An error occurred: %(error)s', error=str(e)), 'danger')
 
     return redirect(url_for('inventory.warehouses'))
 
@@ -519,7 +520,7 @@ def warehouse_details(id):
     # Calculate statistics
     total_products = len(stocks)
     total_value = sum(stock.quantity * stock.product.cost_price for stock in stocks)
-    low_stock_count = sum(1 for stock in stocks if stock.quantity <= stock.product.min_stock_level)
+    low_stock_count = sum(1 for stock in stocks if stock.product.min_stock and stock.quantity <= stock.product.min_stock)
 
     return render_template('inventory/warehouse_details.html',
                          warehouse=warehouse,
@@ -542,7 +543,7 @@ def stock_transfer():
 
             # Validate
             if from_warehouse_id == to_warehouse_id:
-                flash('لا يمكن النقل إلى نفس المستودع', 'danger')
+                flash(_('Cannot transfer to the same warehouse'), 'danger')
                 return redirect(url_for('inventory.stock_transfer'))
 
             # Get source stock
@@ -552,7 +553,7 @@ def stock_transfer():
             ).first()
 
             if not from_stock or from_stock.available_quantity < quantity:
-                flash('الكمية المتاحة غير كافية', 'danger')
+                flash(_('Insufficient quantity available'), 'danger')
                 return redirect(url_for('inventory.stock_transfer'))
 
             # Get or create destination stock
@@ -602,12 +603,12 @@ def stock_transfer():
             db.session.add(in_movement)
             db.session.commit()
 
-            flash('تم نقل المخزون بنجاح', 'success')
+            flash(_('Stock transferred successfully'), 'success')
             return redirect(url_for('inventory.stock_transfer'))
 
         except Exception as e:
             db.session.rollback()
-            flash(f'حدث خطأ: {str(e)}', 'danger')
+            flash(_('An error occurred: %(error)s', error=str(e)), 'danger')
 
     products = Product.query.filter_by(is_active=True, track_inventory=True).all()
     warehouses = Warehouse.query.filter_by(is_active=True).all()

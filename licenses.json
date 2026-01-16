@@ -1,26 +1,42 @@
 {
-  "ACTIVE-LICENSE-KEY-001": {
-    "company": "شركة اختبار نشطة",
-    "expiry": "2026-04-22",
+  "B542-7086-289B-5AAA-9082-FBA2-87D1-3D74": {
+    "company": "ahmed",
+    "expiry": "2026-02-15",
+    "created": "2026-01-16 02:23:27",
+    "duration_days": 30,
+    "machine_id": "D41D8CD98F00B204",
+    "license_type": "Standard",
+    "max_users": 3,
+    "features": [
+      "all"
+    ],
     "status": "active",
-    "created": "2026-01-12 22:45:21"
+    "activation_count": 0,
+    "last_check": null,
+    "username": "ahmed",
+    "password": "141414",
+    "contact_email": "ahmed@gmail.com",
+    "contact_phone": "99000",
+    "notes": ""
   },
-  "SUSPENDED-LICENSE-KEY-002": {
-    "company": "شركة اختبار معلقة",
-    "expiry": "2026-03-03",
-    "status": "suspended",
-    "created": "2026-01-12 22:45:21"
-  },
-  "EXPIRED-LICENSE-KEY-003": {
-    "company": "شركة اختبار منتهية",
-    "expiry": "2026-01-02",
+  "99C2-237A-FD1A-59BF-366F-8BD8-A291-EBA8": {
+    "company": "ALI",
+    "expiry": "2026-01-18",
+    "created": "2026-01-16 04:01:22",
+    "duration_days": 2,
+    "machine_id": "7e655b3c-8bdd-414e-81ce-5037a8906da5",
+    "license_type": "Standard",
+    "max_users": 2,
+    "features": [
+      "all"
+    ],
     "status": "active",
-    "created": "2026-01-12 22:45:21"
-  },
-  "EXPIRING-LICENSE-KEY-004": {
-    "company": "شركة اختبار قريبة الانتهاء",
-    "expiry": "2026-01-17",
-    "status": "active",
-    "created": "2026-01-12 22:45:21"
+    "activation_count": 0,
+    "last_check": null,
+    "username": "ALI",
+    "password": "141414",
+    "contact_email": "calcatta.cetamica@gmail.com",
+    "contact_phone": "",
+    "notes": ""
   }
 }

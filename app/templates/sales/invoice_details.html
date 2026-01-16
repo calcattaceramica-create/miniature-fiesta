@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}تفاصيل الفاتورة {{ invoice.invoice_number }} - نظام إدارة المخزون{% endblock %}
-{% block page_title %}تفاصيل الفاتورة{% endblock %}
+{% block title %}{{ _('Invoice Details') }} {{ invoice.invoice_number }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Invoice Details') }}{% endblock %}
 
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
     <div>
-        <h3><i class="fas fa-file-invoice"></i> فاتورة رقم: {{ invoice.invoice_number }}</h3>
-        <p class="text-muted mb-0">تفاصيل فاتورة المبيعات</p>
+        <h3><i class="fas fa-file-invoice"></i> {{ _('Invoice Number') }}: {{ invoice.invoice_number }}</h3>
+        <p class="text-muted mb-0">{{ _('Sales invoice details') }}</p>
     </div>
     <div>
         <a href="{{ url_for('sales.invoices') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-right"></i> العودة للقائمة
+            <i class="fas fa-arrow-right"></i> {{ _('Back to List') }}
         </a>
         <button class="btn btn-primary" onclick="window.print()">
-            <i class="fas fa-print"></i> طباعة
+            <i class="fas fa-print"></i> {{ _('Print') }}
         </button>
     </div>
 </div>
@@ -24,25 +24,25 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات الفاتورة</h5>
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ _('Invoice Information') }}</h5>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>رقم الفاتورة:</strong> {{ invoice.invoice_number }}</p>
-                        <p><strong>تاريخ الفاتورة:</strong> {{ invoice.invoice_date.strftime('%Y-%m-%d') }}</p>
-                        <p><strong>العميل:</strong> {{ invoice.customer.name }}</p>
-                        <p><strong>رقم العميل:</strong> {{ invoice.customer.code }}</p>
+                        <p><strong>{{ _('Invoice Number') }}:</strong> {{ invoice.invoice_number }}</p>
+                        <p><strong>{{ _('Invoice Date') }}:</strong> {{ invoice.invoice_date.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>{{ _('Customer') }}:</strong> {{ invoice.customer.name }}</p>
+                        <p><strong>{{ _('Customer Code') }}:</strong> {{ invoice.customer.code }}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>المستودع:</strong> {{ invoice.warehouse.name if invoice.warehouse else '-' }}</p>
-                        <p><strong>المستخدم:</strong> {{ invoice.user.username if invoice.user else '-' }}</p>
-                        <p><strong>تاريخ الإنشاء:</strong> {{ invoice.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>{{ _('Warehouse') }}:</strong> {{ invoice.warehouse.name if invoice.warehouse else '-' }}</p>
+                        <p><strong>{{ _('User') }}:</strong> {{ invoice.user.username if invoice.user else '-' }}</p>
+                        <p><strong>{{ _('Created At') }}:</strong> {{ invoice.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
                     </div>
                 </div>
                 {% if invoice.notes %}
                 <hr>
-                <p><strong>ملاحظات:</strong></p>
+                <p><strong>{{ _('Notes') }}:</strong></p>
                 <p>{{ invoice.notes }}</p>
                 {% endif %}
             </div>
@@ -52,40 +52,40 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> الحالة</h5>
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> {{ _('Status') }}</h5>
             </div>
             <div class="card-body">
-                <p><strong>حالة الفاتورة:</strong></p>
+                <p><strong>{{ _('Invoice Status') }}:</strong></p>
                 <p>
                     {% if invoice.status == 'draft' %}
-                        <span class="badge bg-secondary fs-6">مسودة</span>
+                        <span class="badge bg-secondary fs-6">{{ _('Draft') }}</span>
                     {% elif invoice.status == 'confirmed' %}
-                        <span class="badge bg-primary fs-6">مؤكدة</span>
+                        <span class="badge bg-primary fs-6">{{ _('Confirmed') }}</span>
                     {% elif invoice.status == 'paid' %}
-                        <span class="badge bg-success fs-6">مدفوعة</span>
+                        <span class="badge bg-success fs-6">{{ _('Paid') }}</span>
                     {% elif invoice.status == 'cancelled' %}
-                        <span class="badge bg-danger fs-6">ملغاة</span>
+                        <span class="badge bg-danger fs-6">{{ _('Cancelled') }}</span>
                     {% endif %}
                 </p>
-                
-                <p><strong>حالة الدفع:</strong></p>
+
+                <p><strong>{{ _('Payment Status') }}:</strong></p>
                 <p>
                     {% if invoice.payment_status == 'unpaid' %}
-                        <span class="badge bg-danger fs-6">غير مدفوعة</span>
+                        <span class="badge bg-danger fs-6">{{ _('Unpaid') }}</span>
                     {% elif invoice.payment_status == 'partial' %}
-                        <span class="badge bg-warning fs-6">مدفوعة جزئياً</span>
+                        <span class="badge bg-warning fs-6">{{ _('Partially Paid') }}</span>
                     {% elif invoice.payment_status == 'paid' %}
-                        <span class="badge bg-success fs-6">مدفوعة</span>
+                        <span class="badge bg-success fs-6">{{ _('Paid') }}</span>
                     {% endif %}
                 </p>
-                
+
                 {% if invoice.status == 'draft' %}
                 <hr>
                 <a href="{{ url_for('sales.confirm_invoice', id=invoice.id) }}" class="btn btn-success w-100 mb-2">
-                    <i class="fas fa-check"></i> تأكيد الفاتورة
+                    <i class="fas fa-check"></i> {{ _('Confirm Invoice') }}
                 </a>
-                <a href="{{ url_for('sales.delete_invoice', id=invoice.id) }}" class="btn btn-danger w-100" onclick="return confirm('هل أنت متأكد من حذف هذه الفاتورة؟')">
-                    <i class="fas fa-trash"></i> حذف الفاتورة
+                <a href="{{ url_for('sales.delete_invoice', id=invoice.id) }}" class="btn btn-danger w-100" onclick="return confirm('{{ _('Are you sure you want to delete this invoice?') }}')">
+                    <i class="fas fa-trash"></i> {{ _('Delete Invoice') }}
                 </a>
                 {% endif %}
             </div>
@@ -96,7 +96,7 @@
 <!-- Invoice Items -->
 <div class="card mt-3">
     <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-list"></i> المنتجات</h5>
+        <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Products') }}</h5>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -104,13 +104,13 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>المنتج</th>
-                        <th>الوصف</th>
-                        <th>الكمية</th>
-                        <th>سعر الوحدة</th>
-                        <th>الخصم</th>
-                        <th>الضريبة</th>
-                        <th>الإجمالي</th>
+                        <th>{{ _('Product') }}</th>
+                        <th>{{ _('Description') }}</th>
+                        <th>{{ _('Quantity') }}</th>
+                        <th>{{ _('Unit Price') }}</th>
+                        <th>{{ _('Discount') }}</th>
+                        <th>{{ _('Tax') }}</th>
+                        <th>{{ _('Total') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,17 +120,17 @@
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.description or '-' }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ "%.2f"|format(item.unit_price) }} ر.س</td>
+                        <td>{{ "%.2f"|format(item.unit_price) }} {{ _('SAR') }}</td>
                         <td>
                             {% if item.discount_amount > 0 %}
-                                {{ "%.2f"|format(item.discount_amount) }} ر.س
+                                {{ "%.2f"|format(item.discount_amount) }} {{ _('SAR') }}
                                 ({{ "%.1f"|format(item.discount_percentage) }}%)
                             {% else %}
                                 -
                             {% endif %}
                         </td>
-                        <td>{{ "%.2f"|format(item.tax_amount) }} ر.س</td>
-                        <td><strong>{{ "%.2f"|format(item.total) }} ر.س</strong></td>
+                        <td>{{ "%.2f"|format(item.tax_amount) }} {{ _('SAR') }}</td>
+                        <td><strong>{{ "%.2f"|format(item.total) }} {{ _('SAR') }}</strong></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -147,30 +147,30 @@
             <div class="card-body">
                 <table class="table table-sm mb-0">
                     <tr>
-                        <th>الإجمالي قبل الضريبة:</th>
-                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.subtotal) }} ر.س</strong></td>
+                        <th>{{ _('Subtotal Before Tax') }}:</th>
+                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.subtotal) }} {{ _('SAR') }}</strong></td>
                     </tr>
                     {% if invoice.discount_amount > 0 %}
                     <tr>
-                        <th>الخصم:</th>
-                        <td class="text-end"><strong class="text-danger">-{{ "%.2f"|format(invoice.discount_amount) }} ر.س</strong></td>
+                        <th>{{ _('Discount') }}:</th>
+                        <td class="text-end"><strong class="text-danger">-{{ "%.2f"|format(invoice.discount_amount) }} {{ _('SAR') }}</strong></td>
                     </tr>
                     {% endif %}
                     <tr>
-                        <th>الضريبة (15%):</th>
-                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.tax_amount) }} ر.س</strong></td>
+                        <th>{{ _('Tax (15%)') }}:</th>
+                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.tax_amount) }} {{ _('SAR') }}</strong></td>
                     </tr>
                     <tr class="table-primary">
-                        <th>الإجمالي النهائي:</th>
-                        <td class="text-end"><strong class="fs-5">{{ "%.2f"|format(invoice.total_amount) }} ر.س</strong></td>
+                        <th>{{ _('Grand Total') }}:</th>
+                        <td class="text-end"><strong class="fs-5">{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
                     </tr>
                     <tr class="table-success">
-                        <th>المبلغ المدفوع:</th>
-                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.paid_amount) }} ر.س</strong></td>
+                        <th>{{ _('Paid Amount') }}:</th>
+                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.paid_amount) }} {{ _('SAR') }}</strong></td>
                     </tr>
                     <tr class="table-warning">
-                        <th>المبلغ المتبقي:</th>
-                        <td class="text-end"><strong class="fs-5">{{ "%.2f"|format(invoice.remaining_amount) }} ر.س</strong></td>
+                        <th>{{ _('Remaining Amount') }}:</th>
+                        <td class="text-end"><strong class="fs-5">{{ "%.2f"|format(invoice.remaining_amount) }} {{ _('SAR') }}</strong></td>
                     </tr>
                 </table>
             </div>

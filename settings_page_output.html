@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+
+
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - نظام إدارة المخزون</title>
+
+    <!-- Bootstrap CSS (RTL or LTR based on language) -->
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #16a085;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--primary-color) 0%, #34495e 100%);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: #fff;
+            transform: translateX(-5px);
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+        
+        .sidebar .nav-link i {
+            margin-left: 10px;
+            width: 20px;
+        }
+        
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: #fff;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
+        }
+        
+        .stat-card {
+            border-right: 4px solid var(--primary-color);
+        }
+        
+        .stat-card.success {
+            border-right-color: var(--success-color);
+        }
+        
+        .stat-card.danger {
+            border-right-color: var(--danger-color);
+        }
+        
+        .stat-card.warning {
+            border-right-color: var(--warning-color);
+        }
+        
+        .stat-card.info {
+            border-right-color: var(--info-color);
+        }
+        
+        .btn-primary {
+            background: var(--secondary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .table {
+            background: #fff;
+        }
+        
+        .table thead {
+            background-color: #f8f9fa;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            font-weight: 500;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        /* Delete Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .modal-header.bg-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+        }
+
+        .modal-body .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .modal-body .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .modal-body .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .modal-body .card.bg-light {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+        }
+
+        .btn-group .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn-group .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+            color: #fff;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #3498db;
+            border-color: #3498db;
+            color: #fff;
+        }
+    </style>
+
+    
+</head>
+<body>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block sidebar p-0">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white"><i class="fas fa-warehouse"></i> نظام ERP</h4>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/index">
+                                <i class="fas fa-home"></i> الرئيسية
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-boxes"></i> المخزون
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="inventoryDropdown">
+                                <li><a class="dropdown-item" href="/inventory/products"><i class="fas fa-box"></i> المنتجات</a></li>
+                                <li><a class="dropdown-item" href="/inventory/categories"><i class="fas fa-tags"></i> التصنيفات</a></li>
+                                <li><a class="dropdown-item" href="/inventory/warehouses"><i class="fas fa-warehouse"></i> المستودعات</a></li>
+                                <li><a class="dropdown-item" href="/inventory/stock"><i class="fas fa-cubes"></i> المخزون</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/inventory/transfer"><i class="fas fa-exchange-alt"></i> نقل المخزون</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="salesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-shopping-cart"></i> المبيعات
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="salesDropdown">
+                                <li><a class="dropdown-item" href="/sales/invoices"><i class="fas fa-file-invoice"></i> فواتير المبيعات</a></li>
+                                <li><a class="dropdown-item" href="/sales/invoices/add"><i class="fas fa-plus"></i> فاتورة جديدة</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/sales/customers"><i class="fas fa-users"></i> العملاء</a></li>
+                                <li><a class="dropdown-item" href="/sales/customers/add"><i class="fas fa-user-plus"></i> عميل جديد</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="purchasesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-shopping-bag"></i> المشتريات
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="purchasesDropdown">
+                                <li><a class="dropdown-item" href="/purchases/invoices"><i class="fas fa-file-invoice-dollar"></i> فواتير الشراء</a></li>
+                                <li><a class="dropdown-item" href="/purchases/invoices/add"><i class="fas fa-plus-circle"></i> فاتورة جديدة</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/purchases/suppliers"><i class="fas fa-truck"></i> الموردين</a></li>
+                                <li><a class="dropdown-item" href="/purchases/suppliers/add"><i class="fas fa-truck-loading"></i> مورد جديد</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="posDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cash-register"></i> نقاط البيع
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="posDropdown">
+                                <li><a class="dropdown-item" href="/pos/"><i class="fas fa-shopping-cart"></i> شاشة البيع</a></li>
+                                <li><a class="dropdown-item" href="/pos/sessions"><i class="fas fa-history"></i> الورديات</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/pos/open-session"><i class="fas fa-door-open"></i> فتح وردية جديدة</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/accounting/accounts">
+                                <i class="fas fa-calculator"></i> المحاسبة
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/hr/employees">
+                                <i class="fas fa-users"></i> الموارد البشرية
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reports/">
+                                <i class="fas fa-chart-bar"></i> التقارير
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/settings/">
+                                <i class="fas fa-cog"></i> الإعدادات
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/license-info">
+                                <i class="fas fa-certificate"></i> معلومات الترخيص
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/security/dashboard">
+                                <i class="fas fa-shield-alt"></i> الأمان
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                <!-- Top Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-light mb-4 mt-3">
+                    <div class="container-fluid">
+                        <span class="navbar-brand">الإعدادات</span>
+                        <div class="d-flex align-items-center">
+                            <!-- Language Switcher -->
+                            <div class="dropdown me-3">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-language"></i>
+                                    
+                                        English
+                                    
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item "
+                                           href="/auth/change-language/ar">
+                                            🇸🇦 العربية
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item active"
+                                           href="/auth/change-language/en">
+                                            🇬🇧 English
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="/settings/language">
+                                            <i class="fas fa-cog"></i> إعدادات اللغة
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- User Menu -->
+                            <div class="dropdown me-3">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user"></i> مدير النظام
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="/settings/profile"><i class="fas fa-user-edit"></i> الملف الشخصي</a></li>
+                                    <li><a class="dropdown-item" href="/auth/change-password"><i class="fas fa-key"></i> تغيير كلمة المرور</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/auth/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Flash Messages -->
+                
+                    
+                
+
+                <!-- Page Content -->
+                
+<div class="page-header">
+    <h3><i class="fas fa-cog"></i> إعدادات النظام</h3>
+    <p class="text-muted mb-0">إدارة إعدادات النظام والتكوينات</p>
+</div>
+
+<div class="row">
+    <!-- Company Settings -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-building fa-4x text-primary mb-3"></i>
+                <h5>بيانات الشركة</h5>
+                <p class="text-muted">إدارة معلومات الشركة والفروع</p>
+                <a href="/settings/company" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> تعديل
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branches -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-code-branch fa-4x text-success mb-3"></i>
+                <h5>الفروع</h5>
+                <p class="text-muted">إدارة فروع الشركة</p>
+                <a href="/settings/branches" class="btn btn-success">
+                    <i class="fas fa-list"></i> عرض الفروع
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users-cog fa-4x text-info mb-3"></i>
+                <h5>المستخدمين</h5>
+                <p class="text-muted">إدارة المستخدمين والصلاحيات</p>
+                <a href="/settings/users" class="btn btn-info">
+                    <i class="fas fa-users"></i> إدارة المستخدمين
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roles -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-tag fa-4x text-purple mb-3"></i>
+                <h5>الأدوار</h5>
+                <p class="text-muted">إدارة الأدوار والصلاحيات</p>
+                <a href="/settings/roles" class="btn btn-purple">
+                    <i class="fas fa-user-tag"></i> إدارة الأدوار
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permissions -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-key fa-4x text-dark mb-3"></i>
+                <h5>الصلاحيات</h5>
+                <p class="text-muted">عرض وإدارة الصلاحيات</p>
+                <a href="/settings/permissions" class="btn btn-dark">
+                    <i class="fas fa-key"></i> عرض الصلاحيات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-circle fa-4x text-warning mb-3"></i>
+                <h5>الملف الشخصي</h5>
+                <p class="text-muted">تعديل معلوماتك الشخصية</p>
+                <a href="/settings/profile" class="btn btn-warning">
+                    <i class="fas fa-user-edit"></i> تعديل الملف
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Settings -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-language fa-4x text-primary mb-3"></i>
+                <h5>إعدادات اللغة</h5>
+                <p class="text-muted">تغيير لغة التطبيق</p>
+                <a href="/settings/language" class="btn btn-primary">
+                    <i class="fas fa-globe"></i> تغيير اللغة
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-key fa-4x text-danger mb-3"></i>
+                <h5>تغيير كلمة المرور</h5>
+                <p class="text-muted">تحديث كلمة المرور الخاصة بك</p>
+                <a href="/auth/change-password" class="btn btn-danger">
+                    <i class="fas fa-lock"></i> تغيير كلمة المرور
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-tags fa-4x text-danger mb-3"></i>
+                <h5>التصنيفات</h5>
+                <p class="text-muted">إدارة تصنيفات المنتجات</p>
+                <a href="/inventory/categories" class="btn btn-danger">
+                    <i class="fas fa-list"></i> إدارة التصنيفات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warehouses -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-warehouse fa-4x text-secondary mb-3"></i>
+                <h5>المستودعات</h5>
+                <p class="text-muted">إدارة المستودعات</p>
+                <a href="/inventory/warehouses" class="btn btn-secondary">
+                    <i class="fas fa-warehouse"></i> إدارة المستودعات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Currencies -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-dollar-sign fa-4x text-success mb-3"></i>
+                <h5>العملات</h5>
+                <p class="text-muted">إدارة العملات وأسعار الصرف</p>
+                <a href="#" class="btn btn-success">
+                    <i class="fas fa-money-bill"></i> إدارة العملات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accounting Settings -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calculator fa-4x text-primary mb-3"></i>
+                <h5>إعدادات الحسابات</h5>
+                <p class="text-muted">ربط العمليات بالحسابات المحاسبية</p>
+                <a href="/settings/accounting-settings" class="btn btn-primary">
+                    <i class="fas fa-cog"></i> إعدادات الحسابات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tax Settings -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-percentage fa-4x text-success mb-3"></i>
+                <h5>الضرائب</h5>
+                <p class="text-muted">إعدادات الضرائب</p>
+                <a href="#" class="btn btn-success">
+                    <i class="fas fa-cog"></i> إعدادات الضرائب
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-database fa-4x text-info mb-3"></i>
+                <h5>النسخ الاحتياطي</h5>
+                <p class="text-muted">نسخ احتياطي واستعادة البيانات</p>
+                <a href="#" class="btn btn-info">
+                    <i class="fas fa-download"></i> نسخ احتياطي
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+            </main>
+        </div>
+    </div>
+    
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    
+    
+</body>
+</html>

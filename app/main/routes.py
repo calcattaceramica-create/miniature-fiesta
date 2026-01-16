@@ -28,7 +28,7 @@ def index():
     products = Product.query.filter_by(is_active=True, track_inventory=True).all()
     for product in products:
         current_stock = product.get_stock()
-        if current_stock <= product.min_stock:
+        if product.min_stock and current_stock <= product.min_stock:
             stats['low_stock_products'] += 1
 
     # Get recent sales

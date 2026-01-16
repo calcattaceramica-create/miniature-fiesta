@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
+from flask_babel import gettext as _
 from app.settings import bp
 from app import db
 from app.models import Company, Branch, User, Role, Permission, RolePermission
@@ -459,7 +460,7 @@ def change_language():
         available_languages = current_app.config.get('LANGUAGES', ['ar', 'en'])
 
         if language not in available_languages:
-            flash('اللغة المحددة غير مدعومة', 'danger')
+            flash(_('Selected language is not supported'), 'danger')
             return redirect(url_for('settings.language_settings'))
 
         # Update user language
@@ -471,11 +472,11 @@ def change_language():
 
         db.session.commit()
 
-        flash('تم تغيير اللغة بنجاح' if language == 'ar' else 'Language changed successfully', 'success')
+        flash(_('Language changed successfully'), 'success')
 
     except Exception as e:
         db.session.rollback()
-        flash(f'حدث خطأ: {str(e)}', 'danger')
+        flash(_('An error occurred: %(error)s', error=str(e)), 'danger')
 
     return redirect(url_for('settings.language_settings'))
 
