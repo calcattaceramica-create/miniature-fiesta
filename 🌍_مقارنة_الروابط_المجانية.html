@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 مقارنة الروابط المجانية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .content {
+            padding: 50px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .comparison-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .comparison-table th {
+            padding: 25px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+        
+        .comparison-table td {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1.1em;
+        }
+        
+        .comparison-table tbody tr:hover {
+            background: #f5f7fa;
+            transform: scale(1.02);
+            transition: all 0.3s;
+        }
+        
+        .feature-name {
+            font-weight: bold;
+            color: #667eea;
+            text-align: right !important;
+        }
+        
+        .yes {
+            color: #38ef7d;
+            font-size: 2em;
+        }
+        
+        .no {
+            color: #f5576c;
+            font-size: 2em;
+        }
+        
+        .warning {
+            color: #ffd89b;
+            font-size: 2em;
+        }
+        
+        .service-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .service-card h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .steps {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .steps h3 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        
+        .steps ol {
+            margin-right: 30px;
+            line-height: 2.5;
+            font-size: 1.2em;
+        }
+        
+        .steps li {
+            margin: 10px 0;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .recommended {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 مقارنة الروابط المجانية</h1>
+            <p style="font-size: 1.5em;">اختر الأفضل لك للوصول من أي مكان في العالم</p>
+        </div>
+        
+        <div class="content">
+            <div class="recommended">
+                <strong>🏆 الأفضل: LocalTunnel</strong>
+                <p style="margin-top: 15px; font-size: 0.9em;">
+                    مجاني تماماً، بدون حدود، رابط ثابت، سهل الاستخدام!
+                </p>
+            </div>
+            
+            <h2 style="color: #667eea; font-size: 3em; text-align: center; margin: 50px 0 30px;">
+                📊 جدول المقارنة
+            </h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>الميزة</th>
+                        <th>🔵 ngrok</th>
+                        <th>🟢 LocalTunnel</th>
+                        <th>🟠 Cloudflare</th>
+                        <th>🔴 Serveo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="feature-name">مجاني تماماً</td>
+                        <td><span class="warning">⚠️</span><br>محدود</td>
+                        <td><span class="yes">✅</span><br>نعم</td>
+                        <td><span class="yes">✅</span><br>نعم</td>
+                        <td><span class="yes">✅</span><br>نعم</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">بدون حدود زمنية</td>
+                        <td><span class="no">❌</span><br>8 ساعات</td>
+                        <td><span class="yes">✅</span><br>بلا حدود</td>
+                        <td><span class="yes">✅</span><br>بلا حدود</td>
+                        <td><span class="yes">✅</span><br>بلا حدود</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">رابط ثابت</td>
+                        <td><span class="no">❌</span><br>يتغير</td>
+                        <td><span class="yes">✅</span><br>يمكن اختياره</td>
+                        <td><span class="no">❌</span><br>يتغير</td>
+                        <td><span class="warning">⚠️</span><br>عشوائي</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">سهولة التثبيت</td>
+                        <td><span class="yes">✅</span><br>سهل جداً</td>
+                        <td><span class="yes">✅</span><br>سهل</td>
+                        <td><span class="warning">⚠️</span><br>متوسط</td>
+                        <td><span class="yes">✅</span><br>لا يحتاج تثبيت</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">يحتاج تسجيل</td>
+                        <td><span class="warning">⚠️</span><br>موصى به</td>
+                        <td><span class="no">❌</span><br>لا</td>
+                        <td><span class="no">❌</span><br>لا</td>
+                        <td><span class="no">❌</span><br>لا</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">HTTPS آمن</td>
+                        <td><span class="yes">✅</span></td>
+                        <td><span class="yes">✅</span></td>
+                        <td><span class="yes">✅</span></td>
+                        <td><span class="yes">✅</span></td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">السرعة</td>
+                        <td>⚡⚡⚡⚡⚡</td>
+                        <td>⚡⚡⚡⚡</td>
+                        <td>⚡⚡⚡⚡⚡</td>
+                        <td>⚡⚡⚡</td>
+                    </tr>
+                    <tr>
+                        <td class="feature-name">الاستقرار</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- ngrok -->
+            <div class="service-card" style="border-right: 10px solid #4285f4;">
+                <h2>🔵 ngrok - سهل وسريع</h2>
+
+                <div class="steps">
+                    <h3>📥 التحميل:</h3>
+                    <a href="https://ngrok.com/download" target="_blank" class="download-btn">
+                        تحميل ngrok
+                    </a>
+                </div>
+
+                <div class="steps">
+                    <h3>📋 الخطوات:</h3>
+                    <ol>
+                        <li>حمّل ngrok من الرابط أعلاه</li>
+                        <li>فك الضغط عن الملف</li>
+                        <li>ضع <code>ngrok.exe</code> في مجلد المشروع</li>
+                        <li>شغّل السيرفر: <code>python app.py</code></li>
+                        <li>في نافذة جديدة: <code>ngrok http 5000</code></li>
+                        <li>انسخ الرابط من نافذة ngrok</li>
+                    </ol>
+                </div>
+
+                <div class="steps">
+                    <h3>💡 مثال:</h3>
+                    <div class="code-block">
+                        ngrok http 5000<br>
+                        <br>
+                        Forwarding: https://abc123.ngrok.io → http://localhost:5000
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <h3>⚠️ ملاحظات:</h3>
+                    <ul style="margin-right: 30px; line-height: 2;">
+                        <li>النسخة المجانية محدودة بـ 8 ساعات</li>
+                        <li>الرابط يتغير كل مرة</li>
+                        <li>يمكن التسجيل للحصول على رابط ثابت</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- LocalTunnel -->
+            <div class="service-card" style="border-right: 10px solid #38ef7d;">
+                <h2>🟢 LocalTunnel - مجاني تماماً (الأفضل!)</h2>
+
+                <div class="recommended" style="margin: 20px 0;">
+                    <strong>🏆 الخيار الموصى به!</strong>
+                </div>
+
+                <div class="steps">
+                    <h3>📥 التثبيت:</h3>
+                    <p style="margin-bottom: 15px;">يحتاج Node.js أولاً:</p>
+                    <a href="https://nodejs.org/" target="_blank" class="download-btn">
+                        تحميل Node.js
+                    </a>
+                    <div class="code-block" style="margin-top: 20px;">
+                        npm install -g localtunnel
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <h3>📋 الخطوات:</h3>
+                    <ol>
+                        <li>ثبّت Node.js من الرابط أعلاه</li>
+                        <li>افتح CMD واكتب: <code>npm install -g localtunnel</code></li>
+                        <li>شغّل السيرفر: <code>python app.py</code></li>
+                        <li>في نافذة جديدة: <code>lt --port 5000</code></li>
+                        <li>انسخ الرابط الذي يظهر</li>
+                    </ol>
+                </div>
+
+                <div class="steps">
+                    <h3>💡 رابط مخصص (اختياري):</h3>
+                    <div class="code-block">
+                        lt --port 5000 --subdomain myapp<br>
+                        <br>
+                        الرابط: https://myapp.loca.lt
+                    </div>
+                    <p style="margin-top: 15px; color: #666;">
+                        ✅ يمكنك اختيار اسم ثابت للرابط!
+                    </p>
+                </div>
+
+                <div class="steps">
+                    <h3>✅ المميزات:</h3>
+                    <ul style="margin-right: 30px; line-height: 2;">
+                        <li>✅ مجاني تماماً بدون حدود</li>
+                        <li>✅ رابط ثابت (يمكنك اختياره)</li>
+                        <li>✅ لا يحتاج تسجيل</li>
+                        <li>✅ سهل الاستخدام</li>
+                        <li>✅ HTTPS آمن</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cloudflare -->
+            <div class="service-card" style="border-right: 10px solid #f6821f;">
+                <h2>🟠 Cloudflare Tunnel - احترافي ومجاني</h2>
+
+                <div class="steps">
+                    <h3>📥 التحميل:</h3>
+                    <a href="https://github.com/cloudflare/cloudflared/releases" target="_blank" class="download-btn">
+                        تحميل cloudflared
+                    </a>
+                </div>
+
+                <div class="steps">
+                    <h3>📋 الخطوات:</h3>
+                    <ol>
+                        <li>حمّل cloudflared من الرابط أعلاه</li>
+                        <li>اختر: <code>cloudflared-windows-amd64.exe</code></li>
+                        <li>أعد تسميته إلى: <code>cloudflared.exe</code></li>
+                        <li>ضعه في مجلد المشروع</li>
+                        <li>شغّل السيرفر: <code>python app.py</code></li>
+                        <li>في نافذة جديدة:</li>
+                    </ol>
+                    <div class="code-block">
+                        cloudflared tunnel --url http://localhost:5000
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <h3>💡 مثال:</h3>
+                    <div class="code-block">
+                        الرابط: https://abc-def-ghi.trycloudflare.com
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <h3>✅ المميزات:</h3>
+                    <ul style="margin-right: 30px; line-height: 2;">
+                        <li>✅ سريع جداً (شبكة Cloudflare العالمية)</li>
+                        <li>✅ آمن جداً</li>
+                        <li>✅ مجاني بدون حدود</li>
+                        <li>✅ احترافي</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Serveo -->
+            <div class="service-card" style="border-right: 10px solid #e74c3c;">
+                <h2>🔴 Serveo - بدون تحميل (SSH)</h2>
+
+                <div class="steps">
+                    <h3>📋 الخطوات:</h3>
+                    <ol>
+                        <li>لا يحتاج تحميل! (يستخدم SSH المدمج في Windows)</li>
+                        <li>شغّل السيرفر: <code>python app.py</code></li>
+                        <li>في نافذة جديدة:</li>
+                    </ol>
+                    <div class="code-block">
+                        ssh -R 80:localhost:5000 serveo.net
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <h3>💡 مثال:</h3>
+                    <div class="code-block">
+                        الرابط: https://abc123.serveo.net
+                    </div>
+                </div>
+
+                <div class="steps">
+                    <h3>✅ المميزات:</h3>
+                    <ul style="margin-right: 30px; line-height: 2;">
+                        <li>✅ لا يحتاج تحميل</li>
+                        <li>✅ مجاني تماماً</li>
+                        <li>✅ سهل جداً</li>
+                    </ul>
+                </div>
+
+                <div class="steps">
+                    <h3>⚠️ ملاحظات:</h3>
+                    <ul style="margin-right: 30px; line-height: 2;">
+                        <li>قد يكون غير مستقر أحياناً</li>
+                        <li>الرابط عشوائي</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quick Start -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px; border-radius: 25px; margin: 50px 0; text-align: center;">
+                <h2 style="font-size: 3em; margin-bottom: 30px;">🚀 ابدأ الآن!</h2>
+
+                <div style="background: white; color: #333; padding: 40px; border-radius: 20px; margin: 30px 0;">
+                    <h3 style="color: #667eea; font-size: 2em; margin-bottom: 20px;">الطريقة الموصى بها: LocalTunnel</h3>
+                    <ol style="text-align: right; margin-right: 50px; font-size: 1.3em; line-height: 2.5;">
+                        <li>حمّل Node.js من: <a href="https://nodejs.org/" target="_blank">nodejs.org</a></li>
+                        <li>افتح CMD واكتب: <code style="background: #2d3748; color: #68d391; padding: 5px 10px; border-radius: 5px;">npm install -g localtunnel</code></li>
+                        <li>انقر نقرتين على: <strong>🌍_روابط_مجانية_للعالم.bat</strong></li>
+                        <li>اختر رقم 2 (LocalTunnel)</li>
+                        <li>انسخ الرابط واستخدمه من أي مكان!</li>
+                    </ol>
+                </div>
+
+                <p style="font-size: 1.5em; margin-top: 30px;">
+                    ✅ مجاني تماماً | ✅ بدون حدود | ✅ رابط ثابت
+                </p>
+            </div>
+
+            <!-- Final Note -->
+            <div style="background: #f8f9fa; padding: 40px; border-radius: 20px; margin: 40px 0;">
+                <h2 style="color: #667eea; font-size: 2.5em; text-align: center; margin-bottom: 30px;">
+                    💡 نصائح مهمة
+                </h2>
+                <ul style="margin-right: 50px; font-size: 1.2em; line-height: 2.5;">
+                    <li><strong>للاستخدام اليومي:</strong> استخدم LocalTunnel (مجاني بدون حدود)</li>
+                    <li><strong>للسرعة القصوى:</strong> استخدم Cloudflare Tunnel</li>
+                    <li><strong>للتجربة السريعة:</strong> استخدم ngrok (سهل جداً)</li>
+                    <li><strong>بدون تحميل:</strong> استخدم Serveo (SSH)</li>
+                    <li><strong>الأمان:</strong> جميع الخيارات توفر HTTPS آمن</li>
+                    <li><strong>لا تشارك الرابط:</strong> مع أشخاص غير موثوقين</li>
+                    <li><strong>غيّر كلمة المرور:</strong> بعد أول تسجيل دخول</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

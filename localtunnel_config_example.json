@@ -1,0 +1,6 @@
+{
+  "subdomain": "myapp",
+  "port": 5000,
+  "description": "مثال على ملف الإعدادات - سيتم إنشاء ملف localtunnel_config.json تلقائياً عند أول استخدام"
+}
+

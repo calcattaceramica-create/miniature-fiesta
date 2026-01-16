@@ -4,6 +4,8 @@ from flask_babel import gettext as _
 from app import db
 from app.security import bp
 from app.models import SecurityLog, IPWhitelist, SessionLog, User
+from app.models_license import License, LicenseCheck
+from app.license_manager import LicenseManager
 from app.auth.decorators import admin_required
 from datetime import datetime, timedelta
 from sqlalchemy import func, desc

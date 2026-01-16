@@ -6,7 +6,7 @@
     "phone": "+966501234567",
     "expiry": "2027-01-16",
     "duration_days": 365,
-    "status": "active",
+    "status": "suspended",
     "created_at": "2026-01-16 06:53:07"
   }
 }

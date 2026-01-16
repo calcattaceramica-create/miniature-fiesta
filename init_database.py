@@ -94,7 +94,40 @@ with app.app_context():
     
     # Commit
     db.session.commit()
-    
+
+    # Create trial license
+    print("\n  Creating trial license...")
+    from app.models_license import License
+    from werkzeug.security import generate_password_hash
+    from datetime import timedelta
+
+    if not License.query.first():
+        license_key = License.generate_license_key()
+        license_hash = License.hash_license_key(license_key)
+
+        trial_license = License(
+            license_key=license_key,
+            license_hash=license_hash,
+            client_name='Trial User',
+            client_email='trial@ded.com',
+            client_company='DED Trial',
+            license_type='trial',
+            max_users=5,
+            max_branches=2,
+            is_active=True,
+            activated_at=datetime.utcnow(),
+            expires_at=datetime.utcnow() + timedelta(days=30),
+            admin_username='admin',
+            admin_password_hash=generate_password_hash('admin123'),
+            notes='Auto-generated trial license - 30 days'
+        )
+        db.session.add(trial_license)
+        db.session.commit()
+
+        print(f"  ✅ Trial License Created!")
+        print(f"  License Key: {license_key}")
+        print(f"  Valid for: 30 days")
+
     print("\n" + "=" * 70)
     print("SUCCESS!")
     print("=" * 70)

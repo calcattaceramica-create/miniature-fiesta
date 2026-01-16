@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 QR Code للوصول السريع</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .qr-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+        }
+        
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .url-display {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5em;
+            word-break: break-all;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #667eea;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 QR Code للوصول السريع</h1>
+        <p style="color: #666; font-size: 1.3em; margin-bottom: 30px;">
+            امسح الكود من الهاتف للوصول المباشر
+        </p>
+        
+        <div class="input-group">
+            <label>🌐 أدخل عنوان IP الخاص بك:</label>
+            <input type="text" id="ipInput" placeholder="مثال: 192.168.1.100" value="">
+        </div>
+        
+        <button class="btn" onclick="generateQR()">🔄 إنشاء QR Code</button>
+        <button class="btn" onclick="getLocalIP()">🔍 اكتشاف IP تلقائياً</button>
+        
+        <div class="qr-container" id="qrContainer" style="display: none;">
+            <div id="qrcode"></div>
+            <div class="url-display" id="urlDisplay"></div>
+        </div>
+        
+        <div class="info-box">
+            <strong>📋 كيف تستخدم QR Code؟</strong>
+            <ol style="text-align: right; margin-right: 20px; margin-top: 15px; line-height: 2;">
+                <li>أدخل عنوان IP الخاص بك أعلاه</li>
+                <li>اضغط "إنشاء QR Code"</li>
+                <li>افتح كاميرا الهاتف</li>
+                <li>وجّه الكاميرا على الكود</li>
+                <li>اضغط على الرابط الذي يظهر</li>
+            </ol>
+        </div>
+        
+        <div class="info-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <strong>⚠️ مهم:</strong>
+            <ul style="text-align: right; margin-right: 20px; margin-top: 15px; line-height: 2;">
+                <li>تأكد أن الهاتف والكمبيوتر على نفس الواي فاي</li>
+                <li>شغّل السيرفر قبل مسح الكود</li>
+                <li>عنوان IP قد يتغير عند إعادة الاتصال</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        let qrcode = null;
+        
+        function generateQR() {
+            const ip = document.getElementById('ipInput').value.trim();
+            
+            if (!ip) {
+                alert('⚠️ يرجى إدخال عنوان IP!');
+                return;
+            }
+            
+            const url = `http://${ip}:5000`;
+            
+            // Clear previous QR code
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            
+            // Generate new QR code
+            qrcode = new QRCode(qrContainer, {
+                text: url,
+                width: 300,
+                height: 300,
+                colorDark: "#667eea",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Show URL
+            document.getElementById('urlDisplay').textContent = url;
+            document.getElementById('qrContainer').style.display = 'block';
+        }
+        
+        async function getLocalIP() {
+            try {
+                // This is a simple method that works in most browsers
+                const pc = new RTCPeerConnection({iceServers: []});
+                pc.createDataChannel('');
+                
+                pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) return;
+                    
+                    const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+                    const match = ipRegex.exec(ice.candidate.candidate);
+                    
+                    if (match && match[1]) {
+                        const ip = match[1];
+                        if (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.')) {
+                            document.getElementById('ipInput').value = ip;
+                            pc.close();
+                            generateQR();
+                        }
+                    }
+                };
+            } catch (error) {
+                alert('⚠️ لم نتمكن من اكتشاف IP تلقائياً. يرجى إدخاله يدوياً.');
+            }
+        }
+        
+        // Auto-detect IP on load
+        window.onload = function() {
+            getLocalIP();
+        };
+    </script>
+</body>
+</html>
+
