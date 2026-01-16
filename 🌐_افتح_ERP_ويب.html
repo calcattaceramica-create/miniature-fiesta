@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DED ERP System - نظام تخطيط موارد المؤسسات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        
+        .countdown {
+            font-size: 48px;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: right;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .info-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 18px;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚀</div>
+        <h1>نظام DED ERP</h1>
+        <p class="subtitle">نظام تخطيط موارد المؤسسات - نسخة الويب</p>
+        
+        <div class="countdown" id="countdown">5</div>
+        <p>ثانية حتى فتح التطبيق...</p>
+        
+        <div class="info-box">
+            <h3>🔐 بيانات الدخول</h3>
+            <div class="info-item">
+                <strong>👤 المستخدم:</strong> admin
+            </div>
+            <div class="info-item">
+                <strong>🔒 كلمة المرور:</strong> admin123
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>🌐 الروابط المتاحة</h3>
+            <div class="info-item">
+                <strong>محلي:</strong> http://localhost:8501
+            </div>
+        </div>
+        
+        <a href="http://localhost:8501" class="btn" id="openBtn">🌐 افتح التطبيق الآن</a>
+        
+        <div class="status warning" id="status">
+            ⚠️ تأكد من تشغيل التطبيق أولاً بالضغط على: 🌐_شغل_ERP_ويب.bat
+        </div>
+    </div>
+    
+    <script>
+        let count = 5;
+        const countdownEl = document.getElementById('countdown');
+        const statusEl = document.getElementById('status');
+        
+        const timer = setInterval(() => {
+            count--;
+            countdownEl.textContent = count;
+            
+            if (count === 0) {
+                clearInterval(timer);
+                statusEl.className = 'status success';
+                statusEl.textContent = '✅ جاري فتح التطبيق...';
+                window.location.href = 'http://localhost:8501';
+            }
+        }, 1000);
+        
+        document.getElementById('openBtn').addEventListener('click', (e) => {
+            clearInterval(timer);
+            statusEl.className = 'status success';
+            statusEl.textContent = '✅ جاري فتح التطبيق...';
+        });
+    </script>
+</body>
+</html>
+
