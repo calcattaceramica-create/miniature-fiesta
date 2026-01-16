@@ -10,14 +10,23 @@ from io import BytesIO
 
 # Page configuration
 st.set_page_config(
-    page_title="DED Control Panel - Demo",
+    page_title="DED Control Panel",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Demo mode warning
-st.warning("⚠️ **وضع العرض التجريبي - Demo Mode**: هذه نسخة تجريبية للعرض فقط.")
+# Authentication credentials (في الإنتاج، استخدم قاعدة بيانات)
+ADMIN_CREDENTIALS = {
+    "admin": "admin123",
+    "manager": "manager123"
+}
+
+# Initialize session state for authentication
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+if 'username' not in st.session_state:
+    st.session_state.username = None
 
 # Simple License Manager
 class SimpleLicenseManager:
@@ -45,12 +54,15 @@ class SimpleLicenseManager:
         hash_obj = hashlib.sha256(data.encode())
         return f"DED-{hash_obj.hexdigest()[:32].upper()}"
     
-    def create_license(self, company, duration_days=365):
+    def create_license(self, company, duration_days=365, username="", password="", phone=""):
         key = self.create_license_key(company)
         expiry = (datetime.now() + timedelta(days=duration_days)).strftime("%Y-%m-%d")
 
         license_data = {
             'company': company,
+            'username': username,
+            'password': password,
+            'phone': phone,
             'expiry': expiry,
             'duration_days': duration_days,
             'status': 'active',
@@ -68,10 +80,16 @@ class SimpleLicenseManager:
             return True
         return False
 
-    def update_license(self, key, company=None, duration_days=None):
+    def update_license(self, key, company=None, duration_days=None, username=None, password=None, phone=None):
         if key in self.licenses:
             if company:
                 self.licenses[key]['company'] = company
+            if username is not None:
+                self.licenses[key]['username'] = username
+            if password is not None:
+                self.licenses[key]['password'] = password
+            if phone is not None:
+                self.licenses[key]['phone'] = phone
             if duration_days:
                 self.licenses[key]['duration_days'] = duration_days
                 expiry = (datetime.now() + timedelta(days=duration_days)).strftime("%Y-%m-%d")
@@ -99,6 +117,9 @@ class SimpleLicenseManager:
             data.append({
                 'المفتاح': key,
                 'الشركة': lic.get('company'),
+                'اسم المستخدم': lic.get('username', ''),
+                'كلمة المرور': lic.get('password', ''),
+                'رقم الهاتف': lic.get('phone', ''),
                 'تاريخ الانتهاء': lic.get('expiry'),
                 'المدة (أيام)': lic.get('duration_days'),
                 'الحالة': status,
@@ -113,6 +134,44 @@ class SimpleLicenseManager:
             df.to_excel(writer, index=False, sheet_name='التراخيص')
 
         return output.getvalue()
+
+# Login Page
+if not st.session_state.authenticated:
+    st.markdown("""
+    <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; margin-bottom: 30px;'>
+        <h1 style='color: white; margin: 0;'>🔐 تسجيل الدخول - Login</h1>
+        <p style='color: #e0e7ff; margin: 10px 0 0 0;'>DED Control Panel</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+
+    with col2:
+        st.markdown("### 🔑 الرجاء تسجيل الدخول")
+
+        with st.form("login_form"):
+            username = st.text_input("👤 اسم المستخدم - Username:", placeholder="admin")
+            password = st.text_input("🔒 كلمة المرور - Password:", type="password", placeholder="••••••••")
+
+            submitted = st.form_submit_button("🚀 تسجيل الدخول - Login", use_container_width=True)
+
+            if submitted:
+                if username in ADMIN_CREDENTIALS and ADMIN_CREDENTIALS[username] == password:
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.success(f"✅ مرحباً {username}!")
+                    st.rerun()
+                else:
+                    st.error("❌ اسم المستخدم أو كلمة المرور غير صحيحة")
+
+        st.markdown("---")
+        st.info("""
+        **🔐 بيانات الدخول التجريبية:**
+        - المستخدم: `admin` | كلمة المرور: `admin123`
+        - المستخدم: `manager` | كلمة المرور: `manager123`
+        """)
+
+    st.stop()
 
 # Initialize manager
 manager = SimpleLicenseManager()
@@ -129,6 +188,16 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# User info and logout
+col1, col2 = st.columns([3, 1])
+with col1:
+    st.markdown(f"**👤 المستخدم:** {st.session_state.username}")
+with col2:
+    if st.button("🚪 تسجيل الخروج - Logout", use_container_width=True):
+        st.session_state.authenticated = False
+        st.session_state.username = None
+        st.rerun()
+
 # Sidebar
 with st.sidebar:
     st.markdown("### 📋 القائمة - Menu")
@@ -141,32 +210,42 @@ with st.sidebar:
 # Create License Page
 if page == "📝 إنشاء ترخيص - Create License":
     st.markdown("### 📝 إنشاء ترخيص جديد - Create New License")
-    
+
     with st.form("create_license_form"):
-        company = st.text_input("اسم الشركة - Company Name:", placeholder="مثال: شركة التقنية المتقدمة")
-        duration = st.number_input("مدة الترخيص (أيام) - Duration (days):", min_value=1, value=365)
-        
+        company = st.text_input("🏢 اسم الشركة - Company Name:", placeholder="مثال: شركة التقنية المتقدمة")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            username = st.text_input("👤 اسم المستخدم - Username:", placeholder="مثال: company_admin")
+            phone = st.text_input("📱 رقم الهاتف - Phone:", placeholder="مثال: +966501234567")
+        with col2:
+            password = st.text_input("🔒 كلمة المرور - Password:", type="password", placeholder="••••••••")
+            duration = st.number_input("⏱️ مدة الترخيص (أيام) - Duration (days):", min_value=1, value=365)
+
         submitted = st.form_submit_button("✨ إنشاء الترخيص - Create License", use_container_width=True)
-        
+
         if submitted:
-            if company:
-                key, data = manager.create_license(company, duration)
+            if company and username and password:
+                key, data = manager.create_license(company, duration, username, password, phone)
                 st.session_state.licenses = manager.licenses
-                
+
                 st.success("✅ تم إنشاء الترخيص بنجاح! - License created successfully!")
-                
+
                 st.markdown("#### 🔑 معلومات الترخيص - License Information")
                 st.code(key, language="text")
-                
-                col1, col2 = st.columns(2)
+
+                col1, col2, col3 = st.columns(3)
                 with col1:
-                    st.info(f"**الشركة - Company:** {data['company']}")
-                    st.info(f"**المدة - Duration:** {data['duration_days']} يوم")
+                    st.info(f"**🏢 الشركة:** {data['company']}")
+                    st.info(f"**👤 المستخدم:** {data['username']}")
                 with col2:
-                    st.info(f"**تاريخ الانتهاء - Expiry:** {data['expiry']}")
-                    st.info(f"**الحالة - Status:** {data['status']}")
+                    st.info(f"**🔒 كلمة المرور:** {data['password']}")
+                    st.info(f"**📱 الهاتف:** {data['phone']}")
+                with col3:
+                    st.info(f"**⏱️ المدة:** {data['duration_days']} يوم")
+                    st.info(f"**📅 الانتهاء:** {data['expiry']}")
             else:
-                st.error("❌ الرجاء إدخال اسم الشركة - Please enter company name")
+                st.error("❌ الرجاء إدخال جميع الحقول المطلوبة (الشركة، المستخدم، كلمة المرور)")
 
 # View Licenses Page
 else:
@@ -245,6 +324,10 @@ else:
                 st.markdown(f"""
                 <div style='background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid {status_color};'>
                     <p><strong>🔑 المفتاح - Key:</strong><br/><code>{key}</code></p>
+                    <p><strong>🏢 الشركة - Company:</strong> {lic.get('company')}</p>
+                    <p><strong>👤 اسم المستخدم - Username:</strong> {lic.get('username', 'غير محدد')}</p>
+                    <p><strong>🔒 كلمة المرور - Password:</strong> {lic.get('password', 'غير محدد')}</p>
+                    <p><strong>📱 رقم الهاتف - Phone:</strong> {lic.get('phone', 'غير محدد')}</p>
                     <p><strong>📅 تاريخ الانتهاء - Expiry:</strong> {lic.get('expiry')}</p>
                     <p><strong>⏱️ المدة - Duration:</strong> {lic.get('duration_days')} يوم</p>
                     <p><strong>📊 الحالة - Status:</strong> {status}</p>
@@ -273,13 +356,20 @@ else:
                     st.markdown("#### ✏️ تعديل الترخيص - Edit License")
 
                     with st.form(f"edit_form_{key}"):
-                        new_company = st.text_input("اسم الشركة الجديد:", value=lic.get('company'))
-                        new_duration = st.number_input("المدة الجديدة (أيام):", min_value=1, value=lic.get('duration_days'))
+                        new_company = st.text_input("🏢 اسم الشركة:", value=lic.get('company'))
+
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            new_username = st.text_input("👤 اسم المستخدم:", value=lic.get('username', ''))
+                            new_phone = st.text_input("📱 رقم الهاتف:", value=lic.get('phone', ''))
+                        with col2:
+                            new_password = st.text_input("🔒 كلمة المرور:", value=lic.get('password', ''))
+                            new_duration = st.number_input("⏱️ المدة (أيام):", min_value=1, value=lic.get('duration_days'))
 
                         col1, col2 = st.columns(2)
                         with col1:
                             if st.form_submit_button("💾 حفظ - Save", use_container_width=True):
-                                if manager.update_license(key, new_company, new_duration):
+                                if manager.update_license(key, new_company, new_duration, new_username, new_password, new_phone):
                                     st.session_state.licenses = manager.licenses
                                     st.session_state[f'editing_{key}'] = False
                                     st.success("✅ تم تحديث الترخيص - License updated")
