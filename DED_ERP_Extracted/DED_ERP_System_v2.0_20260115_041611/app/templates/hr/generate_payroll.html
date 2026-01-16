@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}إنشاء كشف رواتب{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-invoice-dollar"></i> إنشاء كشف رواتب</h2>
+        <a href="{{ url_for('hr.payroll') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة
+        </a>
+    </div>
+
+    <!-- Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar"></i> اختر الشهر والسنة</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('hr.generate_payroll') }}">
+                        <div class="mb-3">
+                            <label class="form-label">الشهر <span class="text-danger">*</span></label>
+                            <select class="form-select" name="month" required>
+                                <option value="">اختر الشهر...</option>
+                                <option value="1">يناير</option>
+                                <option value="2">فبراير</option>
+                                <option value="3">مارس</option>
+                                <option value="4">أبريل</option>
+                                <option value="5">مايو</option>
+                                <option value="6">يونيو</option>
+                                <option value="7">يوليو</option>
+                                <option value="8">أغسطس</option>
+                                <option value="9">سبتمبر</option>
+                                <option value="10">أكتوبر</option>
+                                <option value="11">نوفمبر</option>
+                                <option value="12">ديسمبر</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">السنة <span class="text-danger">*</span></label>
+                            <select class="form-select" name="year" required>
+                                <option value="">اختر السنة...</option>
+                                {% for y in range(2020, 2031) %}
+                                <option value="{{ y }}" {% if y == 2024 %}selected{% endif %}>{{ y }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            <strong>ملاحظة:</strong> سيتم إنشاء كشف رواتب لجميع الموظفين النشطين في الشهر والسنة المحددة.
+                            سيتم حساب الساعات الإضافية تلقائياً من سجلات الحضور.
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-cog"></i> إنشاء كشف الرواتب
+                            </button>
+                            <a href="{{ url_for('hr.payroll') }}" class="btn btn-secondary btn-lg px-5">
+                                <i class="fas fa-times"></i> إلغاء
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Instructions Card -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-question-circle"></i> كيفية الاستخدام</h5>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li class="mb-2">اختر الشهر والسنة المطلوبة</li>
+                        <li class="mb-2">اضغط على "إنشاء كشف الرواتب"</li>
+                        <li class="mb-2">سيتم إنشاء كشف رواتب لجميع الموظفين النشطين</li>
+                        <li class="mb-2">يمكنك مراجعة الكشف واعتماده من صفحة الرواتب</li>
+                        <li class="mb-0">بعد الاعتماد، يمكنك تسجيل الدفع</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set current month and year as default
+document.addEventListener('DOMContentLoaded', function() {
+    const monthSelect = document.querySelector('select[name="month"]');
+    const yearSelect = document.querySelector('select[name="year"]');
+    
+    if (monthSelect && !monthSelect.value) {
+        const currentMonth = new Date().getMonth() + 1;
+        monthSelect.value = currentMonth;
+    }
+    
+    if (yearSelect && !yearSelect.value) {
+        const currentYear = new Date().getFullYear();
+        yearSelect.value = currentYear;
+    }
+});
+</script>
+{% endblock %}
+

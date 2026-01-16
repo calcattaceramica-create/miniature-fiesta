@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}تقرير حركة المخزون - نظام إدارة المخزون{% endblock %}
+{% block page_title %}تقرير حركة المخزون{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-exchange-alt"></i> تقرير حركة المخزون</h3>
+    <p class="text-muted mb-0">جميع حركات الإدخال والإخراج للمخزون</p>
+</div>
+
+<!-- Filters -->
+<div class="card shadow mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-filter"></i> تصفية النتائج</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('reports.stock_movement_report') }}">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date or '' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date or '' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">المنتج</label>
+                    <select name="product_id" class="form-select">
+                        <option value="">الكل</option>
+                        {% for product in products %}
+                        <option value="{{ product.id }}" {% if selected_product_id == product.id %}selected{% endif %}>
+                            {{ product.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">المستودع</label>
+                    <select name="warehouse_id" class="form-select">
+                        <option value="">الكل</option>
+                        {% for warehouse in warehouses %}
+                        <option value="{{ warehouse.id }}" {% if selected_warehouse_id == warehouse.id %}selected{% endif %}>
+                            {{ warehouse.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                    <a href="{{ url_for('reports.stock_movement_report') }}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> إعادة تعيين
+                    </a>
+                    <button type="button" onclick="window.print()" class="btn btn-info">
+                        <i class="fas fa-print"></i> طباعة
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="card shadow">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-list"></i> الحركات ({{ movements|length }})</h5>
+    </div>
+    <div class="card-body">
+        {% if movements %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>التاريخ</th>
+                        <th>المنتج</th>
+                        <th>المستودع</th>
+                        <th>النوع</th>
+                        <th>الكمية</th>
+                        <th>المرجع</th>
+                        <th>المستخدم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movement in movements %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ movement.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ movement.product.name }}</td>
+                        <td>{{ movement.warehouse.name }}</td>
+                        <td>
+                            {% if movement.movement_type == 'in' %}
+                                <span class="badge bg-success">إدخال</span>
+                            {% else %}
+                                <span class="badge bg-danger">إخراج</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if movement.movement_type == 'in' %}
+                                <span class="text-success">+{{ movement.quantity }}</span>
+                            {% else %}
+                                <span class="text-danger">-{{ movement.quantity }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if movement.reference_type == 'sale' %}
+                                <span class="badge bg-info">مبيعات</span>
+                            {% elif movement.reference_type == 'purchase' %}
+                                <span class="badge bg-primary">مشتريات</span>
+                            {% elif movement.reference_type == 'transfer' %}
+                                <span class="badge bg-warning">تحويل</span>
+                            {% elif movement.reference_type == 'adjustment' %}
+                                <span class="badge bg-secondary">تسوية</span>
+                            {% elif movement.reference_type == 'initial_stock' %}
+                                <span class="badge bg-dark">رصيد افتتاحي</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark">{{ movement.reference_type }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ movement.user.full_name if movement.user else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle"></i>
+            لا توجد حركات مخزون بالمعايير المحددة
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

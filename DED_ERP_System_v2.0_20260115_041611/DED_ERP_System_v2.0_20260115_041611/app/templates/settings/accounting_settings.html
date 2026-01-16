@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}إعدادات الحسابات المحاسبية - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إعدادات الحسابات المحاسبية{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-cog"></i> إعدادات الحسابات المحاسبية</h2>
+                <p class="text-muted mb-0">ربط العمليات بالحسابات المحاسبية</p>
+            </div>
+            <div>
+                <a href="{{ url_for('settings.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> العودة للإعدادات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('settings.save_accounting_settings') }}">
+        <!-- Sales Accounts -->
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> حسابات المبيعات</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب إيرادات المبيعات <span class="text-danger">*</span></label>
+                            <select class="form-select" name="sales_revenue_account_id" required>
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in revenue_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.sales_revenue_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب ضريبة المبيعات <span class="text-danger">*</span></label>
+                            <select class="form-select" name="sales_tax_account_id" required>
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in liability_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.sales_tax_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب خصم المبيعات</label>
+                            <select class="form-select" name="sales_discount_account_id">
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in expense_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.sales_discount_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب العملاء (الذمم المدينة) <span class="text-danger">*</span></label>
+                            <select class="form-select" name="accounts_receivable_account_id" required>
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in asset_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.accounts_receivable_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب تكلفة المبيعات</label>
+                            <select class="form-select" name="sales_cost_account_id">
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in expense_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.sales_cost_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Accounts -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> حسابات المشتريات</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب مصروفات المشتريات <span class="text-danger">*</span></label>
+                            <select class="form-select" name="purchase_expense_account_id" required>
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in expense_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.purchase_expense_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب ضريبة المشتريات</label>
+                            <select class="form-select" name="purchase_tax_account_id">
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in asset_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.purchase_tax_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب خصم المشتريات</label>
+                            <select class="form-select" name="purchase_discount_account_id">
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in revenue_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.purchase_discount_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب الموردين (الذمم الدائنة) <span class="text-danger">*</span></label>
+                            <select class="form-select" name="accounts_payable_account_id" required>
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in liability_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.accounts_payable_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory & Cash Accounts -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-boxes"></i> حسابات المخزون والنقدية</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب المخزون <span class="text-danger">*</span></label>
+                            <select class="form-select" name="inventory_account_id" required>
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in asset_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.inventory_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب تسوية المخزون</label>
+                            <select class="form-select" name="inventory_adjustment_account_id">
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in expense_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.inventory_adjustment_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب النقدية <span class="text-danger">*</span></label>
+                            <select class="form-select" name="cash_account_id" required>
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in asset_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.cash_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POS Accounts -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-cash-register"></i> حسابات نقاط البيع</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب النقدية (POS)</label>
+                            <select class="form-select" name="pos_cash_account_id">
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in asset_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.pos_cash_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">حساب البطاقات (POS)</label>
+                            <select class="form-select" name="pos_card_account_id">
+                                <option value="">-- اختر الحساب --</option>
+                                {% for account in asset_accounts %}
+                                <option value="{{ account.id }}" {% if settings and settings.pos_card_account_id == account.id %}selected{% endif %}>
+                                    {{ account.code }} - {{ account.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automation Settings -->
+        <div class="card mb-3">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-robot"></i> إعدادات الأتمتة</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="auto_create_journal_entries" id="auto_create"
+                                   {% if settings and settings.auto_create_journal_entries %}checked{% endif %}>
+                            <label class="form-check-label" for="auto_create">
+                                <strong>إنشاء قيود محاسبية تلقائياً</strong>
+                                <br><small class="text-muted">عند تأكيد الفواتير والمدفوعات</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="auto_post_journal_entries" id="auto_post"
+                                   {% if settings and settings.auto_post_journal_entries %}checked{% endif %}>
+                            <label class="form-check-label" for="auto_post">
+                                <strong>ترحيل القيود تلقائياً</strong>
+                                <br><small class="text-muted">ترحيل القيود المحاسبية فوراً بدون مراجعة</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('settings.index') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> إلغاء
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> حفظ الإعدادات
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

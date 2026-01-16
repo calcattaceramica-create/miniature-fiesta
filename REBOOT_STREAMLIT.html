@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔄 إعادة نشر التطبيق - Streamlit Cloud</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #f5576c;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            background: #fff3cd;
+            border-right: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-right: 5px solid #f5576c;
+        }
+        
+        .step h3 {
+            color: #f5576c;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .copy-box {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            direction: ltr;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .copy-box:hover {
+            background: #1a202c;
+        }
+        
+        .copy-box::after {
+            content: '📋 اضغط للنسخ';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f5576c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .copy-box:hover::after {
+            opacity: 1;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+            transition: transform 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.6);
+        }
+        
+        .success {
+            background: #d4edda;
+            border-right: 5px solid #28a745;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .info-grid {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            border-right: 3px solid #2196f3;
+        }
+        
+        .info-item strong {
+            color: #1976d2;
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('✅ تم النسخ: ' + text);
+            }, function(err) {
+                alert('❌ فشل النسخ');
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 إعادة نشر التطبيق</h1>
+        <p style="text-align: center; color: #666; font-size: 1.2em; margin-bottom: 30px;">
+            تم إصلاح المشكلة! الآن أعد النشر
+        </p>
+        
+        <div class="alert">
+            <strong>✅ ما تم إصلاحه:</strong><br>
+            تم تحديث ملف <code>requirements_web.txt</code> بإصدارات محددة ومتوافقة مع Streamlit Cloud
+        </div>
+        
+        <h2 style="color: #f5576c; margin: 30px 0 20px 0;">📋 الخطوات:</h2>
+        
+        <div class="step">
+            <h3>1️⃣ اذهب إلى Streamlit Cloud</h3>
+            <p>افتح الرابط التالي:</p>
+            <a href="https://share.streamlit.io/" target="_blank" class="button">🌐 افتح Streamlit Cloud</a>
+        </div>
+        
+        <div class="step">
+            <h3>2️⃣ احذف التطبيق القديم (إذا وجد)</h3>
+            <p>في القائمة، ابحث عن التطبيق القديم:</p>
+            <ul style="margin-right: 20px; margin-top: 10px;">
+                <li>اضغط على الثلاث نقاط <strong>⋮</strong></li>
+                <li>اختر <strong>"Delete"</strong></li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <h3>3️⃣ أنشئ تطبيق جديد</h3>
+            <p>اضغط على زر <strong>"New app"</strong> أو <strong>"Create app"</strong></p>
+        </div>
+        
+        <div class="step">
+            <h3>4️⃣ املأ البيانات</h3>
+            <p>انسخ والصق هذه المعلومات بالضبط:</p>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Repository:</strong>
+                    <div class="copy-box" onclick="copyToClipboard('calcattaceramica-create/miniature-fiesta')">
+                        calcattaceramica-create/miniature-fiesta
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <strong>Branch:</strong>
+                    <div class="copy-box" onclick="copyToClipboard('main')">
+                        main
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <strong>Main file path:</strong>
+                    <div class="copy-box" onclick="copyToClipboard('DED_Control_Panel_Web.py')">
+                        DED_Control_Panel_Web.py
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <strong>App URL (اختياري):</strong>
+                    <div class="copy-box" onclick="copyToClipboard('ded-control-panel')">
+                        ded-control-panel
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3>5️⃣ انشر التطبيق</h3>
+            <p>بعد ملء جميع البيانات:</p>
+            <ul style="margin-right: 20px; margin-top: 10px;">
+                <li>اضغط على زر <strong>"Deploy!"</strong></li>
+                <li>انتظر 2-3 دقائق ⏳</li>
+            </ul>
+        </div>
+        
+        <div class="success">
+            <h3 style="color: #28a745; margin-bottom: 10px;">🎉 النتيجة المتوقعة:</h3>
+            <p>بعد اكتمال النشر، ستحصل على رابط مثل:</p>
+            <div style="background: white; padding: 10px; border-radius: 5px; margin-top: 10px; direction: ltr; text-align: left;">
+                🌍 https://ded-control-panel.streamlit.app
+            </div>
+            <p style="margin-top: 10px;">أو:</p>
+            <div style="background: white; padding: 10px; border-radius: 5px; margin-top: 10px; direction: ltr; text-align: left; font-size: 0.9em;">
+                🌍 https://calcattaceramica-create-miniature-fiesta-ded-control-panel-web.streamlit.app
+            </div>
+        </div>
+        
+        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 30px;">
+            <h3 style="color: #856404; margin-bottom: 10px;">💡 نصائح:</h3>
+            <ul style="margin-right: 20px; color: #856404;">
+                <li>اضغط على المربعات السوداء لنسخ المعلومات تلقائياً</li>
+                <li>تأكد من كتابة اسم الملف بالضبط (مع الحروف الكبيرة)</li>
+                <li>إذا ظهر خطأ، اضغط "Manage app" → "Logs" لمعرفة السبب</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="https://share.streamlit.io/" target="_blank" class="button" style="font-size: 1.3em;">
+                🚀 ابدأ الآن!
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+

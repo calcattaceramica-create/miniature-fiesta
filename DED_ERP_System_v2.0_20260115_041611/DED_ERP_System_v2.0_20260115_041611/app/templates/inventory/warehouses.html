@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Warehouses') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-warehouse"></i> {{ _('Warehouse Management') }}</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWarehouseModal">
+            <i class="fas fa-plus"></i> {{ _('Add New Warehouse') }}
+        </button>
+    </div>
+
+    <!-- Warehouses Grid -->
+    <div class="row">
+        {% for warehouse in warehouses %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 {% if not warehouse.is_active %}border-danger{% endif %}">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-warehouse"></i> {{ warehouse.name }}
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-light" onclick="editWarehouse({{ warehouse.id }}, '{{ warehouse.name }}', '{{ warehouse.name_en or '' }}', '{{ warehouse.code }}', {{ warehouse.branch_id or 'null' }}, '{{ warehouse.address or '' }}', {{ warehouse.manager_id or 'null' }}, {{ 'true' if warehouse.is_active else 'false' }})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteWarehouse({{ warehouse.id }}, '{{ warehouse.name }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>{{ _('Code') }}:</strong> <span class="badge bg-secondary">{{ warehouse.code }}</span>
+                    </div>
+
+                    {% if warehouse.name_en %}
+                    <div class="mb-2">
+                        <strong>{{ _('English Name') }}:</strong> {{ warehouse.name_en }}
+                    </div>
+                    {% endif %}
+
+                    {% if warehouse.branch %}
+                    <div class="mb-2">
+                        <strong>{{ _('Branch') }}:</strong> {{ warehouse.branch.name }}
+                    </div>
+                    {% endif %}
+
+                    {% if warehouse.address %}
+                    <div class="mb-2">
+                        <strong>{{ _('Address') }}:</strong> {{ warehouse.address }}
+                    </div>
+                    {% endif %}
+
+                    {% if warehouse.manager_id %}
+                    <div class="mb-2">
+                        <strong>{{ _('Manager') }}:</strong>
+                        {% set manager = users|selectattr('id', 'equalto', warehouse.manager_id)|first %}
+                        {{ manager.full_name if manager else _('Not specified') }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-2">
+                        <strong>{{ _('Status') }}:</strong>
+                        {% if warehouse.is_active %}
+                        <span class="badge bg-success">{{ _('Active') }}</span>
+                        {% else %}
+                        <span class="badge bg-danger">{{ _('Inactive') }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-2">
+                        <strong>{{ _('Product Count') }}:</strong>
+                        <span class="badge bg-info">{{ warehouse.stocks|length }}</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('inventory.warehouse_details', id=warehouse.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye"></i> {{ _('View Details') }}
+                    </a>
+                    <small class="text-muted float-end">
+                        {{ warehouse.created_at.strftime('%Y-%m-%d') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if not warehouses %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> {{ _('No warehouses found. Add a new warehouse.') }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Warehouse Modal -->
+<div class="modal fade" id="addWarehouseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('inventory.add_warehouse') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ _('Add New Warehouse') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Warehouse Name') }} *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('English Name') }}</label>
+                        <input type="text" class="form-control" name="name_en">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Code') }} *</label>
+                        <input type="text" class="form-control" name="code" required>
+                        <small class="text-muted">{{ _('Example') }}: WH-001</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Branch') }}</label>
+                        <select class="form-select" name="branch_id">
+                            <option value="">{{ _('Select Branch') }}</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Address') }}</label>
+                        <textarea class="form-control" name="address" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Manager') }}</label>
+                        <select class="form-select" name="manager_id">
+                            <option value="">{{ _('Select Manager') }}</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="add_is_active" checked>
+                        <label class="form-check-label" for="add_is_active">{{ _('Active') }}</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ _('Save') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Warehouse Modal -->
+<div class="modal fade" id="editWarehouseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="editWarehouseForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ _('Edit Warehouse') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Warehouse Name') }} *</label>
+                        <input type="text" class="form-control" name="name" id="edit_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('English Name') }}</label>
+                        <input type="text" class="form-control" name="name_en" id="edit_name_en">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Code') }} *</label>
+                        <input type="text" class="form-control" name="code" id="edit_code" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Branch') }}</label>
+                        <select class="form-select" name="branch_id" id="edit_branch_id">
+                            <option value="">{{ _('Select Branch') }}</option>
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Address') }}</label>
+                        <textarea class="form-control" name="address" id="edit_address" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Manager') }}</label>
+                        <select class="form-select" name="manager_id" id="edit_manager_id">
+                            <option value="">{{ _('Select Manager') }}</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="is_active" id="edit_is_active">
+                        <label class="form-check-label" for="edit_is_active">{{ _('Active') }}</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ _('Save Changes') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Warehouse Modal -->
+<div class="modal fade" id="deleteWarehouseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="deleteWarehouseForm">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">{{ _('Confirm Delete') }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ _('Are you sure you want to delete the warehouse') }} <strong id="delete_warehouse_name"></strong>?</p>
+                    <p class="text-danger">{{ _('This action cannot be undone!') }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-danger">{{ _('Delete') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editWarehouse(id, name, name_en, code, branch_id, address, manager_id, is_active) {
+    document.getElementById('editWarehouseForm').action = "{{ url_for('inventory.edit_warehouse', id=0) }}".replace('0', id);
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_name_en').value = name_en;
+    document.getElementById('edit_code').value = code;
+    document.getElementById('edit_branch_id').value = branch_id || '';
+    document.getElementById('edit_address').value = address;
+    document.getElementById('edit_manager_id').value = manager_id || '';
+    document.getElementById('edit_is_active').checked = is_active;
+
+    var modal = new bootstrap.Modal(document.getElementById('editWarehouseModal'));
+    modal.show();
+}
+
+function deleteWarehouse(id, name) {
+    document.getElementById('deleteWarehouseForm').action = "{{ url_for('inventory.delete_warehouse', id=0) }}".replace('0', id);
+    document.getElementById('delete_warehouse_name').textContent = name;
+
+    var modal = new bootstrap.Modal(document.getElementById('deleteWarehouseModal'));
+    modal.show();
+}
+</script>
+{% endblock %}
+

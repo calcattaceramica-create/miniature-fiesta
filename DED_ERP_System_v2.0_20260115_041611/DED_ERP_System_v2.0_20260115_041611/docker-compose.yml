@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: erp-system
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key}
+      - DATABASE_URL=sqlite:///erp_system.db
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+      - ./erp_system.db:/app/erp_system.db
+    restart: unless-stopped
+    networks:
+      - erp-network
+
+  # Optional: PostgreSQL database
+  # Uncomment if you want to use PostgreSQL instead of SQLite
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: erp-db
+  #   environment:
+  #     - POSTGRES_DB=erp_system
+  #     - POSTGRES_USER=erp_user
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD:-change-this-password}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - erp-network
+  #   restart: unless-stopped
+
+  # Optional: Redis for caching
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: erp-redis
+  #   networks:
+  #     - erp-network
+  #   restart: unless-stopped
+
+networks:
+  erp-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
+

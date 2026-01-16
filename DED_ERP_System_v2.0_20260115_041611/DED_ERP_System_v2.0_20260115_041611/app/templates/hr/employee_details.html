@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الموظف - {{ employee.first_name }} {{ employee.last_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user"></i> تفاصيل الموظف</h2>
+        <div>
+            <a href="{{ url_for('hr.edit_employee', id=employee.id) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> تعديل
+            </a>
+            <a href="{{ url_for('hr.employees') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right"></i> العودة
+            </a>
+        </div>
+    </div>
+
+    <!-- Employee Info -->
+    <div class="row">
+        <!-- Basic Info -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    <h4>{{ employee.first_name }} {{ employee.last_name }}</h4>
+                    <p class="text-muted">{{ employee.employee_number }}</p>
+                    <hr>
+                    <div class="text-start">
+                        <p><strong>القسم:</strong> {{ employee.department.name if employee.department else '-' }}</p>
+                        <p><strong>المنصب:</strong> {{ employee.position.name if employee.position else '-' }}</p>
+                        <p><strong>الفرع:</strong> {{ employee.branch.name if employee.branch else '-' }}</p>
+                        <p><strong>الحالة:</strong> 
+                            {% if employee.employment_status == 'active' %}
+                            <span class="badge bg-success">نشط</span>
+                            {% else %}
+                            <span class="badge bg-danger">غير نشط</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card shadow mt-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">إحصائيات سريعة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>إجمالي أيام الحضور:</span>
+                        <strong>{{ attendance_summary.total_days or 0 }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>إجمالي ساعات العمل:</span>
+                        <strong>{{ '%.2f'|format(attendance_summary.total_hours or 0) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>الراتب الأساسي:</span>
+                        <strong>{{ '%.2f'|format(employee.basic_salary) }} ريال</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Info -->
+        <div class="col-md-8 mb-4">
+            <!-- Personal Info -->
+            <div class="card shadow mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-id-card"></i> المعلومات الشخصية</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>الاسم بالإنجليزي:</strong> {{ employee.first_name_en }} {{ employee.last_name_en }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>رقم الهوية:</strong> {{ employee.national_id or '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>رقم الجواز:</strong> {{ employee.passport_number or '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>تاريخ الميلاد:</strong> {{ employee.date_of_birth.strftime('%Y-%m-%d') if employee.date_of_birth else '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>الجنس:</strong> {{ 'ذكر' if employee.gender == 'male' else 'أنثى' if employee.gender == 'female' else '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>الحالة الاجتماعية:</strong> {{ employee.marital_status or '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>الجنسية:</strong> {{ employee.nationality or '-' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="card shadow mb-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-phone"></i> معلومات الاتصال</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>البريد الإلكتروني:</strong> {{ employee.email or '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>الهاتف:</strong> {{ employee.phone or '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>الجوال:</strong> {{ employee.mobile or '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>المدينة:</strong> {{ employee.city or '-' }}
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <strong>العنوان:</strong> {{ employee.address or '-' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Info -->
+            <div class="card shadow mb-3">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-briefcase"></i> معلومات التوظيف</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>تاريخ التعيين:</strong> {{ employee.hire_date.strftime('%Y-%m-%d') if employee.hire_date else '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>نوع العقد:</strong> {{ employee.contract_type or '-' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>حالة التوظيف:</strong> {{ employee.employment_status or '-' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for Additional Info -->
+    <div class="card shadow">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#attendance">الحضور</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#leaves">الإجازات</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#payroll">الرواتب</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <!-- Attendance Tab -->
+                <div class="tab-pane fade show active" id="attendance">
+                    <h5>آخر سجلات الحضور</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>الدخول</th>
+                                    <th>الخروج</th>
+                                    <th>ساعات العمل</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for att in recent_attendance %}
+                                <tr>
+                                    <td>{{ att.attendance_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ att.check_in.strftime('%H:%M') if att.check_in else '-' }}</td>
+                                    <td>{{ att.check_out.strftime('%H:%M') if att.check_out else '-' }}</td>
+                                    <td>{{ '%.2f'|format(att.working_hours) }}</td>
+                                    <td>
+                                        {% if att.status == 'present' %}
+                                        <span class="badge bg-success">حاضر</span>
+                                        {% elif att.status == 'absent' %}
+                                        <span class="badge bg-danger">غائب</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">متأخر</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">لا توجد سجلات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Leaves Tab -->
+                <div class="tab-pane fade" id="leaves">
+                    <h5>طلبات الإجازات</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>من</th>
+                                    <th>إلى</th>
+                                    <th>الأيام</th>
+                                    <th>السبب</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in leaves %}
+                                <tr>
+                                    <td>{{ leave.start_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ leave.end_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ leave.days_count }}</td>
+                                    <td>{{ leave.reason[:30] if leave.reason else '-' }}</td>
+                                    <td>
+                                        {% if leave.status == 'approved' %}
+                                        <span class="badge bg-success">موافق</span>
+                                        {% elif leave.status == 'rejected' %}
+                                        <span class="badge bg-danger">مرفوض</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">معلق</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">لا توجد طلبات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payroll Tab -->
+                <div class="tab-pane fade" id="payroll">
+                    <h5>سجل الرواتب</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>الشهر/السنة</th>
+                                    <th>الراتب الأساسي</th>
+                                    <th>البدلات</th>
+                                    <th>الخصومات</th>
+                                    <th>صافي الراتب</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pay in payrolls %}
+                                <tr>
+                                    <td>{{ pay.month }}/{{ pay.year }}</td>
+                                    <td>{{ '%.2f'|format(pay.basic_salary) }}</td>
+                                    <td>{{ '%.2f'|format(pay.allowances) }}</td>
+                                    <td>{{ '%.2f'|format(pay.deductions) }}</td>
+                                    <td><strong>{{ '%.2f'|format(pay.net_salary) }}</strong></td>
+                                    <td>
+                                        {% if pay.status == 'paid' %}
+                                        <span class="badge bg-success">مدفوع</span>
+                                        {% elif pay.status == 'approved' %}
+                                        <span class="badge bg-info">معتمد</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">مسودة</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">لا توجد سجلات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

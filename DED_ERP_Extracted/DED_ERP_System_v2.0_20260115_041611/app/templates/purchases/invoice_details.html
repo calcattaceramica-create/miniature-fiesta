@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Purchase Invoice Details') }} - {{ _('Inventory Management System') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-file-invoice"></i> {{ _('Purchase Invoice No') }}: {{ invoice.invoice_number }}</h4>
+                    <div>
+                        {% if invoice.status == 'draft' %}
+                        <a href="{{ url_for('purchases.confirm_invoice', id=invoice.id) }}" class="btn btn-light">
+                            <i class="fas fa-check"></i> {{ _('Confirm Invoice') }}
+                        </a>
+                        <a href="{{ url_for('purchases.delete_invoice', id=invoice.id) }}" class="btn btn-danger"
+                           onclick="return confirm('{{ _('Are you sure you want to delete this invoice?') }}')">
+                            <i class="fas fa-trash"></i> {{ _('Delete') }}
+                        </a>
+                        {% elif invoice.status == 'confirmed' %}
+                        <a href="{{ url_for('purchases.cancel_invoice', id=invoice.id) }}" class="btn btn-warning">
+                            <i class="fas fa-ban"></i> {{ _('Cancel Invoice') }}
+                        </a>
+                        {% endif %}
+                        <a href="#" class="btn btn-light" onclick="window.print()">
+                            <i class="fas fa-print"></i> {{ _('Print') }}
+                        </a>
+                        <a href="{{ url_for('purchases.invoices') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right"></i> {{ _('Back') }}
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Invoice Header -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2">{{ _('Invoice Information') }}</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th style="width: 40%">{{ _('Invoice Number') }}:</th>
+                                    <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Date') }}:</th>
+                                    <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Reference Number') }}:</th>
+                                    <td>{{ invoice.reference_number or '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Status') }}:</th>
+                                    <td>
+                                        {% if invoice.status == 'draft' %}
+                                            <span class="badge bg-secondary">{{ _('Draft') }}</span>
+                                        {% elif invoice.status == 'confirmed' %}
+                                            <span class="badge bg-success">{{ _('Confirmed') }}</span>
+                                        {% elif invoice.status == 'paid' %}
+                                            <span class="badge bg-primary">{{ _('Paid') }}</span>
+                                        {% elif invoice.status == 'cancelled' %}
+                                            <span class="badge bg-danger">{{ _('Cancelled') }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Payment Status') }}:</th>
+                                    <td>
+                                        {% if invoice.payment_status == 'unpaid' %}
+                                            <span class="badge bg-danger">{{ _('Unpaid') }}</span>
+                                        {% elif invoice.payment_status == 'partial' %}
+                                            <span class="badge bg-warning">{{ _('Partially Paid') }}</span>
+                                        {% elif invoice.payment_status == 'paid' %}
+                                            <span class="badge bg-success">{{ _('Paid') }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2">{{ _('Supplier and Warehouse Information') }}</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th style="width: 40%">{{ _('Supplier') }}:</th>
+                                    <td><strong>{{ invoice.supplier.name }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Supplier Code') }}:</th>
+                                    <td>{{ invoice.supplier.code }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Phone') }}:</th>
+                                    <td>{{ invoice.supplier.phone or '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Warehouse') }}:</th>
+                                    <td>{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('User') }}:</th>
+                                    <td>{{ invoice.user.username if invoice.user else '-' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Items -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2">{{ _('Invoice Items') }}</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>{{ _('Item') }}</th>
+                                            <th>{{ _('Quantity') }}</th>
+                                            <th>{{ _('Price') }}</th>
+                                            <th>{{ _('Discount') }} %</th>
+                                            <th>{{ _('Tax') }} %</th>
+                                            <th>{{ _('Total') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in invoice.items %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>
+                                                <strong>{{ item.product.name }}</strong><br>
+                                                <small class="text-muted">{{ item.product.code }}</small>
+                                            </td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>{{ "%.2f"|format(item.unit_price) }} {{ _('SAR') }}</td>
+                                            <td>{{ "%.2f"|format(item.discount_percent) }}%</td>
+                                            <td>{{ "%.2f"|format(item.tax_percent) }}%</td>
+                                            <td><strong>{{ "%.2f"|format(item.total_price) }} {{ _('SAR') }}</strong></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Totals -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            {% if invoice.notes %}
+                            <h5 class="border-bottom pb-2">{{ _('Notes') }}</h5>
+                            <p>{{ invoice.notes }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>{{ _('Subtotal') }}:</span>
+                                        <strong>{{ "%.2f"|format(invoice.subtotal_amount) }} {{ _('SAR') }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>{{ _('Discount') }}:</span>
+                                        <strong>{{ "%.2f"|format(invoice.discount_amount) }} {{ _('SAR') }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>{{ _('Tax') }}:</span>
+                                        <strong>{{ "%.2f"|format(invoice.tax_amount) }} {{ _('SAR') }}</strong>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h5>{{ _('Total') }}:</h5>
+                                        <h5 class="text-success">{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</h5>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>{{ _('Paid') }}:</span>
+                                        <strong class="text-primary">{{ "%.2f"|format(invoice.paid_amount) }} {{ _('SAR') }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>{{ _('Remaining') }}:</span>
+                                        <strong class="text-danger">{{ "%.2f"|format(invoice.remaining_amount) }} {{ _('SAR') }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

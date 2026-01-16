@@ -1,24 +1,21 @@
 import streamlit as st
 import json
-import sqlite3
 from pathlib import Path
 from datetime import datetime, timedelta
 import hashlib
 import secrets
-import subprocess
-import sys
-import platform
 import uuid
-from werkzeug.security import generate_password_hash
-import pandas as pd
 
 # Page configuration
 st.set_page_config(
-    page_title="DED Control Panel",
+    page_title="DED Control Panel - Demo",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Demo mode warning
+st.warning("⚠️ **وضع العرض التجريبي - Demo Mode**: هذه نسخة تجريبية للعرض فقط. للاستخدام الكامل، قم بتشغيل التطبيق محلياً.")
 
 # Custom CSS for modern design
 st.markdown("""
@@ -92,19 +89,8 @@ class LicenseManager:
             json.dump(licenses, f, indent=2, ensure_ascii=False)
     
     def get_machine_id(self):
-        try:
-            if platform.system() == 'Windows':
-                import winreg
-                key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 
-                                    r"SOFTWARE\Microsoft\Cryptography", 
-                                    0, winreg.KEY_READ | winreg.KEY_WOW64_64KEY)
-                value, _ = winreg.QueryValueEx(key, "MachineGuid")
-                winreg.CloseKey(key)
-                return value
-            else:
-                return str(uuid.getnode())
-        except:
-            return str(uuid.uuid4())
+        # Demo mode - return a fixed ID
+        return "DEMO-" + str(uuid.uuid4())[:8]
     
     def create_license_key(self, company, machine_id=""):
         timestamp = datetime.now().isoformat()
@@ -149,74 +135,8 @@ class LicenseManager:
         return key, license_data
 
     def sync_to_database(self, license_key, license_data):
-        try:
-            if not self.db_path.exists():
-                return False, "Database not found"
-
-            conn = sqlite3.connect(str(self.db_path))
-            cursor = conn.cursor()
-
-            expiry_date = datetime.strptime(license_data.get('expiry'), "%Y-%m-%d")
-
-            cursor.execute("""
-                INSERT OR REPLACE INTO licenses
-                (license_key, company_name, machine_id, expiry_date, duration_days,
-                 license_type, max_users, features, status, activation_count,
-                 contact_email, contact_phone, notes, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                license_key,
-                license_data.get('company'),
-                license_data.get('machine_id'),
-                expiry_date,
-                license_data.get('duration_days', 365),
-                license_data.get('license_type', 'Standard'),
-                license_data.get('max_users', 10),
-                'all',
-                license_data.get('status', 'active'),
-                license_data.get('activation_count', 0),
-                license_data.get('contact_email'),
-                license_data.get('contact_phone'),
-                license_data.get('notes'),
-                datetime.now()
-            ))
-
-            license_id = cursor.lastrowid
-            if license_id == 0:
-                cursor.execute("SELECT id FROM licenses WHERE license_key = ?", (license_key,))
-                result = cursor.fetchone()
-                if result:
-                    license_id = result[0]
-
-            username = license_data.get('username')
-            cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
-            user_exists = cursor.fetchone()
-
-            if not user_exists:
-                password_hash = generate_password_hash(license_data.get('password'))
-                cursor.execute("""
-                    INSERT INTO users
-                    (username, email, password_hash, full_name, phone, is_active,
-                     is_admin, language, license_id, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    username,
-                    license_data.get('contact_email', f"{username}@example.com"),
-                    password_hash,
-                    license_data.get('company'),
-                    license_data.get('contact_phone'),
-                    1 if license_data.get('status') == 'active' else 0,
-                    0,
-                    'ar',
-                    license_id,
-                    datetime.now()
-                ))
-
-            conn.commit()
-            conn.close()
-            return True, "Synced successfully"
-        except Exception as e:
-            return False, str(e)
+        # Demo mode - database operations disabled
+        return False, "⚠️ Database operations are disabled in demo mode"
 
 # Initialize manager
 manager = LicenseManager()
@@ -312,8 +232,11 @@ with tab1:
                 "المفتاح - Key": key[:20] + "..."
             })
 
-        df = pd.DataFrame(data)
-        st.dataframe(df, use_container_width=True, height=400)
+        # Display as table without pandas
+        if data:
+            st.table(data)
+        else:
+            st.info("لا توجد تراخيص - No licenses found")
 
         # License actions
         st.markdown("#### 🔧 إجراءات - Actions")
@@ -382,64 +305,25 @@ with tab2:
     btn_col1, btn_col2, btn_col3 = st.columns(3)
 
     with btn_col1:
-        if st.button("▶️ تشغيل التطبيق - Start App", type="primary", use_container_width=True, disabled=st.session_state.app_running):
-            try:
-                process = subprocess.Popen(
-                    [sys.executable, "run.py"],
-                    cwd=str(manager.app_dir),
-                    creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
-                )
-                st.session_state.flask_process = process
-                st.session_state.app_running = True
-                st.success("✅ تم تشغيل التطبيق! - Application started!")
-                st.rerun()
-            except Exception as e:
-                st.error(f"❌ خطأ: {str(e)}")
+        if st.button("▶️ تشغيل التطبيق - Start App", type="primary", use_container_width=True, disabled=True):
+            st.warning("⚠️ App control is disabled in demo mode")
 
     with btn_col2:
-        if st.button("⏹️ إيقاف التطبيق - Stop App", use_container_width=True, disabled=not st.session_state.app_running):
-            if st.session_state.flask_process:
-                try:
-                    st.session_state.flask_process.terminate()
-                    st.session_state.flask_process.wait(timeout=5)
-                except:
-                    st.session_state.flask_process.kill()
-                st.session_state.flask_process = None
-            st.session_state.app_running = False
-            st.success("✅ تم إيقاف التطبيق! - Application stopped!")
-            st.rerun()
+        if st.button("⏹️ إيقاف التطبيق - Stop App", use_container_width=True, disabled=True):
+            st.warning("⚠️ App control is disabled in demo mode")
 
     with btn_col3:
-        if st.button("🌐 فتح في المتصفح - Open Browser", use_container_width=True, disabled=not st.session_state.app_running):
-            import webbrowser
-            webbrowser.open("http://127.0.0.1:5000")
-            st.success("✅ تم فتح المتصفح - Browser opened")
+        if st.button("🌐 فتح في المتصفح - Open Browser", use_container_width=True, disabled=True):
+            st.warning("⚠️ App control is disabled in demo mode")
 
     st.markdown("---")
 
     # Migration section
     st.markdown("### 🔄 تطبيق Migration - Apply Migration")
-    st.info("⚠️ يجب تشغيل التطبيق أولاً لإنشاء قاعدة البيانات - You must start the app first to create the database")
+    st.info("⚠️ Migration is disabled in demo mode")
 
-    if st.button("🔄 تطبيق Migration", use_container_width=True):
-        if not manager.db_path.exists():
-            st.error("❌ قاعدة البيانات غير موجودة! يجب تشغيل التطبيق أولاً - Database not found! Start the app first")
-        else:
-            try:
-                result = subprocess.run(
-                    [sys.executable, "apply_migration.py"],
-                    cwd=str(manager.app_dir),
-                    capture_output=True,
-                    text=True,
-                    timeout=30
-                )
-                if result.returncode == 0:
-                    st.success("✅ تم تطبيق Migration بنجاح! - Migration applied successfully!")
-                    st.code(result.stdout)
-                else:
-                    st.error(f"❌ خطأ: {result.stderr}")
-            except Exception as e:
-                st.error(f"❌ خطأ: {str(e)}")
+    if st.button("🔄 تطبيق Migration", use_container_width=True, disabled=True):
+        st.warning("⚠️ Migration is disabled in demo mode")
 
 # Footer
 st.markdown("---")

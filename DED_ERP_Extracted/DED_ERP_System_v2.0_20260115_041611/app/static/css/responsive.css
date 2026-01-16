@@ -1,0 +1,526 @@
+/* ========================================
+   Responsive Design for DED System
+   Mobile-First Approach
+   ======================================== */
+
+/* ========================================
+   1. Base Responsive Utilities
+   ======================================== */
+
+/* Container adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+}
+
+/* ========================================
+   2. Page Header Responsive
+   ======================================== */
+
+.page-header .d-flex {
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .page-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .page-header .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .page-header .btn-group {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .page-header .btn-group .btn {
+        border-radius: 0.25rem !important;
+        margin-bottom: 5px;
+    }
+}
+
+/* ========================================
+   3. Cards Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .card-header {
+        padding: 10px 15px;
+    }
+}
+
+/* ========================================
+   4. Tables Responsive
+   ======================================== */
+
+@media (max-width: 992px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table {
+        min-width: 800px;
+        font-size: 0.875rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .table {
+        min-width: 600px;
+        font-size: 0.8rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.4rem;
+    }
+    
+    /* Hide less important columns on mobile */
+    .table .hide-mobile {
+        display: none;
+    }
+}
+
+/* ========================================
+   5. Forms Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    
+    /* Stack form rows on mobile */
+    .row > [class*="col-"] {
+        margin-bottom: 10px;
+    }
+    
+    /* Full width buttons on mobile */
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-group {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        border-radius: 0.25rem !important;
+        margin-bottom: 5px;
+    }
+}
+
+/* ========================================
+   6. Navigation & Sidebar Responsive
+   ======================================== */
+
+@media (max-width: 992px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100vh;
+        transition: left 0.3s ease;
+        z-index: 1050;
+    }
+
+    .sidebar.show {
+        left: 0;
+    }
+
+    /* Navbar adjustments */
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+    }
+}
+
+/* ========================================
+   7. Dashboard Cards Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .dashboard-card {
+        margin-bottom: 15px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .stat-card p {
+        font-size: 0.9rem;
+    }
+}
+
+/* ========================================
+   8. Modal Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   9. Invoice/Document Forms Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Invoice items table */
+    #invoice-items-table {
+        font-size: 0.75rem;
+    }
+
+    #invoice-items-table th,
+    #invoice-items-table td {
+        padding: 0.3rem;
+    }
+
+    #invoice-items-table input {
+        font-size: 0.75rem;
+        padding: 0.25rem;
+    }
+
+    /* Invoice summary */
+    .invoice-summary {
+        font-size: 0.9rem;
+    }
+
+    .invoice-summary .row {
+        margin-bottom: 5px;
+    }
+}
+
+/* ========================================
+   10. Action Buttons Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .btn-sm {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* ========================================
+   11. Filters & Search Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .filter-section {
+        margin-bottom: 15px;
+    }
+
+    .filter-section .row > div {
+        margin-bottom: 10px;
+    }
+
+    .search-box {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* ========================================
+   12. Pagination Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .pagination {
+        font-size: 0.875rem;
+    }
+
+    .pagination .page-link {
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+/* ========================================
+   13. Alerts & Messages Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .alert {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+
+    .alert .btn-close {
+        padding: 0.5rem;
+    }
+}
+
+/* ========================================
+   14. POS Screen Responsive
+   ======================================== */
+
+@media (max-width: 992px) {
+    .pos-container {
+        flex-direction: column;
+    }
+
+    .pos-products,
+    .pos-cart {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pos-product-card {
+        width: calc(50% - 10px);
+    }
+
+    .pos-cart-item {
+        font-size: 0.85rem;
+    }
+}
+
+/* ========================================
+   15. Reports & Charts Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px !important;
+        margin-bottom: 20px;
+    }
+
+    .report-filters {
+        flex-direction: column;
+    }
+
+    .report-filters .form-group {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* ========================================
+   16. Settings Pages Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .settings-nav {
+        flex-direction: column;
+    }
+
+    .settings-nav .nav-link {
+        width: 100%;
+        text-align: right;
+        border-radius: 0.25rem;
+        margin-bottom: 5px;
+    }
+
+    .settings-content {
+        padding: 15px;
+    }
+}
+
+/* ========================================
+   17. Employee/HR Cards Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .employee-card {
+        margin-bottom: 15px;
+    }
+
+    .employee-card .card-body {
+        padding: 15px;
+    }
+
+    .employee-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .attendance-table {
+        font-size: 0.8rem;
+    }
+}
+
+/* ========================================
+   18. Accounting Pages Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .journal-entry-form {
+        padding: 15px;
+    }
+
+    .account-tree {
+        font-size: 0.85rem;
+    }
+
+    .financial-statement {
+        font-size: 0.85rem;
+        overflow-x: auto;
+    }
+}
+
+/* ========================================
+   19. Customer/Supplier Cards Responsive
+   ======================================== */
+
+@media (max-width: 768px) {
+    .customer-card,
+    .supplier-card {
+        margin-bottom: 15px;
+    }
+
+    .balance-badge {
+        font-size: 0.85rem;
+    }
+}
+
+/* ========================================
+   20. Utility Classes
+   ======================================== */
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
+
+/* Show only on mobile */
+.show-on-mobile {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .show-on-mobile {
+        display: block !important;
+    }
+}
+
+/* Text alignment on mobile */
+@media (max-width: 768px) {
+    .text-mobile-center {
+        text-align: center !important;
+    }
+
+    .text-mobile-right {
+        text-align: right !important;
+    }
+
+    .text-mobile-left {
+        text-align: left !important;
+    }
+}
+
+/* Spacing adjustments */
+@media (max-width: 768px) {
+    .mb-mobile-2 {
+        margin-bottom: 0.5rem !important;
+    }
+
+    .mb-mobile-3 {
+        margin-bottom: 1rem !important;
+    }
+
+    .p-mobile-2 {
+        padding: 0.5rem !important;
+    }
+}
+
+/* ========================================
+   21. Print Styles
+   ======================================== */
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .page-header,
+    .navbar,
+    .sidebar,
+    .btn,
+    .pagination {
+        display: none !important;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+
+    .table {
+        font-size: 10pt;
+    }
+}

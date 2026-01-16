@@ -8,6 +8,31 @@ A complete system for managing software licenses with automatic verification dur
 
 ---
 
+## ✅ الحالة الحالية - Current Status
+
+**تم تفعيل نظام الترخيص بنجاح! ✅**
+
+- ✅ تم إنشاء ترخيص تجريبي نشط
+- ✅ مدة الترخيص: 365 يوم (سنة واحدة)
+- ✅ الحد الأقصى للمستخدمين: 10
+- ✅ الحد الأقصى للفروع: 5
+- ✅ تم تفعيل middleware الترخيص
+
+### 🔑 معلومات الترخيص الحالي - Current License Info
+
+```
+License Key: CEC9-79EE-C42F-2DAD
+Client: DED ERP System
+Type: TRIAL
+Created: 2026-01-16
+Expires: 2027-01-16
+Days Remaining: 364 days
+Max Users: 10
+Max Branches: 5
+```
+
+---
+
 ## المكونات الرئيسية - Main Components
 
 ### 1. لوحة التحكم - Control Panel (`DED_Control_Panel.pyw`)

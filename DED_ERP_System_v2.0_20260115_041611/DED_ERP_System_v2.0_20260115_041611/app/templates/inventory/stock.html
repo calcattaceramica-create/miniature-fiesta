@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Stock Levels') }}{% endblock %}
+{% block page_title %}{{ _('Stock Levels') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-boxes"></i> {{ _('Stock Levels') }}</h2>
+                <p class="text-muted mb-0">{{ _('View and manage stock levels in all warehouses') }}</p>
+            </div>
+            <div>
+                <a href="{{ url_for('inventory.stock_transfer') }}" class="btn btn-primary">
+                    <i class="fas fa-exchange-alt"></i> {{ _('Stock Transfer') }}
+                </a>
+                <a href="{{ url_for('inventory.warehouses') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-warehouse"></i> {{ _('Warehouses') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('inventory.stock') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label for="warehouse" class="form-label">{{ _('Warehouse') }}</label>
+                    <select name="warehouse" id="warehouse" class="form-select" onchange="this.form.submit()">
+                        <option value="">{{ _('All Warehouses') }}</option>
+                        {% for warehouse in warehouses %}
+                        <option value="{{ warehouse.id }}" {% if warehouse_id == warehouse.id %}selected{% endif %}>
+                            {{ warehouse.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label">{{ _('Status') }}</label>
+                    <select name="status" id="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">{{ _('All Statuses') }}</option>
+                        <option value="low">{{ _('Low Stock') }}</option>
+                        <option value="normal">{{ _('Normal Stock') }}</option>
+                        <option value="high">{{ _('High Stock') }}</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <div>
+                        <a href="{{ url_for('inventory.stock') }}" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> {{ _('Reset') }}
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stock Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('Total Products') }}</h6>
+                    <h3 class="mb-0">{{ stocks.total }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('Low Stock') }}</h6>
+                    <h3 class="mb-0">
+                        {% set low_stock_count = namespace(value=0) %}
+                        {% for stock in stocks.items %}
+                            {% if stock.product.min_stock and stock.quantity <= stock.product.min_stock %}
+                                {% set low_stock_count.value = low_stock_count.value + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ low_stock_count.value }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('Normal Stock') }}</h6>
+                    <h3 class="mb-0">
+                        {% set normal_stock_count = namespace(value=0) %}
+                        {% for stock in stocks.items %}
+                            {% if (not stock.product.min_stock or stock.quantity > stock.product.min_stock) and (not stock.product.max_stock or stock.quantity < stock.product.max_stock) %}
+                                {% set normal_stock_count.value = normal_stock_count.value + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ normal_stock_count.value }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">{{ _('High Stock') }}</h6>
+                    <h3 class="mb-0">
+                        {% set high_stock_count = namespace(value=0) %}
+                        {% for stock in stocks.items %}
+                            {% if stock.product.max_stock and stock.quantity >= stock.product.max_stock %}
+                                {% set high_stock_count.value = high_stock_count.value + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ high_stock_count.value }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Table -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Stock List') }}</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>{{ _('Product') }}</th>
+                            <th>{{ _('Code') }}</th>
+                            <th>{{ _('Warehouse') }}</th>
+                            <th>{{ _('Total Quantity') }}</th>
+                            <th>{{ _('Reserved') }}</th>
+                            <th>{{ _('Available') }}</th>
+                            <th>{{ _('Min Level') }}</th>
+                            <th>{{ _('Max Level') }}</th>
+                            <th>{{ _('Status') }}</th>
+                            <th>{{ _('Value') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stock in stocks.items %}
+                        <tr>
+                            <td>{{ loop.index + (stocks.page - 1) * stocks.per_page }}</td>
+                            <td>
+                                <strong>{{ stock.product.name }}</strong>
+                                {% if stock.product.name_en %}
+                                <br><small class="text-muted">{{ stock.product.name_en }}</small>
+                                {% endif %}
+                            </td>
+                            <td><code>{{ stock.product.code }}</code></td>
+                            <td>
+                                <a href="{{ url_for('inventory.warehouse_details', id=stock.warehouse.id) }}">
+                                    {{ stock.warehouse.name }}
+                                </a>
+                            </td>
+                            <td><strong class="text-primary">{{ stock.quantity }}</strong></td>
+                            <td>{{ stock.reserved_quantity }}</td>
+                            <td>{{ stock.available_quantity }}</td>
+                            <td>{{ stock.product.min_stock }}</td>
+                            <td>{{ stock.product.max_stock }}</td>
+                            <td>
+                                {% if stock.product.min_stock and stock.quantity <= stock.product.min_stock %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-exclamation-triangle"></i> {{ _('Low') }}
+                                </span>
+                                {% elif stock.product.max_stock and stock.quantity >= stock.product.max_stock %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-exclamation-circle"></i> {{ _('High') }}
+                                </span>
+                                {% else %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle"></i> {{ _('Normal') }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong>{{ "%.2f"|format(stock.quantity * stock.product.cost_price) }}</strong> {{ _('SAR') }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                <h5>{{ _('No stock found') }}</h5>
+                                <p>{{ _('No stock found in warehouses') }}</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if stocks.pages > 1 %}
+        <div class="card-footer">
+            <nav aria-label="Stock pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if stocks.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('inventory.stock', page=stocks.prev_num, warehouse=warehouse_id) }}">
+                            <i class="fas fa-chevron-right"></i> {{ _('Previous') }}
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in stocks.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == stocks.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('inventory.stock', page=page_num, warehouse=warehouse_id) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if stocks.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('inventory.stock', page=stocks.next_num, warehouse=warehouse_id) }}">
+                            {{ _('Next') }} <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+@media print {
+    .page-header .btn,
+    .card-body form,
+    .pagination {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
+

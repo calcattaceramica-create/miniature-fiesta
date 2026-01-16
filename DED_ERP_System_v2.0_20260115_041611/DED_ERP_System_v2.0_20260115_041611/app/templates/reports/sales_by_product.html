@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}تقرير المبيعات حسب المنتج - نظام إدارة المخزون{% endblock %}
+{% block page_title %}تقرير المبيعات حسب المنتج{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-chart-line"></i> تقرير المبيعات حسب المنتج</h3>
+    <p class="text-muted mb-0">تحليل المبيعات لكل منتج</p>
+</div>
+
+<!-- Filters -->
+<div class="card shadow mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-filter"></i> الفترة الزمنية</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('reports.sales_by_product') }}">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date or '' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date or '' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> بحث
+                        </button>
+                        <a href="{{ url_for('reports.sales_by_product') }}" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> إعادة تعيين
+                        </a>
+                        <button type="button" onclick="window.print()" class="btn btn-info">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card bg-gradient-primary text-white shadow">
+            <div class="card-body">
+                <h6 class="text-white-50 mb-1">إجمالي الكمية المباعة</h6>
+                <h3 class="mb-0">{{ "{:,.0f}".format(total_qty) }}</h3>
+                <small>وحدة</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-gradient-success text-white shadow">
+            <div class="card-body">
+                <h6 class="text-white-50 mb-1">إجمالي قيمة المبيعات</h6>
+                <h3 class="mb-0">{{ "{:,.2f}".format(total_amount) }}</h3>
+                <small>ريال سعودي</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="card shadow">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-list"></i> المنتجات ({{ results|length }})</h5>
+    </div>
+    <div class="card-body">
+        {% if results %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>كود المنتج</th>
+                        <th>اسم المنتج</th>
+                        <th>الكمية المباعة</th>
+                        <th>إجمالي المبيعات</th>
+                        <th>النسبة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in results %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.code }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ "{:,.0f}".format(item.total_qty) }}</td>
+                        <td>{{ "{:,.2f}".format(item.total_amount) }} ر.س</td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ (item.total_amount / total_amount * 100) if total_amount > 0 else 0 }}%">
+                                    {{ "{:.1f}".format((item.total_amount / total_amount * 100) if total_amount > 0 else 0) }}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <th colspan="3">الإجمالي</th>
+                        <th>{{ "{:,.0f}".format(total_qty) }}</th>
+                        <th>{{ "{:,.2f}".format(total_amount) }} ر.س</th>
+                        <th>100%</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle"></i>
+            لا توجد مبيعات في الفترة المحددة
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+</style>
+{% endblock %}
+

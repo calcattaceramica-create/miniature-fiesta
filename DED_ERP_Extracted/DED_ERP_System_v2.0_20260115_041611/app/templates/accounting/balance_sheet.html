@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}الميزانية العمومية - نظام إدارة المخزون{% endblock %}
+{% block page_title %}الميزانية العمومية{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> الميزانية العمومية</h4>
+                        <button onclick="window.print()" class="btn btn-light">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Report Header -->
+                    <div class="text-center mb-4">
+                        <h3>الميزانية العمومية</h3>
+                        <p class="text-muted">Balance Sheet / Statement of Financial Position</p>
+                        <p>كما في تاريخ: {{ report_date }}</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- Assets Side -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">الأصول (Assets)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <!-- Current Assets -->
+                                        <tr class="table-light">
+                                            <td colspan="2"><strong>الأصول المتداولة (Current Assets)</strong></td>
+                                        </tr>
+                                        {% for account in current_assets %}
+                                        <tr>
+                                            <td class="ps-3">{{ account.name }}</td>
+                                            <td class="text-end" width="150">{{ "{:,.2f}".format(account.debit_balance) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr class="fw-bold">
+                                            <td>إجمالي الأصول المتداولة</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_current_assets) }}</td>
+                                        </tr>
+
+                                        <!-- Fixed Assets -->
+                                        <tr class="table-light">
+                                            <td colspan="2"><strong>الأصول الثابتة (Fixed Assets)</strong></td>
+                                        </tr>
+                                        {% for account in fixed_assets %}
+                                        <tr>
+                                            <td class="ps-3">{{ account.name }}</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(account.debit_balance) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr class="fw-bold">
+                                            <td>إجمالي الأصول الثابتة</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_fixed_assets) }}</td>
+                                        </tr>
+
+                                        <!-- Total Assets -->
+                                        <tr class="table-success fw-bold fs-6">
+                                            <td>إجمالي الأصول</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_assets) }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Liabilities & Equity Side -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-danger text-white">
+                                    <h5 class="mb-0">الخصوم وحقوق الملكية</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <!-- Current Liabilities -->
+                                        <tr class="table-light">
+                                            <td colspan="2"><strong>الخصوم المتداولة (Current Liabilities)</strong></td>
+                                        </tr>
+                                        {% for account in current_liabilities %}
+                                        <tr>
+                                            <td class="ps-3">{{ account.name }}</td>
+                                            <td class="text-end" width="150">{{ "{:,.2f}".format(account.credit_balance) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr class="fw-bold">
+                                            <td>إجمالي الخصوم المتداولة</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_current_liabilities) }}</td>
+                                        </tr>
+
+                                        <!-- Long-term Liabilities -->
+                                        <tr class="table-light">
+                                            <td colspan="2"><strong>الخصوم طويلة الأجل (Long-term Liabilities)</strong></td>
+                                        </tr>
+                                        {% for account in long_term_liabilities %}
+                                        <tr>
+                                            <td class="ps-3">{{ account.name }}</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(account.credit_balance) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr class="fw-bold">
+                                            <td>إجمالي الخصوم طويلة الأجل</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_long_term_liabilities) }}</td>
+                                        </tr>
+
+                                        <!-- Total Liabilities -->
+                                        <tr class="fw-bold">
+                                            <td>إجمالي الخصوم</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_liabilities) }}</td>
+                                        </tr>
+
+                                        <!-- Equity -->
+                                        <tr class="table-light">
+                                            <td colspan="2"><strong>حقوق الملكية (Equity)</strong></td>
+                                        </tr>
+                                        {% for account in equity_accounts %}
+                                        <tr>
+                                            <td class="ps-3">{{ account.name }}</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(account.credit_balance) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr class="fw-bold">
+                                            <td>إجمالي حقوق الملكية</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_equity) }}</td>
+                                        </tr>
+
+                                        <!-- Total Liabilities & Equity -->
+                                        <tr class="table-danger fw-bold fs-6">
+                                            <td>إجمالي الخصوم وحقوق الملكية</td>
+                                            <td class="text-end">{{ "{:,.2f}".format(total_liabilities_equity) }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Balance Check -->
+                    <div class="alert {% if total_assets == total_liabilities_equity %}alert-success{% else %}alert-danger{% endif %} mt-4">
+                        <i class="fas {% if total_assets == total_liabilities_equity %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                        {% if total_assets == total_liabilities_equity %}
+                            <strong>الميزانية متوازنة!</strong> إجمالي الأصول يساوي إجمالي الخصوم وحقوق الملكية.
+                        {% else %}
+                            <strong>تحذير!</strong> الميزانية غير متوازنة. يوجد فرق بمقدار {{ "{:,.2f}".format(abs(total_assets - total_liabilities_equity)) }} ريال.
+                        {% endif %}
+                    </div>
+
+                    <!-- Financial Ratios -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted">نسبة التداول</h6>
+                                    <h3 class="text-primary">
+                                        {% if total_current_liabilities > 0 %}
+                                            {{ "{:.2f}".format(total_current_assets / total_current_liabilities) }}
+                                        {% else %}
+                                            ∞
+                                        {% endif %}
+                                    </h3>
+                                    <small class="text-muted">Current Ratio</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted">نسبة المديونية</h6>
+                                    <h3 class="text-warning">
+                                        {% if total_assets > 0 %}
+                                            {{ "{:.2f}".format((total_liabilities / total_assets) * 100) }}%
+                                        {% else %}
+                                            0.00%
+                                        {% endif %}
+                                    </h3>
+                                    <small class="text-muted">Debt Ratio</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted">نسبة حقوق الملكية</h6>
+                                    <h3 class="text-success">
+                                        {% if total_assets > 0 %}
+                                            {{ "{:.2f}".format((total_equity / total_assets) * 100) }}%
+                                        {% else %}
+                                            0.00%
+                                        {% endif %}
+                                    </h3>
+                                    <small class="text-muted">Equity Ratio</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar { display: none !important; }
+}
+</style>
+{% endblock %}
+

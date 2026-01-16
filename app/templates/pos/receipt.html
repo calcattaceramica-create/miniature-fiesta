@@ -3,265 +3,890 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فاتورة - {{ order.order_number }}</title>
+    <title>فاتورة ضريبية - {{ order.order_number }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ========== إعدادات عامة ========== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             direction: rtl;
-            padding: 20px;
-            max-width: 80mm;
+            padding: 20px 15px;
+            min-height: 100vh;
+        }
+
+        /* ========== حاوية الفاتورة ========== */
+        .invoice-container {
+            max-width: 210mm; /* عرض A4 */
             margin: 0 auto;
-        }
-        
-        .receipt {
             background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+            page-break-inside: avoid; /* منع تقسيم الصفحة */
         }
-        
-        .header {
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== رأس الفاتورة ========== */
+        .invoice-header {
+            color: white;
+            padding: 20px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invoice-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-logo-section {
             text-align: center;
-            border-bottom: 2px dashed #000;
-            padding-bottom: 10px;
             margin-bottom: 10px;
         }
-        
-        .header h1 {
+
+        .company-logo {
+            max-height: 60px;
+            max-width: 150px;
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .company-name {
             font-size: 24px;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin: 10px 0 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
-        .header p {
-            font-size: 12px;
-            margin: 2px 0;
-        }
-        
-        .info {
-            margin: 10px 0;
-            font-size: 12px;
-        }
-        
-        .info-row {
+
+        .invoice-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 3px;
             display: flex;
-            justify-content: space-between;
-            margin: 3px 0;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        
-        .items {
-            margin: 10px 0;
-            border-top: 1px dashed #000;
-            border-bottom: 1px dashed #000;
-            padding: 10px 0;
-        }
-        
-        .item {
-            margin: 5px 0;
-            font-size: 12px;
-        }
-        
-        .item-header {
+
+        .company-details {
             display: flex;
-            justify-content: space-between;
-            font-weight: bold;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            font-size: 14px;
         }
-        
-        .item-details {
+
+        .company-detail-item {
             display: flex;
-            justify-content: space-between;
-            color: #666;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .company-detail-item i {
+            font-size: 16px;
+        }
+
+        /* ========== معلومات الفاتورة ========== */
+        .invoice-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(to bottom, #f8f9fa, white);
+        }
+
+        .info-card {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-label {
             font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        
-        .totals {
-            margin: 10px 0;
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* ========== جدول المنتجات ========== */
+        .items-section {
+            padding: 15px 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 6px;
+        }
+
+        .items-table thead th {
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
             font-size: 13px;
         }
-        
+
+        .items-table thead th:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .items-table thead th:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .items-table tbody tr {
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .items-table tbody tr:hover {
+            background: #e9ecef;
+            transform: scale(1.01);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .items-table tbody td {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+        }
+
+        .items-table tbody td:first-child {
+            border-right: 1px solid #dee2e6;
+            border-radius: 8px 0 0 8px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .items-table tbody td:last-child {
+            border-left: 1px solid #dee2e6;
+            border-radius: 0 8px 8px 0;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        /* ========== الإجماليات ========== */
+        .totals-section {
+            padding: 15px 30px;
+            background: linear-gradient(to bottom, white, #f8f9fa);
+        }
+
+        .totals-grid {
+            display: grid;
+            gap: 10px;
+            max-width: 350px;
+            margin-right: auto;
+        }
+
         .total-row {
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
+            align-items: center;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-        
-        .total-row.grand {
-            font-size: 16px;
-            font-weight: bold;
-            border-top: 2px solid #000;
-            padding-top: 5px;
-            margin-top: 10px;
+
+        .total-label {
+            font-size: 13px;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        
-        .payment {
-            margin: 10px 0;
-            border-top: 1px dashed #000;
-            padding-top: 10px;
-            font-size: 12px;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 2px dashed #000;
-            font-size: 11px;
-        }
-        
-        .barcode {
-            text-align: center;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
+
+        .total-value {
             font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
         }
-        
+
+        .total-row.discount .total-value {
+            color: #dc3545;
+        }
+
+        .total-row.tax .total-value {
+            color: #ffc107;
+        }
+
+        .total-row.grand {
+            color: white;
+            padding: 12px 15px;
+            margin-top: 8px;
+            box-shadow: 0 3px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .total-row.grand .total-label,
+        .total-row.grand .total-value {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* ========== معلومات الدفع ========== */
+        .payment-section {
+            padding: 15px 30px;
+            background: white;
+            border-top: 2px solid #667eea;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .payment-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 10px;
+            border-radius: 8px;
+            border-right: 3px solid #28a745;
+        }
+
+        .payment-label {
+            font-size: 11px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .payment-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        /* ========== التذييل ========== */
+        .invoice-footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+        }
+
+        .barcode-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .barcode {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            letter-spacing: 3px;
+        }
+
+        .thank-you {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .footer-message {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .footer-details {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .footer-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ========== أزرار الطباعة ========== */
+        .print-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-close {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        /* ========== إعدادات الطباعة ========== */
         @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+
             body {
+                background: white;
                 padding: 0;
+                margin: 0;
             }
-            
+
+            .invoice-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+
             .no-print {
-                display: none;
+                display: none !important;
             }
+
+            .invoice-header {
+                padding: 15px 20px !important;
+                page-break-inside: avoid;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .company-name {
+                font-size: 20px !important;
+            }
+
+            .invoice-title {
+                font-size: 16px !important;
+            }
+
+            .invoice-info,
+            .items-section,
+            .totals-section,
+            .payment-section,
+            .invoice-footer {
+                padding: 10px 20px !important;
+                page-break-inside: avoid;
+            }
+
+            .section-title {
+                font-size: 14px !important;
+                margin-bottom: 8px !important;
+            }
+
+            .items-table {
+                border-spacing: 0 4px !important;
+            }
+
+            .items-table thead th {
+                padding: 8px !important;
+                font-size: 12px !important;
+            }
+
+            .items-table tbody td {
+                padding: 8px !important;
+                font-size: 12px !important;
+            }
+
+            .total-row {
+                padding: 6px 12px !important;
+                margin-bottom: 4px !important;
+            }
+
+            .total-label,
+            .total-value {
+                font-size: 12px !important;
+            }
+
+            .total-row.grand {
+                padding: 10px 12px !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .total-row.grand .total-label,
+            .total-row.grand .total-value {
+                font-size: 14px !important;
+            }
+
+            .payment-card {
+                padding: 8px !important;
+            }
+
+            .payment-label {
+                font-size: 10px !important;
+            }
+
+            .payment-value {
+                font-size: 12px !important;
+            }
+
+            .invoice-footer {
+                padding: 12px 20px !important;
+            }
+
+            .thank-you {
+                font-size: 14px !important;
+            }
+
+            .footer-message {
+                font-size: 11px !important;
+            }
+
+            .footer-detail {
+                font-size: 10px !important;
+            }
+
+            /* إخفاء التأثيرات الحركية */
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+
+            /* ضمان عدم تقسيم الأقسام */
+            .invoice-header,
+            .invoice-info,
+            .items-section,
+            .totals-section,
+            .payment-section,
+            .invoice-footer {
+                page-break-inside: avoid !important;
+            }
+
+            /* ضمان طباعة كل شيء على صفحة واحدة */
+            html, body {
+                height: auto;
+                overflow: visible;
+            }
+        }
+
+        /* ========== تأثيرات إضافية ========== */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
         }
     </style>
+
+    <!-- Dynamic Template Styles -->
+    {% include 'pos/receipt_styles.html' %}
 </head>
 <body>
-    <div class="receipt">
-        <!-- Header -->
-        <div class="header">
-            <h1>نظام إدارة المخزون</h1>
-            <p>فاتورة ضريبية مبسطة</p>
-            <p>الرقم الضريبي: 300000000000003</p>
-        </div>
-        
-        <!-- Order Info -->
-        <div class="info">
-            <div class="info-row">
-                <span>رقم الطلب:</span>
-                <strong>{{ order.order_number }}</strong>
-            </div>
-            <div class="info-row">
-                <span>التاريخ:</span>
-                <span>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
-            </div>
-            <div class="info-row">
-                <span>الكاشير:</span>
-                <span>{{ order.session.cashier.username }}</span>
-            </div>
-            {% if order.customer %}
-            <div class="info-row">
-                <span>العميل:</span>
-                <span>{{ order.customer.name }}</span>
-            </div>
-            {% endif %}
-        </div>
-        
-        <!-- Items -->
-        <div class="items">
-            {% for item in order.items %}
-            <div class="item">
-                <div class="item-header">
-                    <span>{{ item.product.name }}</span>
-                    <span>{{ (item.unit_price * item.quantity)|round(2) }} ريال</span>
+    <div class="invoice-container">
+        <!-- رأس الفاتورة -->
+        <div class="invoice-header">
+            <div class="header-content">
+                {% if company and company.logo %}
+                <div class="company-logo-section">
+                    <img src="{{ url_for('static', filename='uploads/' + company.logo) }}"
+                         alt="{{ company.name if company else 'شعار الشركة' }}"
+                         class="company-logo">
                 </div>
-                <div class="item-details">
-                    <span>{{ item.quantity }} × {{ item.unit_price|round(2) }} ريال</span>
+                {% endif %}
+
+                <div class="company-name">
+                    {{ company.name if company else 'نظام إدارة المخزون' }}
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <!-- Totals -->
-        <div class="totals">
-            <div class="total-row">
-                <span>المجموع الفرعي:</span>
-                <span>{{ order.subtotal|round(2) }} ريال</span>
-            </div>
-            {% if order.discount_amount > 0 %}
-            <div class="total-row">
-                <span>الخصم:</span>
-                <span style="color: red;">-{{ order.discount_amount|round(2) }} ريال</span>
-            </div>
-            {% endif %}
-            <div class="total-row">
-                <span>الضريبة (15%):</span>
-                <span>{{ order.tax_amount|round(2) }} ريال</span>
-            </div>
-            <div class="total-row grand">
-                <span>الإجمالي:</span>
-                <span>{{ order.total_amount|round(2) }} ريال</span>
-            </div>
-        </div>
-        
-        <!-- Payment -->
-        <div class="payment">
-            <div class="info-row">
-                <span>طريقة الدفع:</span>
-                <strong>
-                    {% if order.payment_method == 'cash' %}
-                    نقدي
-                    {% elif order.payment_method == 'card' %}
-                    بطاقة
-                    {% else %}
-                    مختلط
+
+                <div class="invoice-title">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>فاتورة ضريبية مبسطة</span>
+                </div>
+
+                <div class="company-details">
+                    {% if company and company.tax_number %}
+                    <div class="company-detail-item">
+                        <i class="fas fa-receipt"></i>
+                        <span>الرقم الضريبي: {{ company.tax_number }}</span>
+                    </div>
                     {% endif %}
-                </strong>
+
+                    {% if company and company.commercial_register %}
+                    <div class="company-detail-item">
+                        <i class="fas fa-certificate"></i>
+                        <span>س.ت: {{ company.commercial_register }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if company and company.phone %}
+                    <div class="company-detail-item">
+                        <i class="fas fa-phone"></i>
+                        <span>{{ company.phone }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if company and company.email %}
+                    <div class="company-detail-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>{{ company.email }}</span>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-            {% if order.payment_method == 'cash' %}
-            <div class="info-row">
-                <span>المبلغ المدفوع:</span>
-                <span>{{ order.cash_amount|round(2) }} ريال</span>
+        </div>
+
+        <!-- معلومات الفاتورة -->
+        <div class="invoice-info">
+            <div class="info-card">
+                <div class="info-label">
+                    <i class="fas fa-hashtag"></i>
+                    رقم الطلب
+                </div>
+                <div class="info-value">{{ order.order_number }}</div>
             </div>
-            {% if order.change_amount > 0 %}
-            <div class="info-row">
-                <span>الباقي:</span>
-                <span>{{ order.change_amount|round(2) }} ريال</span>
+
+            <div class="info-card">
+                <div class="info-label">
+                    <i class="fas fa-calendar"></i>
+                    التاريخ
+                </div>
+                <div class="info-value">{{ order.order_date.strftime('%Y-%m-%d') }}</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">
+                    <i class="fas fa-clock"></i>
+                    الوقت
+                </div>
+                <div class="info-value">{{ order.order_date.strftime('%H:%M:%S') }}</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-label">
+                    <i class="fas fa-user"></i>
+                    الكاشير
+                </div>
+                <div class="info-value">{{ order.session.cashier.username }}</div>
+            </div>
+
+            {% if order.customer %}
+            <div class="info-card">
+                <div class="info-label">
+                    <i class="fas fa-user-tie"></i>
+                    العميل
+                </div>
+                <div class="info-value">{{ order.customer.name }}</div>
             </div>
             {% endif %}
-            {% elif order.payment_method == 'mixed' %}
-            <div class="info-row">
-                <span>نقدي:</span>
-                <span>{{ order.cash_amount|round(2) }} ريال</span>
-            </div>
-            <div class="info-row">
-                <span>بطاقة:</span>
-                <span>{{ order.card_amount|round(2) }} ريال</span>
-            </div>
-            {% endif %}
         </div>
-        
-        <!-- Barcode -->
-        <div class="barcode">
-            *{{ order.order_number }}*
+
+        <!-- جدول المنتجات -->
+        <div class="items-section">
+            <div class="section-title">
+                <i class="fas fa-shopping-cart"></i>
+                <span>تفاصيل المنتجات</span>
+            </div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit_price|round(2) }} ر.س</td>
+                        <td>{{ (item.unit_price * item.quantity)|round(2) }} ر.س</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p>شكراً لتعاملكم معنا</p>
-            <p>نتمنى لكم يوماً سعيداً</p>
-            <p style="margin-top: 10px;">{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+
+        <!-- الإجماليات -->
+        <div class="totals-section">
+            <div class="totals-grid">
+                <div class="total-row">
+                    <div class="total-label">
+                        <i class="fas fa-calculator"></i>
+                        <span>المجموع الفرعي</span>
+                    </div>
+                    <div class="total-value">{{ order.subtotal|round(2) }} ر.س</div>
+                </div>
+
+                {% if order.discount_amount > 0 %}
+                <div class="total-row discount">
+                    <div class="total-label">
+                        <i class="fas fa-tag"></i>
+                        <span>الخصم</span>
+                    </div>
+                    <div class="total-value">-{{ order.discount_amount|round(2) }} ر.س</div>
+                </div>
+                {% endif %}
+
+                <div class="total-row tax">
+                    <div class="total-label">
+                        <i class="fas fa-percent"></i>
+                        <span>ضريبة القيمة المضافة (15%)</span>
+                    </div>
+                    <div class="total-value">{{ order.tax_amount|round(2) }} ر.س</div>
+                </div>
+
+                <div class="total-row grand">
+                    <div class="total-label">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>الإجمالي النهائي</span>
+                    </div>
+                    <div class="total-value">{{ order.total_amount|round(2) }} ر.س</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- معلومات الدفع -->
+        <div class="payment-section">
+            <div class="section-title">
+                <i class="fas fa-credit-card"></i>
+                <span>تفاصيل الدفع</span>
+            </div>
+
+            <div class="payment-grid">
+                <div class="payment-card">
+                    <div class="payment-label">
+                        <i class="fas fa-wallet"></i>
+                        طريقة الدفع
+                    </div>
+                    <div class="payment-value">
+                        {% if order.payment_method == 'cash' %}
+                        <span class="badge badge-success">
+                            <i class="fas fa-money-bill"></i> نقدي
+                        </span>
+                        {% elif order.payment_method == 'card' %}
+                        <span class="badge badge-info">
+                            <i class="fas fa-credit-card"></i> بطاقة
+                        </span>
+                        {% else %}
+                        <span class="badge badge-warning">
+                            <i class="fas fa-exchange-alt"></i> مختلط
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if order.payment_method == 'cash' %}
+                <div class="payment-card">
+                    <div class="payment-label">المبلغ المدفوع</div>
+                    <div class="payment-value">{{ order.cash_amount|round(2) }} ر.س</div>
+                </div>
+
+                {% if order.change_amount > 0 %}
+                <div class="payment-card">
+                    <div class="payment-label">الباقي</div>
+                    <div class="payment-value">{{ order.change_amount|round(2) }} ر.س</div>
+                </div>
+                {% endif %}
+
+                {% elif order.payment_method == 'mixed' %}
+                <div class="payment-card">
+                    <div class="payment-label">نقدي</div>
+                    <div class="payment-value">{{ order.cash_amount|round(2) }} ر.س</div>
+                </div>
+
+                <div class="payment-card">
+                    <div class="payment-label">بطاقة</div>
+                    <div class="payment-value">{{ order.card_amount|round(2) }} ر.س</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- التذييل -->
+        <div class="invoice-footer">
+            <div class="barcode-section">
+                <div class="barcode">*{{ order.order_number }}*</div>
+            </div>
+
+            <div class="thank-you">
+                <i class="fas fa-heart"></i>
+                شكراً لتعاملكم معنا
+            </div>
+
+            <div class="footer-message">
+                نتمنى لكم يوماً سعيداً ونسعد بخدمتكم دائماً
+            </div>
+
+            <div class="footer-details">
+                {% if company and company.address %}
+                <div class="footer-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ company.address }}</span>
+                </div>
+                {% endif %}
+
+                {% if company and company.website %}
+                <div class="footer-detail">
+                    <i class="fas fa-globe"></i>
+                    <span>{{ company.website }}</span>
+                </div>
+                {% endif %}
+
+                <div class="footer-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <!-- Print Button -->
-    <div class="no-print" style="text-align: center; margin-top: 20px;">
-        <button onclick="window.print()" style="padding: 10px 30px; font-size: 16px; cursor: pointer;">
-            طباعة
+
+    <!-- أزرار الطباعة -->
+    <div class="print-buttons no-print">
+        <button onclick="window.print()" class="btn btn-print">
+            <i class="fas fa-print"></i>
+            <span>طباعة الفاتورة</span>
         </button>
-        <button onclick="window.close()" style="padding: 10px 30px; font-size: 16px; cursor: pointer; margin-right: 10px;">
-            إغلاق
+        <button onclick="window.close()" class="btn btn-close">
+            <i class="fas fa-times"></i>
+            <span>إغلاق</span>
         </button>
     </div>
-    
+
     <script>
-        // Auto print on load
-        window.onload = function() {
-            // Uncomment to auto-print
-            // window.print();
-        };
+        // تأثيرات إضافية
+        document.addEventListener('DOMContentLoaded', function() {
+            // إضافة تأثير للأزرار
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px) scale(1.05)';
+                });
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // طباعة تلقائية (اختياري)
+            // setTimeout(() => window.print(), 500);
+        });
+
+        // اختصارات لوحة المفاتيح
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+P للطباعة
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+            // ESC للإغلاق
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        });
     </script>
 </body>
 </html>

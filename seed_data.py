@@ -47,8 +47,8 @@ def seed_sample_data():
                 'min_price': 2200.00,
                 'tax_rate': 15.0,
                 'track_inventory': True,
-                'min_stock_level': 5,
-                'reorder_point': 10
+                'min_stock': 5,
+                'reorder_level': 10
             },
             {
                 'name': 'ماوس لاسلكي Logitech',
@@ -62,8 +62,8 @@ def seed_sample_data():
                 'min_price': 60.00,
                 'tax_rate': 15.0,
                 'track_inventory': True,
-                'min_stock_level': 20,
-                'reorder_point': 30
+                'min_stock': 20,
+                'reorder_level': 30
             },
             {
                 'name': 'لوحة مفاتيح ميكانيكية',
@@ -77,8 +77,8 @@ def seed_sample_data():
                 'min_price': 170.00,
                 'tax_rate': 15.0,
                 'track_inventory': True,
-                'min_stock_level': 10,
-                'reorder_point': 15
+                'min_stock': 10,
+                'reorder_level': 15
             },
             # Clothing
             {
@@ -93,8 +93,8 @@ def seed_sample_data():
                 'min_price': 100.00,
                 'tax_rate': 15.0,
                 'track_inventory': True,
-                'min_stock_level': 15,
-                'reorder_point': 25
+                'min_stock': 15,
+                'reorder_level': 25
             },
             {
                 'name': 'بنطال جينز',
@@ -108,8 +108,8 @@ def seed_sample_data():
                 'min_price': 120.00,
                 'tax_rate': 15.0,
                 'track_inventory': True,
-                'min_stock_level': 20,
-                'reorder_point': 30
+                'min_stock': 20,
+                'reorder_level': 30
             },
             # Food
             {
@@ -124,8 +124,8 @@ def seed_sample_data():
                 'min_price': 10.00,
                 'tax_rate': 0.0,  # Food usually exempt from tax
                 'track_inventory': True,
-                'min_stock_level': 100,
-                'reorder_point': 200
+                'min_stock': 100,
+                'reorder_level': 200
             },
         ]
         

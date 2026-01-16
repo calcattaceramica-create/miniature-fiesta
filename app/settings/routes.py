@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, current_app
 from flask_login import login_required, current_user
 from flask_babel import gettext as _
 from app.settings import bp
@@ -6,16 +6,20 @@ from app import db
 from app.models import Company, Branch, User, Role, Permission, RolePermission
 from app.models_settings import AccountingSettings
 from app.models_accounting import Account, BankAccount
-from app.auth.decorators import admin_required
+from app.auth.decorators import admin_required, permission_required, any_permission_required
+import os
+from werkzeug.utils import secure_filename
 
 @bp.route('/')
 @login_required
+@permission_required('settings.view')
 def index():
     """Settings dashboard"""
     return render_template('settings/index.html')
 
 @bp.route('/company')
 @login_required
+@permission_required('settings.company')
 def company():
     """Company settings"""
     company = Company.query.first()
@@ -23,6 +27,7 @@ def company():
 
 @bp.route('/company/update', methods=['POST'])
 @login_required
+@permission_required('settings.company')
 def update_company():
     """Update company information"""
     try:
@@ -49,8 +54,19 @@ def update_company():
         if 'logo' in request.files:
             logo_file = request.files['logo']
             if logo_file and logo_file.filename:
-                # Save logo file (you may want to add proper file handling here)
-                company.logo = logo_file.filename
+                # Secure the filename
+                filename = secure_filename(logo_file.filename)
+
+                # Create uploads directory if it doesn't exist
+                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+                os.makedirs(upload_folder, exist_ok=True)
+
+                # Save the file
+                file_path = os.path.join(upload_folder, filename)
+                logo_file.save(file_path)
+
+                # Update company logo
+                company.logo = filename
 
         db.session.commit()
         flash('تم تحديث بيانات الشركة بنجاح', 'success')
@@ -62,6 +78,7 @@ def update_company():
 
 @bp.route('/company/create', methods=['POST'])
 @login_required
+@permission_required('settings.company')
 def create_company():
     """Create company information"""
     try:
@@ -89,8 +106,54 @@ def create_company():
 
     return redirect(url_for('settings.company'))
 
+@bp.route('/invoice-templates')
+@login_required
+@permission_required('settings.company')
+def invoice_templates():
+    """Invoice templates settings"""
+    company = Company.query.first()
+    return render_template('settings/invoice_templates.html', company=company)
+
+@bp.route('/invoice-templates/update', methods=['POST'])
+@login_required
+@permission_required('settings.company')
+def update_invoice_template():
+    """Update invoice template"""
+    try:
+        company = Company.query.first()
+
+        if not company:
+            flash('لم يتم العثور على بيانات الشركة', 'danger')
+            return redirect(url_for('settings.company'))
+
+        template = request.form.get('template', 'modern')
+
+        # Validate template
+        valid_templates = ['modern', 'classic', 'minimal', 'elegant']
+        if template not in valid_templates:
+            flash('شكل الفاتورة غير صحيح', 'danger')
+            return redirect(url_for('settings.invoice_templates'))
+
+        company.invoice_template = template
+        db.session.commit()
+
+        template_names = {
+            'modern': 'عصري (Modern)',
+            'classic': 'كلاسيكي (Classic)',
+            'minimal': 'بسيط (Minimal)',
+            'elegant': 'أنيق (Elegant)'
+        }
+
+        flash(f'تم تحديث شكل الفاتورة إلى: {template_names.get(template, template)}', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'حدث خطأ: {str(e)}', 'danger')
+
+    return redirect(url_for('settings.invoice_templates'))
+
 @bp.route('/branches')
 @login_required
+@permission_required('settings.branches.manage')
 def branches():
     """Branches management"""
     branches = Branch.query.all()
@@ -98,6 +161,7 @@ def branches():
 
 @bp.route('/branches/add', methods=['POST'])
 @login_required
+@permission_required('settings.branches.manage')
 def add_branch():
     """Add new branch"""
     try:
@@ -123,6 +187,7 @@ def add_branch():
 
 @bp.route('/branches/edit/<int:id>', methods=['POST'])
 @login_required
+@permission_required('settings.branches.manage')
 def edit_branch(id):
     """Edit branch"""
     try:
@@ -147,6 +212,7 @@ def edit_branch(id):
 
 @bp.route('/branches/delete/<int:id>', methods=['POST'])
 @login_required
+@permission_required('settings.branches.manage')
 def delete_branch(id):
     """Delete branch"""
     try:
@@ -162,7 +228,7 @@ def delete_branch(id):
 
 @bp.route('/users')
 @login_required
-@admin_required
+@permission_required('settings.users.view')
 def users():
     """Users management"""
     users = User.query.all()
@@ -172,7 +238,7 @@ def users():
 
 @bp.route('/users/add', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.users.manage')
 def add_user():
     """Add new user"""
     try:
@@ -217,7 +283,7 @@ def add_user():
 
 @bp.route('/users/edit/<int:id>', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.users.manage')
 def edit_user(id):
     """Edit user"""
     try:
@@ -245,7 +311,7 @@ def edit_user(id):
 
 @bp.route('/users/delete/<int:id>', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.users.manage')
 def delete_user(id):
     """Delete user"""
     try:
@@ -267,7 +333,7 @@ def delete_user(id):
 
 @bp.route('/roles')
 @login_required
-@admin_required
+@permission_required('settings.roles.view')
 def roles():
     """Roles management"""
     roles = Role.query.all()
@@ -276,7 +342,7 @@ def roles():
 
 @bp.route('/roles/add', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.roles.manage')
 def add_role():
     """Add new role"""
     try:
@@ -307,7 +373,7 @@ def add_role():
 
 @bp.route('/roles/edit/<int:id>', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.roles.manage')
 def edit_role(id):
     """Edit role"""
     try:
@@ -326,7 +392,7 @@ def edit_role(id):
 
 @bp.route('/roles/delete/<int:id>', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.roles.manage')
 def delete_role(id):
     """Delete role"""
     try:
@@ -348,7 +414,7 @@ def delete_role(id):
 
 @bp.route('/roles/<int:id>/permissions', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.permissions.manage')
 def update_role_permissions(id):
     """Update role permissions"""
     try:
@@ -378,7 +444,7 @@ def update_role_permissions(id):
 
 @bp.route('/permissions')
 @login_required
-@admin_required
+@permission_required('settings.permissions.view')
 def permissions():
     """Permissions management"""
     permissions = Permission.query.all()
@@ -386,7 +452,7 @@ def permissions():
 
 @bp.route('/permissions/add', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('settings.permissions.manage')
 def add_permission():
     """Add new permission"""
     try:
@@ -482,7 +548,7 @@ def change_language():
 
 @bp.route('/accounting-settings')
 @login_required
-@admin_required
+@permission_required('accounting.settings')
 def accounting_settings():
     """Accounting settings page"""
     settings = AccountingSettings.query.first()
@@ -502,7 +568,7 @@ def accounting_settings():
 
 @bp.route('/accounting-settings/save', methods=['POST'])
 @login_required
-@admin_required
+@permission_required('accounting.settings')
 def save_accounting_settings():
     """Save accounting settings"""
     try:

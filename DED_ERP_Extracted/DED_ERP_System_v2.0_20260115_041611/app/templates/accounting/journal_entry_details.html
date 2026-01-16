@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل القيد - {{ entry.entry_number }}{% endblock %}
+{% block page_title %}تفاصيل القيد{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Entry Info Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-book-open"></i> معلومات القيد</h4>
+                    <div>
+                        {% if entry.status == 'draft' %}
+                        <form method="POST" action="{{ url_for('accounting.post_journal_entry', id=entry.id) }}" 
+                              style="display: inline;">
+                            <button type="submit" class="btn btn-light" 
+                                    onclick="return confirm('هل أنت متأكد من ترحيل هذا القيد؟')">
+                                <i class="fas fa-check"></i> ترحيل القيد
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('accounting.delete_journal_entry', id=entry.id) }}" 
+                              style="display: inline;">
+                            <button type="submit" class="btn btn-danger" 
+                                    onclick="return confirm('هل أنت متأكد من حذف هذا القيد؟')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">رقم القيد:</th>
+                                    <td><strong class="text-primary">{{ entry.entry_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>تاريخ القيد:</th>
+                                    <td><strong>{{ entry.entry_date.strftime('%Y-%m-%d') }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>نوع القيد:</th>
+                                    <td>
+                                        {% if entry.entry_type == 'manual' %}
+                                            <span class="badge bg-primary">يدوي</span>
+                                        {% elif entry.entry_type == 'auto' %}
+                                            <span class="badge bg-info">تلقائي</span>
+                                        {% elif entry.entry_type == 'opening' %}
+                                            <span class="badge bg-success">افتتاحي</span>
+                                        {% elif entry.entry_type == 'closing' %}
+                                            <span class="badge bg-warning">ختامي</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>الحالة:</th>
+                                    <td>
+                                        {% if entry.status == 'draft' %}
+                                            <span class="badge bg-secondary">مسودة</span>
+                                        {% elif entry.status == 'posted' %}
+                                            <span class="badge bg-success">مرحّل</span>
+                                        {% elif entry.status == 'cancelled' %}
+                                            <span class="badge bg-danger">ملغي</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%">إجمالي المدين:</th>
+                                    <td><strong class="text-success">{{ "{:,.2f}".format(entry.total_debit) }} ريال</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>إجمالي الدائن:</th>
+                                    <td><strong class="text-danger">{{ "{:,.2f}".format(entry.total_credit) }} ريال</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>المستخدم:</th>
+                                    <td>{{ entry.user.username if entry.user else '-' }}</td>
+                                </tr>
+                                {% if entry.posted_at %}
+                                <tr>
+                                    <th>تاريخ الترحيل:</th>
+                                    <td>{{ entry.posted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6>البيان:</h6>
+                            <p class="text-muted">{{ entry.description }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <a href="{{ url_for('accounting.journal_entries') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> العودة للقائمة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entry Items Card -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-list"></i> بنود القيد</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="15%">رمز الحساب</th>
+                                    <th width="30%">اسم الحساب</th>
+                                    <th width="30%">البيان</th>
+                                    <th width="12.5%">مدين</th>
+                                    <th width="12.5%">دائن</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in entry.items %}
+                                <tr>
+                                    <td><strong>{{ item.account.code }}</strong></td>
+                                    <td>
+                                        <a href="{{ url_for('accounting.account_details', id=item.account.id) }}">
+                                            {{ item.account.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ item.description or '-' }}</td>
+                                    <td class="text-success">
+                                        {% if item.debit > 0 %}
+                                            <strong>{{ "{:,.2f}".format(item.debit) }}</strong>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-danger">
+                                        {% if item.credit > 0 %}
+                                            <strong>{{ "{:,.2f}".format(item.credit) }}</strong>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="3" class="text-end">الإجمالي:</th>
+                                    <th class="text-success">{{ "{:,.2f}".format(entry.total_debit) }}</th>
+                                    <th class="text-danger">{{ "{:,.2f}".format(entry.total_credit) }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة موظف{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-plus"></i> إضافة موظف جديد</h2>
+        <a href="{{ url_for('hr.employees') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة للقائمة
+        </a>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('hr.add_employee') }}">
+        <div class="row">
+            <!-- Personal Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-user"></i> المعلومات الشخصية</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الاسم الأول (عربي) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="first_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">اسم العائلة (عربي) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="last_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الاسم الأول (إنجليزي)</label>
+                                <input type="text" class="form-control" name="first_name_en">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">اسم العائلة (إنجليزي)</label>
+                                <input type="text" class="form-control" name="last_name_en">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">رقم الهوية الوطنية</label>
+                                <input type="text" class="form-control" name="national_id">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">رقم الجواز</label>
+                                <input type="text" class="form-control" name="passport_number">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">تاريخ الميلاد</label>
+                                <input type="date" class="form-control" name="date_of_birth">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الجنس</label>
+                                <select class="form-select" name="gender">
+                                    <option value="">اختر...</option>
+                                    <option value="male">ذكر</option>
+                                    <option value="female">أنثى</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الحالة الاجتماعية</label>
+                                <select class="form-select" name="marital_status">
+                                    <option value="">اختر...</option>
+                                    <option value="single">أعزب</option>
+                                    <option value="married">متزوج</option>
+                                    <option value="divorced">مطلق</option>
+                                    <option value="widowed">أرمل</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الجنسية</label>
+                                <input type="text" class="form-control" name="nationality" value="سعودي">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-address-book"></i> معلومات الاتصال</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الهاتف</label>
+                            <input type="text" class="form-control" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الجوال</label>
+                            <input type="text" class="form-control" name="mobile">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">العنوان</label>
+                            <textarea class="form-control" name="address" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">المدينة</label>
+                            <input type="text" class="form-control" name="city">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-briefcase"></i> معلومات التوظيف</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">القسم</label>
+                            <select class="form-select" name="department_id">
+                                <option value="">اختر القسم...</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">المنصب</label>
+                            <select class="form-select" name="position_id">
+                                <option value="">اختر المنصب...</option>
+                                {% for pos in positions %}
+                                <option value="{{ pos.id }}">{{ pos.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">الفرع</label>
+                            <select class="form-select" name="branch_id">
+                                <option value="">اختر الفرع...</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تاريخ التعيين</label>
+                            <input type="date" class="form-control" name="hire_date">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">نوع العقد</label>
+                            <select class="form-select" name="contract_type">
+                                <option value="">اختر...</option>
+                                <option value="permanent">دائم</option>
+                                <option value="temporary">مؤقت</option>
+                                <option value="contract">عقد</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Information -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> معلومات الراتب</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">الراتب الأساسي</label>
+                            <input type="number" class="form-control" name="basic_salary" step="0.01" value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center mb-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-save"></i> حفظ
+            </button>
+            <a href="{{ url_for('hr.employees') }}" class="btn btn-secondary btn-lg px-5">
+                <i class="fas fa-times"></i> إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

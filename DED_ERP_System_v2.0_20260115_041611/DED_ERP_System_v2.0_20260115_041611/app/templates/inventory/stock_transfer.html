@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Stock Transfer') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <h2><i class="fas fa-exchange-alt"></i> {{ _('Stock Transfer Between Warehouses') }}</h2>
+        <p class="text-muted mb-0">{{ _('Transfer products from one warehouse to another') }}</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-exchange-alt"></i> {{ _('Stock Transfer Form') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="transferForm">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">{{ _('Product') }} *</label>
+                                <select class="form-select" name="product_id" id="product_id" required onchange="loadProductStock()">
+                                    <option value="">{{ _('Select Product') }}</option>
+                                    {% for product in products %}
+                                    <option value="{{ product.id }}">{{ product.name }} ({{ product.code }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ _('From Warehouse') }} *</label>
+                                <select class="form-select" name="from_warehouse_id" id="from_warehouse_id" required onchange="updateAvailableStock()">
+                                    <option value="">{{ _('Select Warehouse') }}</option>
+                                    {% for warehouse in warehouses %}
+                                    <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">
+                                    {{ _('Available Quantity') }}: <strong id="available_stock">-</strong>
+                                </small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ _('To Warehouse') }} *</label>
+                                <select class="form-select" name="to_warehouse_id" id="to_warehouse_id" required>
+                                    <option value="">{{ _('Select Warehouse') }}</option>
+                                    {% for warehouse in warehouses %}
+                                    <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ _('Quantity') }} *</label>
+                                <input type="number" class="form-control" name="quantity" id="quantity"
+                                       step="0.01" min="0.01" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ _('Date') }}</label>
+                                <input type="date" class="form-control" value="{{ now.strftime('%Y-%m-%d') }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ _('Notes') }}</label>
+                            <textarea class="form-control" name="notes" rows="3"></textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>{{ _('Note') }}:</strong> {{ _('Two stock movements will be recorded (outgoing from first warehouse and incoming to second warehouse)') }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-exchange-alt"></i> {{ _('Execute Transfer') }}
+                            </button>
+                            <a href="{{ url_for('inventory.stock') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> {{ _('Cancel') }}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transfers -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-history"></i> {{ _('Recent Transfers') }}</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{{ _('Date') }}</th>
+                                    <th>{{ _('Product') }}</th>
+                                    <th>{{ _('From Warehouse') }}</th>
+                                    <th>{{ _('To Warehouse') }}</th>
+                                    <th>{{ _('Quantity') }}</th>
+                                    <th>{{ _('User') }}</th>
+                                    <th>{{ _('Notes') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم إضافة البيانات هنا -->
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                        {{ _('No recent transfers') }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let productStockData = {};
+
+function loadProductStock() {
+    const productId = document.getElementById('product_id').value;
+    
+    if (!productId) {
+        productStockData = {};
+        document.getElementById('available_stock').textContent = '-';
+        return;
+    }
+    
+    fetch(`/inventory/api/product-stock/${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            productStockData = data;
+            updateAvailableStock();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function updateAvailableStock() {
+    const warehouseId = document.getElementById('from_warehouse_id').value;
+    const availableStockEl = document.getElementById('available_stock');
+    
+    if (!warehouseId || !productStockData[warehouseId]) {
+        availableStockEl.textContent = '0';
+        availableStockEl.className = 'text-danger fw-bold';
+        return;
+    }
+    
+    const available = productStockData[warehouseId].available;
+    availableStockEl.textContent = available;
+    availableStockEl.className = available > 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
+}
+</script>
+{% endblock %}
+

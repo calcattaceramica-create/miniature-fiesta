@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}قائمة التدفقات النقدية - نظام إدارة المخزون{% endblock %}
+{% block page_title %}قائمة التدفقات النقدية{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-money-bill-wave"></i> قائمة التدفقات النقدية</h4>
+                        <button onclick="window.print()" class="btn btn-dark">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Report Header -->
+                    <div class="text-center mb-4">
+                        <h3>قائمة التدفقات النقدية</h3>
+                        <p class="text-muted">Cash Flow Statement</p>
+                        <p>الفترة: {{ start_date }} إلى {{ end_date }}</p>
+                    </div>
+
+                    <!-- Cash Flow Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <!-- Operating Activities -->
+                                <tr class="table-primary">
+                                    <td colspan="2"><strong>التدفقات النقدية من الأنشطة التشغيلية</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">صافي الربح</td>
+                                    <td class="text-end" width="200">{{ "{:,.2f}".format(net_profit) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">الاستهلاك والإطفاء</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(depreciation) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">التغير في المخزون</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(inventory_change) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">التغير في الذمم المدينة</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(receivables_change) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">التغير في الذمم الدائنة</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(payables_change) }}</td>
+                                </tr>
+                                <tr class="table-light fw-bold">
+                                    <td>صافي التدفقات النقدية من الأنشطة التشغيلية</td>
+                                    <td class="text-end {% if operating_cash_flow >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(operating_cash_flow) }}
+                                    </td>
+                                </tr>
+
+                                <!-- Investing Activities -->
+                                <tr class="table-info">
+                                    <td colspan="2"><strong>التدفقات النقدية من الأنشطة الاستثمارية</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">شراء أصول ثابتة</td>
+                                    <td class="text-end text-danger">({{ "{:,.2f}".format(fixed_assets_purchase) }})</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">بيع أصول ثابتة</td>
+                                    <td class="text-end text-success">{{ "{:,.2f}".format(fixed_assets_sale) }}</td>
+                                </tr>
+                                <tr class="table-light fw-bold">
+                                    <td>صافي التدفقات النقدية من الأنشطة الاستثمارية</td>
+                                    <td class="text-end {% if investing_cash_flow >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(investing_cash_flow) }}
+                                    </td>
+                                </tr>
+
+                                <!-- Financing Activities -->
+                                <tr class="table-warning">
+                                    <td colspan="2"><strong>التدفقات النقدية من الأنشطة التمويلية</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">قروض جديدة</td>
+                                    <td class="text-end text-success">{{ "{:,.2f}".format(new_loans) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">سداد قروض</td>
+                                    <td class="text-end text-danger">({{ "{:,.2f}".format(loan_repayment) }})</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">رأس مال إضافي</td>
+                                    <td class="text-end text-success">{{ "{:,.2f}".format(capital_increase) }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">توزيعات أرباح</td>
+                                    <td class="text-end text-danger">({{ "{:,.2f}".format(dividends) }})</td>
+                                </tr>
+                                <tr class="table-light fw-bold">
+                                    <td>صافي التدفقات النقدية من الأنشطة التمويلية</td>
+                                    <td class="text-end {% if financing_cash_flow >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(financing_cash_flow) }}
+                                    </td>
+                                </tr>
+
+                                <!-- Net Change in Cash -->
+                                <tr class="table-success fw-bold">
+                                    <td>صافي التغير في النقدية</td>
+                                    <td class="text-end {% if net_cash_change >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,.2f}".format(net_cash_change) }}
+                                    </td>
+                                </tr>
+
+                                <!-- Cash Balance -->
+                                <tr>
+                                    <td>النقدية في بداية الفترة</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(opening_cash) }}</td>
+                                </tr>
+                                <tr class="table-primary fw-bold fs-5">
+                                    <td>النقدية في نهاية الفترة</td>
+                                    <td class="text-end">{{ "{:,.2f}".format(closing_cash) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Cash Flow Summary -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h6>التدفقات التشغيلية</h6>
+                                    <h3>{{ "{:,.2f}".format(operating_cash_flow) }}</h3>
+                                    <small>Operating Cash Flow</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h6>التدفقات الاستثمارية</h6>
+                                    <h3>{{ "{:,.2f}".format(investing_cash_flow) }}</h3>
+                                    <small>Investing Cash Flow</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body text-center">
+                                    <h6>التدفقات التمويلية</h6>
+                                    <h3>{{ "{:,.2f}".format(financing_cash_flow) }}</h3>
+                                    <small>Financing Cash Flow</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis -->
+                    <div class="alert {% if net_cash_change >= 0 %}alert-success{% else %}alert-warning{% endif %} mt-4">
+                        <i class="fas {% if net_cash_change >= 0 %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+                        {% if net_cash_change >= 0 %}
+                            <strong>تدفق نقدي إيجابي!</strong> زادت النقدية بمقدار {{ "{:,.2f}".format(net_cash_change) }} ريال خلال الفترة.
+                        {% else %}
+                            <strong>تدفق نقدي سلبي!</strong> انخفضت النقدية بمقدار {{ "{:,.2f}".format(abs(net_cash_change)) }} ريال خلال الفترة.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .sidebar { display: none !important; }
+}
+</style>
+{% endblock %}
+

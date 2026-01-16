@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}القيود اليومية - نظام إدارة المخزون{% endblock %}
+{% block page_title %}القيود اليومية{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-book-open"></i> القيود اليومية</h4>
+                    <a href="{{ url_for('accounting.add_journal_entry') }}" class="btn btn-light">
+                        <i class="fas fa-plus"></i> إضافة قيد جديد
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Filter Tabs -->
+                    <ul class="nav nav-pills mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_status == 'all' %}active{% endif %}" 
+                               href="{{ url_for('accounting.journal_entries', status='all') }}">
+                                <i class="fas fa-list"></i> الكل
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_status == 'draft' %}active{% endif %}" 
+                               href="{{ url_for('accounting.journal_entries', status='draft') }}">
+                                <i class="fas fa-edit"></i> مسودة
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_status == 'posted' %}active{% endif %}" 
+                               href="{{ url_for('accounting.journal_entries', status='posted') }}">
+                                <i class="fas fa-check-circle"></i> مرحّل
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_status == 'cancelled' %}active{% endif %}" 
+                               href="{{ url_for('accounting.journal_entries', status='cancelled') }}">
+                                <i class="fas fa-times-circle"></i> ملغي
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Entries Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>رقم القيد</th>
+                                    <th>التاريخ</th>
+                                    <th>البيان</th>
+                                    <th>النوع</th>
+                                    <th>إجمالي المدين</th>
+                                    <th>إجمالي الدائن</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in entries.items %}
+                                <tr>
+                                    <td><strong>{{ entry.entry_number }}</strong></td>
+                                    <td>{{ entry.entry_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ entry.description[:50] }}{% if entry.description|length > 50 %}...{% endif %}</td>
+                                    <td>
+                                        {% if entry.entry_type == 'manual' %}
+                                            <span class="badge bg-primary">يدوي</span>
+                                        {% elif entry.entry_type == 'auto' %}
+                                            <span class="badge bg-info">تلقائي</span>
+                                        {% elif entry.entry_type == 'opening' %}
+                                            <span class="badge bg-success">افتتاحي</span>
+                                        {% elif entry.entry_type == 'closing' %}
+                                            <span class="badge bg-warning">ختامي</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-success"><strong>{{ "{:,.2f}".format(entry.total_debit) }}</strong></td>
+                                    <td class="text-danger"><strong>{{ "{:,.2f}".format(entry.total_credit) }}</strong></td>
+                                    <td>
+                                        {% if entry.status == 'draft' %}
+                                            <span class="badge bg-secondary">مسودة</span>
+                                        {% elif entry.status == 'posted' %}
+                                            <span class="badge bg-success">مرحّل</span>
+                                        {% elif entry.status == 'cancelled' %}
+                                            <span class="badge bg-danger">ملغي</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('accounting.journal_entry_details', id=entry.id) }}" 
+                                           class="btn btn-sm btn-info" title="التفاصيل">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if entry.status == 'draft' %}
+                                        <form method="POST" action="{{ url_for('accounting.post_journal_entry', id=entry.id) }}" 
+                                              style="display: inline;">
+                                            <button type="submit" class="btn btn-sm btn-success" title="ترحيل"
+                                                    onclick="return confirm('هل أنت متأكد من ترحيل هذا القيد؟')">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">لا توجد قيود</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if entries.pages > 1 %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if entries.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('accounting.journal_entries', page=entries.prev_num, status=current_status) }}">
+                                    السابق
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for page_num in entries.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                {% if page_num %}
+                                    <li class="page-item {% if page_num == entries.page %}active{% endif %}">
+                                        <a class="page-link" href="{{ url_for('accounting.journal_entries', page=page_num, status=current_status) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if entries.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('accounting.journal_entries', page=entries.next_num, status=current_status) }}">
+                                    التالي
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

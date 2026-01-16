@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الوردية - {{ session.session_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-invoice"></i> تفاصيل الوردية: {{ session.session_number }}</h2>
+        <div>
+            <a href="{{ url_for('pos.print_session_report', id=session.id) }}" 
+               class="btn btn-secondary" target="_blank">
+                <i class="fas fa-print"></i> طباعة التقرير
+            </a>
+            <a href="{{ url_for('pos.sessions') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i> رجوع
+            </a>
+        </div>
+    </div>
+
+    <!-- معلومات الوردية -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات الوردية</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="40%">رقم الوردية:</th>
+                            <td><strong>{{ session.session_number }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>الكاشير:</th>
+                            <td>{{ session.cashier.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>المستودع:</th>
+                            <td>{{ session.warehouse.name if session.warehouse else '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>وقت الفتح:</th>
+                            <td>{{ session.opening_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        </tr>
+                        <tr>
+                            <th>وقت الإغلاق:</th>
+                            <td>
+                                {% if session.closing_time %}
+                                {{ session.closing_time.strftime('%Y-%m-%d %H:%M:%S') }}
+                                {% else %}
+                                <span class="badge bg-success">مفتوحة</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>المدة:</th>
+                            <td>
+                                {% if session.closing_time %}
+                                {{ ((session.closing_time - session.opening_time).total_seconds() / 3600)|round(2) }} ساعة
+                                {% else %}
+                                جارية...
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>الحالة:</th>
+                            <td>
+                                {% if session.status == 'open' %}
+                                <span class="badge bg-success">مفتوحة</span>
+                                {% else %}
+                                <span class="badge bg-secondary">مغلقة</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> الملخص المالي</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="40%">الرصيد الافتتاحي:</th>
+                            <td><strong>{{ session.opening_balance|round(2) }} ريال</strong></td>
+                        </tr>
+                        <tr>
+                            <th>إجمالي المبيعات:</th>
+                            <td><strong class="text-success">{{ session.total_sales|round(2) }} ريال</strong></td>
+                        </tr>
+                        <tr>
+                            <th>المبيعات النقدية:</th>
+                            <td>{{ session.total_cash|round(2) }} ريال</td>
+                        </tr>
+                        <tr>
+                            <th>المبيعات بالبطاقة:</th>
+                            <td>{{ session.total_card|round(2) }} ريال</td>
+                        </tr>
+                        <tr>
+                            <th>الرصيد المتوقع:</th>
+                            <td><strong>{{ (session.opening_balance + session.total_cash)|round(2) }} ريال</strong></td>
+                        </tr>
+                        {% if session.closing_balance %}
+                        <tr>
+                            <th>الرصيد الختامي الفعلي:</th>
+                            <td><strong>{{ session.closing_balance|round(2) }} ريال</strong></td>
+                        </tr>
+                        <tr>
+                            <th>الفرق:</th>
+                            <td>
+                                {% set difference = session.closing_balance - (session.opening_balance + session.total_cash) %}
+                                <strong class="{% if difference >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ difference|round(2) }} ريال
+                                </strong>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>عدد الطلبات:</th>
+                            <td><strong>{{ session.orders|length }}</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- قائمة الطلبات -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> الطلبات ({{ session.orders|length }})</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>رقم الطلب</th>
+                            <th>التاريخ</th>
+                            <th>العميل</th>
+                            <th>عدد الأصناف</th>
+                            <th>المجموع الفرعي</th>
+                            <th>الخصم</th>
+                            <th>الضريبة</th>
+                            <th>الإجمالي</th>
+                            <th>طريقة الدفع</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in session.orders %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ order.order_number }}</strong></td>
+                            <td>{{ order.order_date.strftime('%H:%M:%S') }}</td>
+                            <td>{{ order.customer.name if order.customer else 'عميل عادي' }}</td>
+                            <td>{{ order.items|length }}</td>
+                            <td>{{ order.subtotal|round(2) }} ريال</td>
+                            <td class="text-danger">{{ order.discount_amount|round(2) }} ريال</td>
+                            <td>{{ order.tax_amount|round(2) }} ريال</td>
+                            <td><strong>{{ order.total_amount|round(2) }} ريال</strong></td>
+                            <td>
+                                {% if order.payment_method == 'cash' %}
+                                <span class="badge bg-success">نقدي</span>
+                                {% elif order.payment_method == 'card' %}
+                                <span class="badge bg-primary">بطاقة</span>
+                                {% else %}
+                                <span class="badge bg-info">مختلط</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.status == 'completed' %}
+                                <span class="badge bg-success">مكتمل</span>
+                                {% elif order.status == 'cancelled' %}
+                                <span class="badge bg-danger">ملغي</span>
+                                {% else %}
+                                <span class="badge bg-warning">مرتجع</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center text-muted py-4">
+                                لا توجد طلبات في هذه الوردية
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if session.orders %}
+                    <tfoot class="table-light">
+                        <tr>
+                            <th colspan="5" class="text-end">الإجمالي:</th>
+                            <th>{{ session.orders|sum(attribute='subtotal')|round(2) }} ريال</th>
+                            <th class="text-danger">{{ session.orders|sum(attribute='discount_amount')|round(2) }} ريال</th>
+                            <th>{{ session.orders|sum(attribute='tax_amount')|round(2) }} ريال</th>
+                            <th><strong>{{ session.orders|sum(attribute='total_amount')|round(2) }} ريال</strong></th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة قيد يومي - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إضافة قيد يومي{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> إضافة قيد يومي جديد</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('accounting.add_journal_entry') }}" id="journalEntryForm">
+                        <!-- Entry Info -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="entry_date" class="form-label">تاريخ القيد <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="entry_date" name="entry_date" 
+                                       value="{{ today }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="description" class="form-label">البيان <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="description" name="description" 
+                                       placeholder="وصف القيد..." required>
+                            </div>
+                        </div>
+
+                        <!-- Entry Items -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">بنود القيد</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="itemsTable">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th width="30%">الحساب</th>
+                                                <th width="30%">البيان</th>
+                                                <th width="15%">مدين</th>
+                                                <th width="15%">دائن</th>
+                                                <th width="10%">
+                                                    <button type="button" class="btn btn-sm btn-success" onclick="addRow()">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemsBody">
+                                            <tr>
+                                                <td>
+                                                    <select class="form-select" name="account_id[]" required>
+                                                        <option value="">-- اختر الحساب --</option>
+                                                        {% for account in accounts %}
+                                                        <option value="{{ account.id }}">{{ account.code }} - {{ account.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" name="item_description[]" 
+                                                           placeholder="البيان...">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control debit-input" name="debit[]" 
+                                                           step="0.01" min="0" value="0" onchange="calculateTotals()">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control credit-input" name="credit[]" 
+                                                           step="0.01" min="0" value="0" onchange="calculateTotals()">
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select class="form-select" name="account_id[]" required>
+                                                        <option value="">-- اختر الحساب --</option>
+                                                        {% for account in accounts %}
+                                                        <option value="{{ account.id }}">{{ account.code }} - {{ account.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" name="item_description[]" 
+                                                           placeholder="البيان...">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control debit-input" name="debit[]" 
+                                                           step="0.01" min="0" value="0" onchange="calculateTotals()">
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control credit-input" name="credit[]" 
+                                                           step="0.01" min="0" value="0" onchange="calculateTotals()">
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="table-light">
+                                            <tr>
+                                                <th colspan="2" class="text-end">الإجمالي:</th>
+                                                <th><span id="totalDebit" class="text-success">0.00</span></th>
+                                                <th><span id="totalCredit" class="text-danger">0.00</span></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="2" class="text-end">الفرق:</th>
+                                                <th colspan="2"><span id="difference" class="text-warning">0.00</span></th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>ملاحظة:</strong> يجب أن يتساوى إجمالي المدين مع إجمالي الدائن (القيد المتوازن).
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('accounting.journal_entries') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-success" id="submitBtn">
+                                <i class="fas fa-save"></i> حفظ القيد
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set today's date
+document.getElementById('entry_date').valueAsDate = new Date();
+
+// Add new row
+function addRow() {
+    const tbody = document.getElementById('itemsBody');
+    const newRow = tbody.rows[0].cloneNode(true);
+
+    // Clear values
+    newRow.querySelectorAll('input').forEach(input => {
+        if (input.type === 'number') {
+            input.value = '0';
+        } else {
+            input.value = '';
+        }
+    });
+    newRow.querySelector('select').selectedIndex = 0;
+
+    tbody.appendChild(newRow);
+}
+
+// Remove row
+function removeRow(btn) {
+    const tbody = document.getElementById('itemsBody');
+    if (tbody.rows.length > 2) {
+        btn.closest('tr').remove();
+        calculateTotals();
+    } else {
+        alert('يجب أن يحتوي القيد على بندين على الأقل');
+    }
+}
+
+// Calculate totals
+function calculateTotals() {
+    let totalDebit = 0;
+    let totalCredit = 0;
+
+    document.querySelectorAll('.debit-input').forEach(input => {
+        totalDebit += parseFloat(input.value) || 0;
+    });
+
+    document.querySelectorAll('.credit-input').forEach(input => {
+        totalCredit += parseFloat(input.value) || 0;
+    });
+
+    const difference = Math.abs(totalDebit - totalCredit);
+
+    document.getElementById('totalDebit').textContent = totalDebit.toFixed(2);
+    document.getElementById('totalCredit').textContent = totalCredit.toFixed(2);
+    document.getElementById('difference').textContent = difference.toFixed(2);
+
+    // Change difference color
+    const diffElement = document.getElementById('difference');
+    if (difference < 0.01) {
+        diffElement.className = 'text-success';
+        document.getElementById('submitBtn').disabled = false;
+    } else {
+        diffElement.className = 'text-danger';
+        document.getElementById('submitBtn').disabled = true;
+    }
+}
+
+// Validate form before submit
+document.getElementById('journalEntryForm').addEventListener('submit', function(e) {
+    const totalDebit = parseFloat(document.getElementById('totalDebit').textContent);
+    const totalCredit = parseFloat(document.getElementById('totalCredit').textContent);
+
+    if (Math.abs(totalDebit - totalCredit) > 0.01) {
+        e.preventDefault();
+        alert('القيد غير متوازن! يجب أن يتساوى المدين والدائن');
+        return false;
+    }
+
+    if (totalDebit === 0 || totalCredit === 0) {
+        e.preventDefault();
+        alert('يجب إدخال قيم للمدين والدائن');
+        return false;
+    }
+});
+
+// Calculate totals on page load
+calculateTotals();
+</script>
+{% endblock %}

@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}الإجازات{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar-times"></i> الإجازات</h2>
+        <a href="{{ url_for('hr.add_leave') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> طلب إجازة
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('hr.leaves') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">الموظف</label>
+                    <select class="form-select" name="employee_id">
+                        <option value="">الكل</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}" {% if employee_id == emp.id %}selected{% endif %}>{{ emp.first_name }} {{ emp.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">الحالة</label>
+                    <select class="form-select" name="status">
+                        <option value="">الكل</option>
+                        <option value="pending" {% if status == 'pending' %}selected{% endif %}>معلق</option>
+                        <option value="approved" {% if status == 'approved' %}selected{% endif %}>موافق</option>
+                        <option value="rejected" {% if status == 'rejected' %}selected{% endif %}>مرفوض</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                    <a href="{{ url_for('hr.leaves') }}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> إعادة تعيين
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leaves Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> طلبات الإجازات ({{ leaves.total }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>الموظف</th>
+                            <th>نوع الإجازة</th>
+                            <th>من تاريخ</th>
+                            <th>إلى تاريخ</th>
+                            <th>عدد الأيام</th>
+                            <th>السبب</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for leave in leaves.items %}
+                        <tr>
+                            <td>{{ loop.index + (leaves.page - 1) * leaves.per_page }}</td>
+                            <td>
+                                <a href="{{ url_for('hr.employee_details', id=leave.employee.id) }}" class="text-decoration-none">
+                                    {{ leave.employee.first_name }} {{ leave.employee.last_name }}
+                                </a>
+                            </td>
+                            <td>{{ leave.leave_type.name if leave.leave_type else '-' }}</td>
+                            <td>{{ leave.start_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ leave.end_date.strftime('%Y-%m-%d') }}</td>
+                            <td><span class="badge bg-info">{{ leave.days_count }}</span></td>
+                            <td>{{ leave.reason[:30] if leave.reason else '-' }}</td>
+                            <td>
+                                {% if leave.status == 'approved' %}
+                                <span class="badge bg-success">موافق</span>
+                                {% elif leave.status == 'rejected' %}
+                                <span class="badge bg-danger">مرفوض</span>
+                                {% else %}
+                                <span class="badge bg-warning">معلق</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if leave.status == 'pending' %}
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-success" onclick="approveLeave({{ leave.id }})" title="موافقة">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger" onclick="rejectLeave({{ leave.id }})" title="رفض">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا توجد طلبات
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if leaves.pages > 1 %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item {% if not leaves.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('hr.leaves', page=leaves.prev_num, employee_id=employee_id, status=status) }}">السابق</a>
+                    </li>
+                    {% for page_num in leaves.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == leaves.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('hr.leaves', page=page_num, employee_id=employee_id, status=status) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not leaves.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('hr.leaves', page=leaves.next_num, employee_id=employee_id, status=status) }}">التالي</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function approveLeave(id) {
+    if (confirm('هل أنت متأكد من الموافقة على هذا الطلب؟')) {
+        fetch('{{ url_for("hr.approve_leave", id=0) }}'.replace('0', id), {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function rejectLeave(id) {
+    if (confirm('هل أنت متأكد من رفض هذا الطلب؟')) {
+        fetch('{{ url_for("hr.reject_leave", id=0) }}'.replace('0', id), {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
+

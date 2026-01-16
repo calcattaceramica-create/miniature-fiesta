@@ -1,0 +1,132 @@
+{# Dynamic POS Styles Based on Company Settings #}
+{% set template = company.invoice_template if company and company.invoice_template else 'modern' %}
+
+{# Modern Template - Default #}
+{% if template == 'modern' %}
+<style>
+    :root {
+        --primary-color: #4f46e5;
+        --primary-dark: #4338ca;
+        --primary-light: #818cf8;
+    }
+    .pos-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .product-card:hover {
+        border-color: #4f46e5;
+    }
+    .search-box input:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .qty-control button {
+        color: #4f46e5;
+    }
+    .qty-control button:hover {
+        background: #4f46e5;
+    }
+    .total-row:last-child {
+        color: #4f46e5;
+    }
+    .cart-item:hover {
+        border-color: #4f46e5;
+    }
+</style>
+
+{# Classic Template #}
+{% elif template == 'classic' %}
+<style>
+    :root {
+        --primary-color: #28a745;
+        --primary-dark: #218838;
+        --primary-light: #34ce57;
+    }
+    .pos-container {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    .product-card:hover {
+        border-color: #28a745;
+    }
+    .search-box input:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+    }
+    .qty-control button {
+        color: #28a745;
+    }
+    .qty-control button:hover {
+        background: #28a745;
+    }
+    .total-row:last-child {
+        color: #28a745;
+    }
+    .cart-item:hover {
+        border-color: #28a745;
+    }
+</style>
+
+{# Minimal Template #}
+{% elif template == 'minimal' %}
+<style>
+    :root {
+        --primary-color: #17a2b8;
+        --primary-dark: #138496;
+        --primary-light: #1fc8e3;
+    }
+    .pos-container {
+        background: linear-gradient(135deg, #17a2b8 0%, #20c9e0 100%);
+    }
+    .product-card:hover {
+        border-color: #17a2b8;
+    }
+    .search-box input:focus {
+        border-color: #17a2b8;
+        box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.1);
+    }
+    .qty-control button {
+        color: #17a2b8;
+    }
+    .qty-control button:hover {
+        background: #17a2b8;
+    }
+    .total-row:last-child {
+        color: #17a2b8;
+    }
+    .cart-item:hover {
+        border-color: #17a2b8;
+    }
+</style>
+
+{# Elegant Template #}
+{% elif template == 'elegant' %}
+<style>
+    :root {
+        --primary-color: #f5576c;
+        --primary-dark: #e63946;
+        --primary-light: #ff6b81;
+    }
+    .pos-container {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .product-card:hover {
+        border-color: #f5576c;
+    }
+    .search-box input:focus {
+        border-color: #f5576c;
+        box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+    }
+    .qty-control button {
+        color: #f5576c;
+    }
+    .qty-control button:hover {
+        background: #f5576c;
+    }
+    .total-row:last-child {
+        color: #f5576c;
+    }
+    .cart-item:hover {
+        border-color: #f5576c;
+    }
+</style>
+{% endif %}
+

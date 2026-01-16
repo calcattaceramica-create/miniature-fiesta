@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}إعدادات اللغة - Language Settings{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-language"></i>
+                    إعدادات اللغة - Language Settings
+                </h2>
+                <a href="{{ url_for('settings.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> رجوع
+                </a>
+            </div>
+
+            <!-- Current Language -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-globe"></i>
+                        اللغة الحالية - Current Language
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <h4>
+                                    {% if current_user.language == 'ar' %}
+                                        <i class="fas fa-flag"></i> العربية (Arabic)
+                                    {% else %}
+                                        <i class="fas fa-flag"></i> English (الإنجليزية)
+                                    {% endif %}
+                                </h4>
+                                <p class="mb-0">
+                                    {% if current_user.language == 'ar' %}
+                                        اللغة المستخدمة حالياً في التطبيق
+                                    {% else %}
+                                        Currently used language in the application
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Language -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exchange-alt"></i>
+                        تغيير اللغة - Change Language
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings.change_language') }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-language"></i>
+                                        اختر اللغة - Select Language
+                                    </label>
+                                    <select name="language" class="form-select form-select-lg" required>
+                                        <option value="ar" {% if current_user.language == 'ar' %}selected{% endif %}>
+                                            🇸🇦 العربية - Arabic
+                                        </option>
+                                        <option value="en" {% if current_user.language == 'en' %}selected{% endif %}>
+                                            🇬🇧 English - الإنجليزية
+                                        </option>
+                                    </select>
+                                    <div class="form-text">
+                                        {% if current_user.language == 'ar' %}
+                                            سيتم تطبيق اللغة على جميع صفحات التطبيق
+                                        {% else %}
+                                            The language will be applied to all application pages
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-check"></i>
+                                    {% if current_user.language == 'ar' %}
+                                        حفظ التغييرات
+                                    {% else %}
+                                        Save Changes
+                                    {% endif %}
+                                </button>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="alert alert-warning">
+                                    <h6>
+                                        <i class="fas fa-info-circle"></i>
+                                        {% if current_user.language == 'ar' %}
+                                            ملاحظات مهمة
+                                        {% else %}
+                                            Important Notes
+                                        {% endif %}
+                                    </h6>
+                                    <ul class="mb-0">
+                                        <li>
+                                            {% if current_user.language == 'ar' %}
+                                                سيتم تغيير اللغة فوراً بعد الحفظ
+                                            {% else %}
+                                                Language will change immediately after saving
+                                            {% endif %}
+                                        </li>
+                                        <li>
+                                            {% if current_user.language == 'ar' %}
+                                                اللغة المحفوظة ستكون افتراضية عند تسجيل الدخول
+                                            {% else %}
+                                                Saved language will be default on login
+                                            {% endif %}
+                                        </li>
+                                        <li>
+                                            {% if current_user.language == 'ar' %}
+                                                يمكنك تغيير اللغة في أي وقت
+                                            {% else %}
+                                                You can change language anytime
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Language Features -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star"></i>
+                        المميزات - Features
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> اللغة العربية</h6>
+                            <ul>
+                                <li>واجهة كاملة باللغة العربية</li>
+                                <li>اتجاه النص من اليمين لليسار (RTL)</li>
+                                <li>تنسيق التواريخ والأرقام بالعربية</li>
+                                <li>دعم الخطوط العربية</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> English Language</h6>
+                            <ul>
+                                <li>Full English interface</li>
+                                <li>Left-to-right text direction (LTR)</li>
+                                <li>English date and number formatting</li>
+                                <li>Latin font support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

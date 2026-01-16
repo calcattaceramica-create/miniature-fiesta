@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض سعر - {{ quotation.quotation_number }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Cairo', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .quotation-container {
+            max-width: 210mm; /* عرض A4 */
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            page-break-inside: avoid;
+        }
+
+        /* ========== رأس الفاتورة ========== */
+        .quotation-header {
+            color: white;
+            padding: 20px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quotation-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-info {
+            margin-bottom: 15px;
+        }
+
+        .company-logo {
+            max-width: 150px;
+            max-height: 70px;
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .company-details {
+            font-size: 12px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .quotation-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .quotation-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quotation-number {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .quotation-date {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* ========== معلومات العميل ========== */
+        .info-section {
+            padding: 15px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .customer-card {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .customer-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .customer-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+        }
+
+        .detail-icon {
+            margin-top: 2px;
+            font-size: 12px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            color: #1f2937;
+            font-size: 13px;
+        }
+
+        /* ========== جدول المنتجات ========== */
+        .items-section {
+            padding: 15px 30px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .items-table thead {
+            color: white;
+        }
+
+        .items-table th {
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .items-table tbody tr {
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .items-table tbody tr:hover {
+            background: #f3f4f6;
+            transform: scale(1.01);
+        }
+
+        .items-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 12px;
+        }
+
+        .items-table td:first-child {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+
+        .product-name {
+            text-align: right;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .product-description {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 3px;
+        }
+
+        /* ========== الإجماليات ========== */
+        .totals-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
+            padding: 15px 30px;
+        }
+
+        .totals-container {
+            max-width: 350px;
+            margin-right: 0;
+            margin-left: auto;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #d1d5db;
+        }
+
+        .total-row:last-child {
+            border-bottom: none;
+        }
+
+        .total-label {
+            color: #6b7280;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .total-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .discount-row .total-value {
+            color: #ef4444;
+        }
+
+        .grand-total {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .grand-total .total-label {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .grand-total .total-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* ========== الملاحظات والتذييل ========== */
+        .notes-section {
+            padding: 12px 30px;
+            background: #fffbeb;
+            border-top: 1px solid #fde68a;
+        }
+
+        .notes-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notes-content {
+            color: #78350f;
+            line-height: 1.6;
+            font-size: 12px;
+        }
+
+        .validity-section {
+            padding: 10px 30px;
+            background: #fef3c7;
+            border-top: 1px solid #fde68a;
+        }
+
+        .validity-text {
+            color: #92400e;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .footer-details {
+            font-size: 11px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 12px 0;
+        }
+
+        .footer-note {
+            font-size: 10px;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* ========== زر الطباعة ========== */
+        .print-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        .print-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* ========== إعدادات الطباعة ========== */
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .quotation-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .quotation-header {
+                padding: 15px 20px !important;
+                page-break-inside: avoid;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .company-name {
+                font-size: 20px !important;
+            }
+
+            .company-details {
+                font-size: 10px !important;
+                line-height: 1.4 !important;
+            }
+
+            .quotation-title {
+                font-size: 16px !important;
+            }
+
+            .quotation-number {
+                font-size: 15px !important;
+            }
+
+            .quotation-date {
+                font-size: 10px !important;
+            }
+
+            .info-section,
+            .items-section,
+            .totals-section,
+            .notes-section,
+            .validity-section,
+            .footer {
+                padding: 10px 20px !important;
+                page-break-inside: avoid;
+            }
+
+            .customer-card {
+                padding: 10px !important;
+            }
+
+            .customer-title {
+                font-size: 13px !important;
+                margin-bottom: 8px !important;
+            }
+
+            .detail-label {
+                font-size: 10px !important;
+            }
+
+            .detail-value {
+                font-size: 11px !important;
+            }
+
+            .items-table {
+                margin-bottom: 10px !important;
+            }
+
+            .items-table th {
+                padding: 8px !important;
+                font-size: 11px !important;
+            }
+
+            .items-table td {
+                padding: 8px !important;
+                font-size: 11px !important;
+            }
+
+            .product-description {
+                font-size: 10px !important;
+            }
+
+            .total-row {
+                padding: 6px 0 !important;
+                font-size: 11px !important;
+            }
+
+            .grand-total {
+                padding: 10px 12px !important;
+                margin-top: 8px !important;
+            }
+
+            .grand-total .total-label {
+                font-size: 13px !important;
+            }
+
+            .grand-total .total-value {
+                font-size: 15px !important;
+            }
+
+            .notes-section {
+                padding: 10px 20px !important;
+            }
+
+            .notes-title {
+                font-size: 12px !important;
+                margin-bottom: 5px !important;
+            }
+
+            .notes-content {
+                font-size: 11px !important;
+                line-height: 1.5 !important;
+            }
+
+            .validity-section {
+                padding: 8px 20px !important;
+            }
+
+            .validity-text {
+                font-size: 11px !important;
+            }
+
+            .footer {
+                padding: 12px 20px !important;
+            }
+
+            .footer-title {
+                font-size: 13px !important;
+                margin-bottom: 8px !important;
+            }
+
+            .footer-details {
+                font-size: 10px !important;
+                line-height: 1.5 !important;
+            }
+
+            .footer-divider {
+                margin: 10px 0 !important;
+            }
+
+            .footer-note {
+                font-size: 9px !important;
+            }
+
+            /* إخفاء التأثيرات الحركية */
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+
+            /* ضمان عدم تقسيم الأقسام */
+            .quotation-header,
+            .info-section,
+            .items-section,
+            .totals-section,
+            .notes-section,
+            .validity-section,
+            .footer {
+                page-break-inside: avoid !important;
+            }
+
+            /* ضمان طباعة كل شيء على صفحة واحدة */
+            html, body {
+                height: auto;
+                overflow: visible;
+            }
+
+            /* الحفاظ على الألوان */
+            .quotation-header,
+            .items-table thead,
+            .grand-total {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+
+    <!-- Dynamic Template Styles -->
+    {% include 'pos/quotation_styles.html' %}
+</head>
+<body>
+    <!-- زر الطباعة العائم -->
+    <button onclick="window.print()" class="print-button no-print">
+        <i class="fas fa-print"></i>
+        <span>طباعة</span>
+    </button>
+
+    <div class="quotation-container">
+        <!-- رأس الفاتورة -->
+        <div class="quotation-header">
+            <div class="header-content">
+                <div class="row align-items-center">
+                    <div class="col-md-6 company-info">
+                        {% if company and company.logo %}
+                        <img src="{{ url_for('static', filename='uploads/' + company.logo) }}"
+                             alt="{{ company.name }}" class="company-logo">
+                        {% endif %}
+                        <div class="company-name">
+                            {{ company.name if company else 'اسم الشركة' }}
+                        </div>
+                        <div class="company-details">
+                            {% if company %}
+                            <div><i class="fas fa-map-marker-alt"></i> {{ company.address }}</div>
+                            <div><i class="fas fa-phone"></i> {{ company.phone }}</div>
+                            <div><i class="fas fa-envelope"></i> {{ company.email }}</div>
+                            {% if company.tax_number %}
+                            <div><i class="fas fa-file-invoice"></i> الرقم الضريبي: {{ company.tax_number }}</div>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="quotation-badge">
+                            <div class="quotation-title">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span>عرض سعر</span>
+                            </div>
+                            <div class="quotation-number">
+                                {{ quotation.quotation_number }}
+                            </div>
+                            <div class="quotation-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ quotation.quotation_date.strftime('%Y-%m-%d') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- معلومات العميل -->
+        <div class="info-section">
+            <div class="customer-card">
+                <div class="customer-title">
+                    <i class="fas fa-user-circle"></i>
+                    <span>معلومات العميل</span>
+                </div>
+                <div class="customer-details">
+                    <div class="detail-item">
+                        <i class="fas fa-user detail-icon"></i>
+                        <div>
+                            <div class="detail-label">اسم العميل</div>
+                            <div class="detail-value">{{ quotation.customer.name }}</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone detail-icon"></i>
+                        <div>
+                            <div class="detail-label">رقم الهاتف</div>
+                            <div class="detail-value">{{ quotation.customer.phone }}</div>
+                        </div>
+                    </div>
+                    {% if quotation.customer.email %}
+                    <div class="detail-item">
+                        <i class="fas fa-envelope detail-icon"></i>
+                        <div>
+                            <div class="detail-label">البريد الإلكتروني</div>
+                            <div class="detail-value">{{ quotation.customer.email }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if quotation.customer.address %}
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt detail-icon"></i>
+                        <div>
+                            <div class="detail-label">العنوان</div>
+                            <div class="detail-value">{{ quotation.customer.address }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- جدول المنتجات -->
+        <div class="items-section">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th style="text-align: right;">المنتج</th>
+                        <th style="width: 100px;">الكمية</th>
+                        <th style="width: 120px;">السعر</th>
+                        <th style="width: 120px;">الضريبة</th>
+                        <th style="width: 150px;">الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in quotation.items %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="product-name">
+                            <div>{{ item.product.name if item.product else item.description }}</div>
+                            {% if item.description and item.product %}
+                            <div class="product-description">{{ item.description }}</div>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ "%.2f"|format(item.unit_price) }} {{ currency_symbol }}</td>
+                        <td>{{ item.tax_rate }}%</td>
+                        <td><strong>{{ "%.2f"|format(item.total) }} {{ currency_symbol }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- الإجماليات -->
+        <div class="totals-section">
+            <div class="totals-container">
+                <div class="total-row">
+                    <div class="total-label">
+                        <i class="fas fa-calculator"></i>
+                        <span>المجموع الفرعي</span>
+                    </div>
+                    <div class="total-value">{{ "%.2f"|format(quotation.subtotal) }} {{ currency_symbol }}</div>
+                </div>
+
+                {% if quotation.discount_amount > 0 %}
+                <div class="total-row discount-row">
+                    <div class="total-label">
+                        <i class="fas fa-percent"></i>
+                        <span>الخصم</span>
+                    </div>
+                    <div class="total-value">- {{ "%.2f"|format(quotation.discount_amount) }} {{ currency_symbol }}</div>
+                </div>
+                {% endif %}
+
+                <div class="total-row">
+                    <div class="total-label">
+                        <i class="fas fa-receipt"></i>
+                        <span>الضريبة ({{ company.tax_rate if company else 15 }}%)</span>
+                    </div>
+                    <div class="total-value">{{ "%.2f"|format(quotation.tax_amount) }} {{ currency_symbol }}</div>
+                </div>
+
+                <div class="grand-total">
+                    <div class="total-row">
+                        <div class="total-label">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>الإجمالي النهائي</span>
+                        </div>
+                        <div class="total-value">{{ "%.2f"|format(quotation.total_amount) }} {{ currency_symbol }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- الملاحظات -->
+        {% if quotation.notes %}
+        <div class="notes-section">
+            <div class="notes-title">
+                <i class="fas fa-sticky-note"></i>
+                <span>ملاحظات</span>
+            </div>
+            <div class="notes-content">
+                {{ quotation.notes }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- صلاحية العرض -->
+        <div class="validity-section">
+            <div class="validity-text">
+                <i class="fas fa-clock"></i>
+                <span>هذا العرض صالح لمدة 30 يوماً من تاريخ الإصدار</span>
+            </div>
+        </div>
+
+        <!-- التذييل -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-title">
+                    <i class="fas fa-info-circle"></i>
+                    معلومات هامة
+                </div>
+                <div class="footer-details">
+                    <p>• هذا عرض سعر وليس فاتورة ضريبية</p>
+                    <p>• الأسعار المذكورة شاملة ضريبة القيمة المضافة</p>
+                    <p>• يرجى مراجعة الكميات والأسعار قبل الموافقة</p>
+                </div>
+                <div class="footer-divider"></div>
+                <div class="footer-note">
+                    تم إنشاء هذا العرض بواسطة نظام DED ERP
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Add New Supplier') }} - {{ _('Inventory Management System') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-truck-loading"></i> {{ _('Add New Supplier') }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('purchases.add_supplier') }}">
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="fas fa-info-circle"></i> {{ _('Basic Information') }}</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">{{ _('Supplier Name') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="name_en" class="form-label">{{ _('Name in English') }}</label>
+                                <input type="text" class="form-control" id="name_en" name="name_en">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label">{{ _('Category') }}</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">{{ _('Select Category') }}</option>
+                                    <option value="محلي">{{ _('Local') }}</option>
+                                    <option value="دولي">{{ _('International') }}</option>
+                                    <option value="جملة">{{ _('Wholesale') }}</option>
+                                    <option value="تجزئة">{{ _('Retail') }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="fas fa-address-book"></i> {{ _('Contact Information') }}</h5>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="email" class="form-label">{{ _('Email') }}</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="phone" class="form-label">{{ _('Phone') }}</label>
+                                <input type="text" class="form-control" id="phone" name="phone">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="mobile" class="form-label">{{ _('Mobile') }}</label>
+                                <input type="text" class="form-control" id="mobile" name="mobile">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="address" class="form-label">{{ _('Address') }}</label>
+                                <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">{{ _('City') }}</label>
+                                <input type="text" class="form-control" id="city" name="city">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="country" class="form-label">{{ _('Country') }}</label>
+                                <input type="text" class="form-control" id="country" name="country" value="{{ _('Saudi Arabia') }}">
+                            </div>
+                        </div>
+
+                        <!-- Business Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="fas fa-building"></i> {{ _('Business Information') }}</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="tax_number" class="form-label">{{ _('Tax Number') }}</label>
+                                <input type="text" class="form-control" id="tax_number" name="tax_number">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="commercial_register" class="form-label">{{ _('Commercial Register') }}</label>
+                                <input type="text" class="form-control" id="commercial_register" name="commercial_register">
+                            </div>
+                        </div>
+
+                        <!-- Financial Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2"><i class="fas fa-money-bill-wave"></i> {{ _('Financial Information') }}</h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="credit_limit" class="form-label">{{ _('Credit Limit') }} ({{ _('SAR') }})</label>
+                                <input type="number" class="form-control" id="credit_limit" name="credit_limit"
+                                       step="0.01" value="0">
+                                <small class="form-text text-muted">{{ _('Maximum debt limit') }}</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_terms" class="form-label">{{ _('Payment Terms') }} ({{ _('days') }})</label>
+                                <input type="number" class="form-control" id="payment_terms" name="payment_terms"
+                                       value="0">
+                                <small class="form-text text-muted">{{ _('Number of days allowed for payment') }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <label for="notes" class="form-label">{{ _('Notes') }}</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> {{ _('Save Supplier') }}
+                                </button>
+                                <a href="{{ url_for('purchases.suppliers') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> {{ _('Cancel') }}
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

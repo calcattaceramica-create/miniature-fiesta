@@ -32,7 +32,7 @@ class User(UserMixin, db.Model):
 
     # Relationships
     branch = db.relationship('Branch', foreign_keys=[branch_id], backref='users')
-    role = db.relationship('Role', backref='users')
+    role = db.relationship('Role', backref='users', lazy='joined')
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -46,7 +46,12 @@ class User(UserMixin, db.Model):
             return True
         if not self.role:
             return False
-        return any(p.name == permission_name for p in self.role.permissions)
+        try:
+            return any(p.name == permission_name for p in self.role.permissions)
+        except Exception as e:
+            # Log the error and return False
+            print(f"Error checking permission: {e}")
+            return False
 
     def has_any_permission(self, *permission_names):
         """Check if user has any of the specified permissions"""
@@ -125,13 +130,13 @@ class User(UserMixin, db.Model):
 
 class Role(db.Model):
     __tablename__ = 'roles'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, nullable=False)
     name_ar = db.Column(db.String(64))
     description = db.Column(db.String(256))
-    permissions = db.relationship('Permission', secondary='role_permissions', backref='roles')
-    
+    permissions = db.relationship('Permission', secondary='role_permissions', backref='roles', lazy='joined')
+
     def __repr__(self):
         return f'<Role {self.name}>'
 
@@ -225,8 +230,9 @@ class Company(db.Model):
     logo = db.Column(db.String(256))
     currency = db.Column(db.String(3), default='SAR')
     tax_rate = db.Column(db.Float, default=15.0)
+    invoice_template = db.Column(db.String(50), default='modern')  # modern, classic, minimal, elegant
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     def __repr__(self):
         return f'<Company {self.name}>'
 

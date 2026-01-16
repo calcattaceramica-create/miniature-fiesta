@@ -1,18 +1,19 @@
 @echo off
+title DED ERP Server
 echo ========================================
-echo Starting DED ERP System
+echo Starting DED ERP Server
 echo ========================================
 echo.
-echo Starting Flask development server...
-echo Server will be available at:
-echo   - http://localhost:5000
-echo   - http://127.0.0.1:5000
+echo Server URL: http://localhost:5000
+echo Username: admin
+echo Password: admin123
 echo.
+echo Keep this window open!
 echo Press CTRL+C to stop the server
 echo ========================================
 echo.
 
-python run.py
-
+REM Use test server for better error reporting
+python test_server.py
 pause
 

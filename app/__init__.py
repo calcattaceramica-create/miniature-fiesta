@@ -13,7 +13,6 @@ babel = Babel()
 
 def get_locale():
     """Get user's preferred language - ALWAYS ARABIC"""
-    # Always return Arabic - no language switching
     return 'ar'
 
 def create_app(config_name='default'):
@@ -23,25 +22,26 @@ def create_app(config_name='default'):
     template_dir = os.path.join(app_dir, 'templates')
     static_dir = os.path.join(app_dir, 'static')
 
+    # Get the absolute path to the translations directory (one level up from app)
+    basedir = os.path.dirname(app_dir)
+    translations_dir = os.path.join(basedir, 'translations')
+
     app = Flask(__name__,
                 template_folder=template_dir,
                 static_folder=static_dir)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
-    
+
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
 
-    # Initialize Babel with proper configuration
-    babel.init_app(
-        app,
-        default_locale='ar',
-        default_timezone='Asia/Riyadh',
-        default_translation_directories='translations',
-        locale_selector=get_locale
-    )
+    # Initialize Babel with absolute path
+    app.config['BABEL_DEFAULT_LOCALE'] = 'ar'
+    app.config['BABEL_DEFAULT_TIMEZONE'] = 'Asia/Riyadh'
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = translations_dir
+    babel.init_app(app, locale_selector=get_locale)
     
     # Login manager settings
     login_manager.login_view = 'auth.login'
@@ -89,9 +89,9 @@ def create_app(config_name='default'):
     from app.security import bp as security_bp
     app.register_blueprint(security_bp, url_prefix='/security')
 
-    # Initialize license middleware (optional - uncomment to enable)
-    # from app.license_middleware import init_license_middleware
-    # init_license_middleware(app)
+    # Initialize license middleware
+    from app.license_middleware import init_license_middleware
+    init_license_middleware(app)
 
     # Add context processor for translations
     @app.context_processor

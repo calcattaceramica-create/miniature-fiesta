@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}العملاء المحتملون - CRM{% endblock %}
+{% block page_title %}العملاء المحتملون{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-user-plus"></i> العملاء المحتملون</h3>
+        <p class="text-muted mb-0">إدارة العملاء المحتملين والفرص الجديدة</p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.add_lead') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> إضافة عميل محتمل
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('crm.leads') }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search" 
+                       placeholder="بحث بالاسم، الشركة، البريد، الهاتف..." 
+                       value="{{ search }}">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="status">
+                    <option value="">جميع الحالات</option>
+                    <option value="new" {% if status == 'new' %}selected{% endif %}>جديد</option>
+                    <option value="contacted" {% if status == 'contacted' %}selected{% endif %}>تم الاتصال</option>
+                    <option value="qualified" {% if status == 'qualified' %}selected{% endif %}>مؤهل</option>
+                    <option value="lost" {% if status == 'lost' %}selected{% endif %}>مفقود</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('crm.leads') }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-redo"></i> إعادة تعيين
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Leads Table -->
+<div class="card mt-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>الكود</th>
+                        <th>الاسم</th>
+                        <th>الشركة</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الهاتف</th>
+                        <th>المصدر</th>
+                        <th>الحالة</th>
+                        <th>التقييم</th>
+                        <th>الإيراد المتوقع</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads.items %}
+                    <tr>
+                        <td><strong>{{ lead.code }}</strong></td>
+                        <td>
+                            <a href="{{ url_for('crm.lead_details', id=lead.id) }}">
+                                {{ lead.name }}
+                            </a>
+                        </td>
+                        <td>{{ lead.company or '-' }}</td>
+                        <td>{{ lead.email or '-' }}</td>
+                        <td>{{ lead.phone or '-' }}</td>
+                        <td>{{ lead.source or '-' }}</td>
+                        <td>
+                            {% if lead.status == 'new' %}
+                                <span class="badge bg-primary">جديد</span>
+                            {% elif lead.status == 'contacted' %}
+                                <span class="badge bg-info">تم الاتصال</span>
+                            {% elif lead.status == 'qualified' %}
+                                <span class="badge bg-success">مؤهل</span>
+                            {% elif lead.status == 'lost' %}
+                                <span class="badge bg-danger">مفقود</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for i in range(lead.rating) %}
+                                <i class="fas fa-star text-warning"></i>
+                            {% endfor %}
+                            {% for i in range(5 - lead.rating) %}
+                                <i class="far fa-star text-muted"></i>
+                            {% endfor %}
+                        </td>
+                        <td>{{ "%.2f"|format(lead.expected_revenue) }} ر.س</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('crm.lead_details', id=lead.id) }}" 
+                                   class="btn btn-info" title="عرض">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ url_for('crm.edit_lead', id=lead.id) }}" 
+                                   class="btn btn-warning" title="تعديل">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-success" 
+                                        onclick="convertLead({{ lead.id }})" title="تحويل لعميل">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                            لا توجد عملاء محتملون
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if leads.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not leads.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.leads', page=leads.prev_num, search=search, status=status) }}">
+                السابق
+            </a>
+        </li>
+        
+        {% for page_num in leads.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == leads.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('crm.leads', page=page_num, search=search, status=status) }}">
+                        {{ page_num }}
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if not leads.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.leads', page=leads.next_num, search=search, status=status) }}">
+                التالي
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function convertLead(leadId) {
+    if (confirm('هل أنت متأكد من تحويل هذا العميل المحتمل إلى عميل؟')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/crm/leads/${leadId}/convert`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
+

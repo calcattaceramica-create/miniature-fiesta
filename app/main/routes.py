@@ -127,42 +127,36 @@ def about():
 @login_required
 def license_info():
     """Display license information for current user"""
+    from app.license_manager import LicenseManager
+
     license_data = None
 
     try:
-        license_file = Path('licenses.json')
-        if license_file.exists():
-            with open(license_file, 'r', encoding='utf-8') as f:
-                licenses = json.load(f)
+        # Get active license from database
+        is_valid, message, license = LicenseManager.verify_license()
 
-            # Find license for current user
-            for key, data in licenses.items():
-                if data.get('username') == current_user.username:
-                    # Calculate days remaining
-                    expiry = data.get('expiry')
-                    days_remaining = None
-                    if expiry:
-                        expiry_date = datetime.strptime(expiry, "%Y-%m-%d")
-                        days_remaining = (expiry_date - datetime.now()).days
-
-                    license_data = {
-                        'key': key,
-                        'company': data.get('company'),
-                        'email': data.get('contact_email'),
-                        'phone': data.get('contact_phone'),
-                        'created': data.get('created'),
-                        'expiry': expiry,
-                        'days_remaining': days_remaining,
-                        'license_type': data.get('license_type', 'Standard'),
-                        'max_users': data.get('max_users', 10),
-                        'activation_count': data.get('activation_count', 0),
-                        'features': data.get('features', ['all']),
-                        'status': data.get('status', 'active'),
-                        'machine_id': data.get('machine_id', 'N/A')
-                    }
-                    break
+        if license:
+            license_data = {
+                'key': license.license_key,
+                'company': license.client_company or license.client_name,
+                'email': license.client_email,
+                'phone': license.client_phone,
+                'created': license.created_at.strftime('%Y-%m-%d') if license.created_at else 'N/A',
+                'expiry': license.expires_at.strftime('%Y-%m-%d') if license.expires_at else 'دائم - Lifetime',
+                'days_remaining': license.days_remaining(),
+                'license_type': license.license_type.title(),
+                'max_users': license.max_users,
+                'max_branches': license.max_branches,
+                'activation_count': len(license.checks) if hasattr(license, 'checks') else 0,
+                'features': ['all'],  # يمكن تخصيصها لاحقاً
+                'status': 'active' if is_valid else ('suspended' if license.is_suspended else 'inactive'),
+                'machine_id': license.machine_id or 'N/A',
+                'is_valid': is_valid,
+                'message': message
+            }
     except Exception as e:
         print(f"Error loading license info: {e}")
+        flash(f'خطأ في تحميل معلومات الترخيص: {str(e)}', 'danger')
 
     return render_template('license_info.html', license_info=license_data)
 

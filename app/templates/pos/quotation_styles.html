@@ -1,0 +1,189 @@
+{# Template Styles Based on Company Settings #}
+{% set template = company.invoice_template if company and company.invoice_template else 'modern' %}
+
+{# Modern Template - Default #}
+{% if template == 'modern' %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .quotation-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+    .info-card {
+        border-left: 4px solid #4f46e5;
+    }
+    .customer-title {
+        color: #4f46e5;
+    }
+    .detail-icon {
+        color: #4f46e5;
+    }
+    .items-table thead {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+    .totals-section {
+        border-top: 2px solid #4f46e5;
+    }
+    .grand-total {
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        border: 2px solid #4f46e5;
+    }
+    .grand-total .total-label {
+        color: #4f46e5;
+    }
+    .grand-total .total-value {
+        color: #4f46e5;
+    }
+    .print-button {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+</style>
+
+{# Classic Template #}
+{% elif template == 'classic' %}
+<style>
+    body {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    .quotation-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    .info-card {
+        border-left: 4px solid #28a745;
+        background: #f8f9fa;
+    }
+    .customer-title {
+        color: #28a745;
+    }
+    .detail-icon {
+        color: #28a745;
+    }
+    .items-table thead {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+    .totals-section {
+        border-top: 2px solid #28a745;
+    }
+    .grand-total {
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+        border: 2px solid #28a745;
+    }
+    .grand-total .total-label {
+        color: #28a745;
+    }
+    .grand-total .total-value {
+        color: #28a745;
+    }
+    .print-button {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    .quotation-container {
+        border-radius: 8px;
+    }
+</style>
+
+{# Minimal Template #}
+{% elif template == 'minimal' %}
+<style>
+    body {
+        background: #f5f5f5;
+    }
+    .quotation-header {
+        background: #17a2b8;
+        padding: 15px 30px;
+    }
+    .quotation-container {
+        border-radius: 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .info-card {
+        border-left: 2px solid #17a2b8;
+        background: white;
+        box-shadow: none;
+        border: 1px solid #dee2e6;
+    }
+    .customer-title {
+        color: #17a2b8;
+    }
+    .detail-icon {
+        color: #17a2b8;
+    }
+    .items-table thead {
+        background: #17a2b8;
+    }
+    .totals-section {
+        border-top: 2px solid #17a2b8;
+    }
+    .grand-total {
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.15);
+        border: 2px solid #17a2b8;
+    }
+    .grand-total .total-label {
+        color: #17a2b8;
+    }
+    .grand-total .total-value {
+        color: #17a2b8;
+    }
+    .print-button {
+        background: #17a2b8;
+        border-radius: 4px;
+    }
+</style>
+
+{# Elegant Template #}
+{% elif template == 'elegant' %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .quotation-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    .quotation-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+    .info-card {
+        border-left: 4px solid #f5576c;
+        background: linear-gradient(to bottom, #fff 0%, #fff5f7 100%);
+    }
+    .customer-title {
+        color: #f5576c;
+    }
+    .detail-icon {
+        color: #f5576c;
+    }
+    .items-table thead {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .totals-section {
+        border-top: 2px solid #f5576c;
+    }
+    .grand-total {
+        box-shadow: 0 4px 12px rgba(245, 87, 108, 0.15);
+        border: 2px solid #f5576c;
+    }
+    .grand-total .total-label {
+        color: #f5576c;
+    }
+    .grand-total .total-value {
+        color: #f5576c;
+    }
+    .print-button {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    .quotation-container {
+        border-radius: 20px;
+    }
+</style>
+{% endif %}
+

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة حساب جديد - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إضافة حساب جديد{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> إضافة حساب جديد</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('accounting.add_account') }}">
+                        <div class="row">
+                            <!-- Account Code -->
+                            <div class="col-md-6 mb-3">
+                                <label for="code" class="form-label">رمز الحساب <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="code" name="code" required 
+                                       placeholder="مثال: 1110">
+                                <small class="text-muted">رمز فريد للحساب</small>
+                            </div>
+
+                            <!-- Account Type -->
+                            <div class="col-md-6 mb-3">
+                                <label for="account_type" class="form-label">نوع الحساب <span class="text-danger">*</span></label>
+                                <select class="form-select" id="account_type" name="account_type" required>
+                                    <option value="">-- اختر النوع --</option>
+                                    <option value="asset">أصول (Assets)</option>
+                                    <option value="liability">خصوم (Liabilities)</option>
+                                    <option value="equity">حقوق ملكية (Equity)</option>
+                                    <option value="revenue">إيرادات (Revenue)</option>
+                                    <option value="expense">مصروفات (Expenses)</option>
+                                </select>
+                            </div>
+
+                            <!-- Account Name (Arabic) -->
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">اسم الحساب (عربي) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" required 
+                                       placeholder="مثال: النقدية">
+                            </div>
+
+                            <!-- Account Name (English) -->
+                            <div class="col-md-6 mb-3">
+                                <label for="name_en" class="form-label">اسم الحساب (إنجليزي)</label>
+                                <input type="text" class="form-control" id="name_en" name="name_en" 
+                                       placeholder="Example: Cash">
+                            </div>
+
+                            <!-- Parent Account -->
+                            <div class="col-md-12 mb-3">
+                                <label for="parent_id" class="form-label">الحساب الرئيسي</label>
+                                <select class="form-select" id="parent_id" name="parent_id">
+                                    <option value="">-- لا يوجد (حساب رئيسي) --</option>
+                                    {% for parent in parent_accounts %}
+                                    <option value="{{ parent.id }}">{{ parent.code }} - {{ parent.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">اختر الحساب الرئيسي إذا كان هذا حساب فرعي</small>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-md-12 mb-3">
+                                <label for="description" class="form-label">الوصف</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" 
+                                          placeholder="وصف تفصيلي للحساب..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('accounting.accounts') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> حفظ الحساب
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> إرشادات</h5>
+                </div>
+                <div class="card-body">
+                    <h6>أنواع الحسابات:</h6>
+                    <ul>
+                        <li><strong>الأصول (Assets):</strong> النقدية، البنوك، المخزون، الأصول الثابتة</li>
+                        <li><strong>الخصوم (Liabilities):</strong> الموردون، القروض، المصروفات المستحقة</li>
+                        <li><strong>حقوق الملكية (Equity):</strong> رأس المال، الأرباح المحتجزة</li>
+                        <li><strong>الإيرادات (Revenue):</strong> المبيعات، الإيرادات الأخرى</li>
+                        <li><strong>المصروفات (Expenses):</strong> الرواتب، الإيجار، المرافق</li>
+                    </ul>
+
+                    <h6 class="mt-3">نظام الترميز المقترح:</h6>
+                    <ul>
+                        <li><strong>1xxx:</strong> الأصول</li>
+                        <li><strong>2xxx:</strong> الخصوم</li>
+                        <li><strong>3xxx:</strong> حقوق الملكية</li>
+                        <li><strong>4xxx:</strong> الإيرادات</li>
+                        <li><strong>5xxx:</strong> المصروفات</li>
+                    </ul>
+
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>ملاحظة:</strong> تأكد من اختيار نوع الحساب الصحيح لأنه يؤثر على التقارير المالية.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

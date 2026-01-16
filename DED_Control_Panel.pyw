@@ -531,9 +531,39 @@ class DEDControlPanel:
         self.update_license_stats()
 
     def create_license_tab(self):
+        # Create main container with scrollbar
+        main_container = tk.Frame(self.license_tab, bg=self.colors['bg'])
+        main_container.pack(fill=tk.BOTH, expand=True)
+
+        # Create canvas and scrollbar
+        canvas = tk.Canvas(main_container, bg=self.colors['bg'], highlightthickness=0)
+        scrollbar = tk.Scrollbar(main_container, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg=self.colors['bg'])
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=canvas.winfo_width())
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Bind canvas width to scrollable frame width
+        def on_canvas_configure(event):
+            canvas.itemconfig(canvas.find_withtag("all")[0], width=event.width)
+        canvas.bind('<Configure>', on_canvas_configure)
+
+        # Mouse wheel scrolling
+        def on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
         # Add License Card with modern design
-        add_card = tk.Frame(self.license_tab, bg=self.colors['card'], relief=tk.FLAT)
-        add_card.pack(fill=tk.X, padx=10, pady=(0, 15))
+        add_card = tk.Frame(scrollable_frame, bg=self.colors['card'], relief=tk.FLAT)
+        add_card.pack(fill=tk.X, padx=10, pady=(10, 15))
 
         # Top border
         tk.Frame(add_card, bg=self.colors['border'], height=1).pack(fill=tk.X)
@@ -554,6 +584,7 @@ class DEDControlPanel:
             row = tk.Frame(parent, bg=self.colors['card'])
             row.pack(fill=tk.X, pady=8)
 
+            # Label on the right
             tk.Label(
                 row,
                 text=label_text,
@@ -564,6 +595,7 @@ class DEDControlPanel:
                 anchor='e'
             ).pack(side=tk.RIGHT, padx=15)
 
+            # Entry on the left
             entry = tk.Entry(
                 row,
                 font=("Segoe UI", 14),
@@ -574,7 +606,7 @@ class DEDControlPanel:
                 insertbackground=self.colors['text'],
                 show=show_char if show_char else ""
             )
-            entry.pack(side=tk.RIGHT, padx=15, ipady=8)
+            entry.pack(side=tk.LEFT, padx=15, ipady=8)
             if default_value:
                 entry.insert(0, default_value)
 
@@ -596,9 +628,6 @@ class DEDControlPanel:
         # Email
         create_form_row(form, "📧 البريد الإلكتروني - Email:", "email_entry")
 
-        # Bottom border
-        tk.Frame(add_card, bg=self.colors['border'], height=1).pack(fill=tk.X)
-
         # Phone
         create_form_row(form, "📱 رقم الهاتف - Phone:", "phone_entry")
 
@@ -607,6 +636,9 @@ class DEDControlPanel:
 
         # Notes
         create_form_row(form, "📝 ملاحظات - Notes:", "notes_entry")
+
+        # Bottom border
+        tk.Frame(add_card, bg=self.colors['border'], height=1).pack(fill=tk.X)
 
         # Buttons with modern design
         btn_frame = tk.Frame(add_card, bg=self.colors['card'])
@@ -661,7 +693,7 @@ class DEDControlPanel:
         ).pack(side=tk.LEFT, padx=5, expand=True, fill=tk.X)
 
         # Licenses List with modern design
-        list_card = tk.Frame(self.license_tab, bg=self.colors['card'], relief=tk.FLAT)
+        list_card = tk.Frame(scrollable_frame, bg=self.colors['card'], relief=tk.FLAT)
         list_card.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
 
         # Top border
