@@ -4,11 +4,12 @@ DED ERP System - Web Version
 """
 
 import streamlit as st
-import sqlite3
+import json
 import pandas as pd
 from datetime import datetime, timedelta
 import hashlib
 from pathlib import Path
+import os
 
 # Page configuration
 st.set_page_config(
@@ -18,45 +19,53 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Database connection
-def get_db_connection():
-    """Get database connection"""
-    db_path = Path("erp_system.db")
-    if not db_path.exists():
-        st.error("⚠️ قاعدة البيانات غير موجودة! يرجى تشغيل: python init_database.py")
-        return None
-    
-    conn = sqlite3.connect(str(db_path))
-    conn.row_factory = sqlite3.Row
-    return conn
+# Simple JSON-based data storage
+DATA_FILE = "erp_data.json"
+
+def load_data():
+    """Load data from JSON file"""
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            pass
+
+    # Default data
+    return {
+        "users": {
+            "admin": {
+                "password": hashlib.sha256("admin123".encode()).hexdigest(),
+                "full_name": "مدير النظام",
+                "role": "admin"
+            }
+        },
+        "products": [],
+        "customers": [],
+        "suppliers": [],
+        "sales_invoices": [],
+        "purchase_invoices": []
+    }
+
+def save_data(data):
+    """Save data to JSON file"""
+    try:
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except:
+        return False
 
 # Authentication
 def check_password(username, password):
     """Check user credentials"""
-    conn = get_db_connection()
-    if not conn:
-        return False
-    
-    try:
-        cursor = conn.cursor()
-        # Hash password
+    data = load_data()
+
+    if username in data["users"]:
         password_hash = hashlib.sha256(password.encode()).hexdigest()
-        
-        # Check user
-        cursor.execute("""
-            SELECT id, username, is_active 
-            FROM user 
-            WHERE username = ? AND password_hash = ? AND is_active = 1
-        """, (username, password_hash))
-        
-        user = cursor.fetchone()
-        conn.close()
-        
-        return user is not None
-    except Exception as e:
-        st.error(f"خطأ في التحقق: {str(e)}")
-        conn.close()
-        return False
+        return data["users"][username]["password"] == password_hash
+
+    return False
 
 # Initialize session state
 if 'logged_in' not in st.session_state:
@@ -108,53 +117,50 @@ def login_page():
 def dashboard_page():
     """Display dashboard"""
     st.title("📊 لوحة التحكم - Dashboard")
-    
-    conn = get_db_connection()
-    if not conn:
-        return
-    
-    try:
-        # Get statistics
-        cursor = conn.cursor()
-        
-        # Products count
-        cursor.execute("SELECT COUNT(*) as count FROM product")
-        products_count = cursor.fetchone()['count']
-        
-        # Customers count
-        cursor.execute("SELECT COUNT(*) as count FROM customer")
-        customers_count = cursor.fetchone()['count']
-        
-        # Suppliers count
-        cursor.execute("SELECT COUNT(*) as count FROM supplier")
-        suppliers_count = cursor.fetchone()['count']
-        
-        # Sales invoices count
-        cursor.execute("SELECT COUNT(*) as count FROM sales_invoice")
-        sales_count = cursor.fetchone()['count']
-        
-        conn.close()
-        
-        # Display statistics
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric("📦 المنتجات", products_count)
-        
-        with col2:
-            st.metric("👥 العملاء", customers_count)
-        
-        with col3:
-            st.metric("🏭 الموردين", suppliers_count)
-        
-        with col4:
-            st.metric("🧾 فواتير المبيعات", sales_count)
-        
-        st.success("✅ النظام يعمل بشكل صحيح!")
-        
-    except Exception as e:
-        st.error(f"خطأ في تحميل البيانات: {str(e)}")
-        conn.close()
+
+    data = load_data()
+
+    # Display statistics
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("📦 المنتجات", len(data.get("products", [])))
+
+    with col2:
+        st.metric("👥 العملاء", len(data.get("customers", [])))
+
+    with col3:
+        st.metric("🏭 الموردين", len(data.get("suppliers", [])))
+
+    with col4:
+        st.metric("🧾 فواتير المبيعات", len(data.get("sales_invoices", [])))
+
+    st.divider()
+
+    # Quick actions
+    st.subheader("⚡ إجراءات سريعة")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button("➕ إضافة منتج جديد", use_container_width=True):
+            st.info("🚧 قيد التطوير...")
+
+    with col2:
+        if st.button("➕ إضافة عميل جديد", use_container_width=True):
+            st.info("🚧 قيد التطوير...")
+
+    with col3:
+        if st.button("➕ فاتورة مبيعات جديدة", use_container_width=True):
+            st.info("🚧 قيد التطوير...")
+
+    st.divider()
+
+    # Recent activity
+    st.subheader("📋 النشاط الأخير")
+    st.info("لا توجد أنشطة حديثة")
+
+    st.success("✅ النظام يعمل بشكل صحيح!")
 
 # Main app
 def main():
@@ -188,6 +194,59 @@ def main():
     # Main content
     if menu == "📊 لوحة التحكم":
         dashboard_page()
+
+    elif menu == "📦 المخزون":
+        st.title("📦 إدارة المخزون")
+
+        tab1, tab2, tab3 = st.tabs(["المنتجات", "التصنيفات", "المستودعات"])
+
+        with tab1:
+            st.subheader("قائمة المنتجات")
+            data = load_data()
+
+            if data.get("products"):
+                df = pd.DataFrame(data["products"])
+                st.dataframe(df, use_container_width=True)
+            else:
+                st.info("لا توجد منتجات. ابدأ بإضافة منتج جديد!")
+
+            if st.button("➕ إضافة منتج"):
+                st.info("🚧 قيد التطوير...")
+
+        with tab2:
+            st.info("🚧 قسم التصنيفات قيد التطوير...")
+
+        with tab3:
+            st.info("🚧 قسم المستودعات قيد التطوير...")
+
+    elif menu == "👥 العملاء":
+        st.title("👥 إدارة العملاء")
+
+        data = load_data()
+
+        if data.get("customers"):
+            df = pd.DataFrame(data["customers"])
+            st.dataframe(df, use_container_width=True)
+        else:
+            st.info("لا يوجد عملاء. ابدأ بإضافة عميل جديد!")
+
+        if st.button("➕ إضافة عميل"):
+            st.info("🚧 قيد التطوير...")
+
+    elif menu == "🏭 الموردين":
+        st.title("🏭 إدارة الموردين")
+
+        data = load_data()
+
+        if data.get("suppliers"):
+            df = pd.DataFrame(data["suppliers"])
+            st.dataframe(df, use_container_width=True)
+        else:
+            st.info("لا يوجد موردين. ابدأ بإضافة مورد جديد!")
+
+        if st.button("➕ إضافة مورد"):
+            st.info("🚧 قيد التطوير...")
+
     else:
         st.title(menu)
         st.info(f"🚧 قسم {menu} قيد التطوير...")
