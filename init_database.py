@@ -99,7 +99,7 @@ with app.app_context():
     print("\n  Creating trial license...")
     from app.models_license import License
     from werkzeug.security import generate_password_hash
-    from datetime import timedelta
+    from datetime import datetime, timedelta
 
     if not License.query.first():
         license_key = License.generate_license_key()
