@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     region: frankfurt
-    buildCommand: pip install -r requirements.txt && python init_database.py
+    buildCommand: pip install -r requirements.txt && python setup_db.py
     startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 run:app
     envVars:
       - key: FLASK_ENV
