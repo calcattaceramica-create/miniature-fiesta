@@ -1,14 +1,11 @@
 services:
   - type: web
-    name: ded-erp-system
+    name: ded-inventory-system
     env: python
     plan: free
     region: frankfurt
-    rootDir: .
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r ./requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 run:app
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     envVars:
       - key: FLASK_ENV
         value: production
@@ -18,9 +15,6 @@ services:
         fromDatabase:
           name: ded-database
           property: connectionString
-      - key: PYTHON_VERSION
-        value: 3.11.7
-    autoDeploy: true
 
 databases:
   - name: ded-database
@@ -28,5 +22,4 @@ databases:
     region: frankfurt
     databaseName: ded_erp
     user: ded_user
-    postgresMajorVersion: 16
 
