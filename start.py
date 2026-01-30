@@ -5,6 +5,14 @@ Simple server starter for DED ERP System
 """
 import os
 import sys
+import webbrowser
+import threading
+import time
+
+def open_browser():
+    """Open browser after a short delay"""
+    time.sleep(2)  # Wait 2 seconds for server to start
+    webbrowser.open('http://localhost:5000')
 
 def main():
     print("=" * 50)
@@ -19,17 +27,20 @@ def main():
     print("   Press CTRL+C to stop the server")
     print("=" * 50)
     print()
-    
+
     # Import and run the app
     from app import create_app
     app = create_app()
-    
+
+    # Open browser in a separate thread
+    threading.Thread(target=open_browser, daemon=True).start()
+
     try:
         app.run(
             host='0.0.0.0',
             port=5000,
-            debug=True,
-            use_reloader=True
+            debug=False,  # Disable debug to prevent reloader issues
+            use_reloader=False
         )
     except KeyboardInterrupt:
         print("\n\n🛑 Server stopped by user")

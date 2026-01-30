@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة التحكم الأمنية - Security Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-shield-alt text-primary"></i>
+                لوحة التحكم الأمنية
+                <small class="text-muted">Security Dashboard</small>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">إجمالي السجلات</h6>
+                            <h2 class="mb-0">{{ total_logs }}</h2>
+                            <small>Total Logs</small>
+                        </div>
+                        <i class="fas fa-list fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">محاولات فاشلة اليوم</h6>
+                            <h2 class="mb-0">{{ failed_logins_today }}</h2>
+                            <small>Failed Logins Today</small>
+                        </div>
+                        <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">الجلسات النشطة</h6>
+                            <h2 class="mb-0">{{ active_sessions }}</h2>
+                            <small>Active Sessions</small>
+                        </div>
+                        <i class="fas fa-users fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">حسابات مقفلة</h6>
+                            <h2 class="mb-0">{{ locked_accounts }}</h2>
+                            <small>Locked Accounts</small>
+                        </div>
+                        <i class="fas fa-lock fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Events -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history"></i>
+                        الأحداث الأخيرة - Recent Events
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>الوقت</th>
+                                    <th>النوع</th>
+                                    <th>المستخدم</th>
+                                    <th>IP</th>
+                                    <th>الخطورة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in recent_events %}
+                                <tr>
+                                    <td>{{ event.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ event.event_type }}</span>
+                                    </td>
+                                    <td>
+                                        {% if event.user %}
+                                            {{ event.user.username }}
+                                        {% else %}
+                                            <em>غير معروف</em>
+                                        {% endif %}
+                                    </td>
+                                    <td><code>{{ event.ip_address }}</code></td>
+                                    <td>
+                                        {% if event.severity == 'critical' %}
+                                            <span class="badge bg-danger">حرج</span>
+                                        {% elif event.severity == 'warning' %}
+                                            <span class="badge bg-warning">تحذير</span>
+                                        {% else %}
+                                            <span class="badge bg-info">معلومات</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('security.logs') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-list"></i>
+                        عرض جميع السجلات
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-ban"></i>
+                        محاولات فاشلة حسب IP
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for ip, count in failed_by_ip %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <code>{{ ip }}</code>
+                            <span class="badge bg-danger rounded-pill">{{ count }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

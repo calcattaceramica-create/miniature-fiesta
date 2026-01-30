@@ -1,138 +1,138 @@
 {% extends "base.html" %}
 
-{% block title %}الملف الشخصي - نظام إدارة المخزون{% endblock %}
-{% block page_title %}الملف الشخصي{% endblock %}
+{% block title %}{{ _('Profile') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Profile') }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h3><i class="fas fa-user-circle"></i> الملف الشخصي</h3>
-    <p class="text-muted mb-0">تعديل معلوماتك الشخصية</p>
+    <h3><i class="fas fa-user-circle"></i> {{ _('Profile') }}</h3>
+    <p class="text-muted mb-0">{{ _('Edit your personal information') }}</p>
 </div>
 
 <div class="row">
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-user-edit"></i> تعديل المعلومات</h5>
+                <h5 class="mb-0"><i class="fas fa-user-edit"></i> {{ _('Edit Information') }}</h5>
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ url_for('settings.profile') }}">
                     <div class="mb-3">
-                        <label class="form-label">اسم المستخدم</label>
+                        <label class="form-label">{{ _('Username') }}</label>
                         <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
-                        <small class="text-muted">لا يمكن تغيير اسم المستخدم</small>
+                        <small class="text-muted">{{ _('Username cannot be changed') }}</small>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">الاسم الكامل</label>
+                        <label class="form-label">{{ _('Full Name') }}</label>
                         <input type="text" class="form-control" name="full_name" value="{{ current_user.full_name }}" required>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">البريد الإلكتروني</label>
+                        <label class="form-label">{{ _('Email') }}</label>
                         <input type="email" class="form-control" name="email" value="{{ current_user.email }}" required>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">رقم الهاتف</label>
+                        <label class="form-label">{{ _('Phone Number') }}</label>
                         <input type="text" class="form-control" name="phone" value="{{ current_user.phone or '' }}">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">اللغة المفضلة</label>
+                        <label class="form-label">{{ _('Preferred Language') }}</label>
                         <select class="form-select" name="language">
                             <option value="ar" {% if current_user.language == 'ar' %}selected{% endif %}>العربية</option>
                             <option value="en" {% if current_user.language == 'en' %}selected{% endif %}>English</option>
                         </select>
                     </div>
-                    
+
                     <hr>
-                    
-                    <h5 class="mb-3"><i class="fas fa-key"></i> تغيير كلمة المرور</h5>
-                    
+
+                    <h5 class="mb-3"><i class="fas fa-key"></i> {{ _('Change Password') }}</h5>
+
                     <div class="mb-3">
-                        <label class="form-label">كلمة المرور الجديدة</label>
-                        <input type="password" class="form-control" name="new_password" placeholder="اتركه فارغاً إذا لم ترد التغيير">
+                        <label class="form-label">{{ _('New Password') }}</label>
+                        <input type="password" class="form-control" name="new_password" placeholder="{{ _('Leave blank if you do not want to change') }}">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label">تأكيد كلمة المرور</label>
-                        <input type="password" class="form-control" name="confirm_password" placeholder="أعد إدخال كلمة المرور الجديدة">
+                        <label class="form-label">{{ _('Confirm Password') }}</label>
+                        <input type="password" class="form-control" name="confirm_password" placeholder="{{ _('Re-enter new password') }}">
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="d-flex justify-content-between">
                         <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> إلغاء
+                            <i class="fas fa-times"></i> {{ _('Cancel') }}
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> حفظ التغييرات
+                            <i class="fas fa-save"></i> {{ _('Save Changes') }}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات الحساب</h5>
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ _('Account Information') }}</h5>
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <strong>الدور:</strong>
-                    <p class="mb-0">{{ current_user.role.name_ar if current_user.role else 'غير محدد' }}</p>
+                    <strong>{{ _('Role:') }}</strong>
+                    <p class="mb-0">{% if current_user.role %}{% if session.get('language') == 'en' %}{{ current_user.role.name }}{% else %}{{ current_user.role.name_ar }}{% endif %}{% else %}{{ _('Not specified') }}{% endif %}</p>
                 </div>
-                
+
                 <div class="mb-3">
-                    <strong>الفرع:</strong>
-                    <p class="mb-0">{{ current_user.branch.name if current_user.branch else 'غير محدد' }}</p>
+                    <strong>{{ _('Branch:') }}</strong>
+                    <p class="mb-0">{{ current_user.branch.name if current_user.branch else _('Not specified') }}</p>
                 </div>
-                
+
                 <div class="mb-3">
-                    <strong>آخر تسجيل دخول:</strong>
-                    <p class="mb-0">{{ current_user.last_login.strftime('%Y-%m-%d %H:%M') if current_user.last_login else 'لم يسجل' }}</p>
+                    <strong>{{ _('Last Login:') }}</strong>
+                    <p class="mb-0">{{ current_user.last_login.strftime('%Y-%m-%d %H:%M') if current_user.last_login else _('Not recorded') }}</p>
                 </div>
-                
+
                 <div class="mb-3">
-                    <strong>تاريخ الإنشاء:</strong>
-                    <p class="mb-0">{{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else 'غير محدد' }}</p>
+                    <strong>{{ _('Created Date:') }}</strong>
+                    <p class="mb-0">{{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else _('Not specified') }}</p>
                 </div>
-                
+
                 <div class="mb-3">
-                    <strong>الحالة:</strong>
+                    <strong>{{ _('Status:') }}</strong>
                     <p class="mb-0">
                         {% if current_user.is_active %}
-                            <span class="badge bg-success">نشط</span>
+                            <span class="badge bg-success">{{ _('Active') }}</span>
                         {% else %}
-                            <span class="badge bg-danger">غير نشط</span>
+                            <span class="badge bg-danger">{{ _('Inactive') }}</span>
                         {% endif %}
                     </p>
                 </div>
-                
+
                 {% if current_user.is_admin %}
                 <div class="alert alert-info">
-                    <i class="fas fa-crown"></i> أنت مدير النظام
+                    <i class="fas fa-crown"></i> {{ _('You are a system administrator') }}
                 </div>
                 {% endif %}
             </div>
         </div>
-        
+
         <div class="card mt-3">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-shield-alt"></i> الأمان</h5>
+                <h5 class="mb-0"><i class="fas fa-shield-alt"></i> {{ _('Security') }}</h5>
             </div>
             <div class="card-body">
                 <p class="text-muted small">
                     <i class="fas fa-info-circle"></i>
-                    تأكد من استخدام كلمة مرور قوية تحتوي على:
+                    {{ _('Make sure to use a strong password that contains:') }}
                 </p>
                 <ul class="small">
-                    <li>8 أحرف على الأقل</li>
-                    <li>أحرف كبيرة وصغيرة</li>
-                    <li>أرقام ورموز</li>
+                    <li>{{ _('At least 8 characters') }}</li>
+                    <li>{{ _('Uppercase and lowercase letters') }}</li>
+                    <li>{{ _('Numbers and symbols') }}</li>
                 </ul>
             </div>
         </div>

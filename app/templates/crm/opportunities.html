@@ -64,7 +64,7 @@
         <div class="card bg-success text-white">
             <div class="card-body">
                 <h6>القيمة الإجمالية</h6>
-                <h3>{{ "%.2f"|format(total_value) }} ر.س</h3>
+                <h3>{{ total_value|currency }}</h3>
             </div>
         </div>
     </div>
@@ -72,7 +72,7 @@
         <div class="card bg-info text-white">
             <div class="card-body">
                 <h6>القيمة المتوقعة</h6>
-                <h3>{{ "%.2f"|format(expected_value) }} ر.س</h3>
+                <h3>{{ expected_value|currency }}</h3>
             </div>
         </div>
     </div>
@@ -122,7 +122,7 @@
                                 -
                             {% endif %}
                         </td>
-                        <td>{{ "%.2f"|format(opp.amount) }} ر.س</td>
+                        <td>{{ opp.amount|currency }}</td>
                         <td>
                             {% if opp.stage == 'prospecting' %}
                                 <span class="badge bg-secondary">استكشاف</span>
@@ -146,7 +146,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td>{{ "%.2f"|format(opp.amount * opp.probability / 100) }} ر.س</td>
+                        <td>{{ (opp.amount * opp.probability / 100)|currency }}</td>
                         <td>{{ opp.expected_close_date.strftime('%Y-%m-%d') if opp.expected_close_date else '-' }}</td>
                         <td>
                             <div class="btn-group btn-group-sm">

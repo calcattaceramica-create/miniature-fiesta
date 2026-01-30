@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}سجلات الأمان - Security Logs{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-list text-primary"></i>
+                سجلات الأمان
+                <small class="text-muted">Security Logs</small>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('security.logs') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">نوع الحدث - Event Type</label>
+                    <select name="event_type" class="form-select">
+                        <option value="">الكل - All</option>
+                        <option value="successful_login">تسجيل دخول ناجح</option>
+                        <option value="failed_login_wrong_password">كلمة مرور خاطئة</option>
+                        <option value="failed_login_unknown_user">مستخدم غير موجود</option>
+                        <option value="login_attempt_locked_account">محاولة دخول لحساب مقفل</option>
+                        <option value="logout">تسجيل خروج</option>
+                        <option value="password_changed">تغيير كلمة المرور</option>
+                        <option value="account_locked">قفل الحساب</option>
+                        <option value="account_unlocked">فتح الحساب</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">مستوى الخطورة - Severity</label>
+                    <select name="severity" class="form-select">
+                        <option value="">الكل - All</option>
+                        <option value="info">معلومات - Info</option>
+                        <option value="warning">تحذير - Warning</option>
+                        <option value="critical">حرج - Critical</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary d-block w-100">
+                        <i class="fas fa-filter"></i> تصفية - Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Logs Table -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i>
+                السجلات - Logs
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>التاريخ والوقت</th>
+                            <th>نوع الحدث</th>
+                            <th>المستخدم</th>
+                            <th>عنوان IP</th>
+                            <th>التفاصيل</th>
+                            <th>الخطورة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs.items %}
+                        <tr>
+                            <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ log.event_type }}</span>
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                    {{ log.user.username }}
+                                {% else %}
+                                    <em class="text-muted">غير معروف</em>
+                                {% endif %}
+                            </td>
+                            <td><code>{{ log.ip_address }}</code></td>
+                            <td>
+                                {% if log.details %}
+                                    <small>{{ log.details[:50] }}{% if log.details|length > 50 %}...{% endif %}</small>
+                                {% else %}
+                                    <em class="text-muted">-</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.severity == 'critical' %}
+                                    <span class="badge bg-danger">حرج</span>
+                                {% elif log.severity == 'warning' %}
+                                    <span class="badge bg-warning text-dark">تحذير</span>
+                                {% else %}
+                                    <span class="badge bg-info">معلومات</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا توجد سجلات - No logs found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if logs.pages > 1 %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if logs.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('security.logs', page=logs.prev_num) }}">السابق</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == logs.page %}
+                            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ url_for('security.logs', page=page_num) }}">{{ page_num }}</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if logs.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('security.logs', page=logs.next_num) }}">التالي</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

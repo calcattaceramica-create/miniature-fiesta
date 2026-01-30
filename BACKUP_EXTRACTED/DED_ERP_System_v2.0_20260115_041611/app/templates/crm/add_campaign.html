@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة حملة تسويقية - CRM{% endblock %}
+{% block page_title %}إضافة حملة تسويقية{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-bullhorn"></i> إضافة حملة تسويقية جديدة</h3>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('crm.add_campaign') }}">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">اسم الحملة <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الكود <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="code" required>
+                        <small class="text-muted">كود فريد للحملة (مثال: CAMP-2024-001)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نوع الحملة</label>
+                        <select class="form-select" name="campaign_type">
+                            <option value="email">بريد إلكتروني</option>
+                            <option value="social_media">وسائل التواصل</option>
+                            <option value="ppc">إعلانات مدفوعة</option>
+                            <option value="event">حدث</option>
+                            <option value="webinar">ندوة عبر الإنترنت</option>
+                            <option value="content">محتوى</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الحالة</label>
+                        <select class="form-select" name="status">
+                            <option value="planning" selected>تخطيط</option>
+                            <option value="active">نشطة</option>
+                            <option value="paused">متوقفة</option>
+                            <option value="completed">مكتملة</option>
+                            <option value="cancelled">ملغاة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ البداية</label>
+                        <input type="date" class="form-control" name="start_date">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ النهاية</label>
+                        <input type="date" class="form-control" name="end_date">
+                    </div>
+                </div>
+                
+                <!-- Budget and Performance -->
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-chart-line"></i> الميزانية والأداء</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الميزانية (ر.س)</label>
+                        <input type="number" class="form-control" name="budget" 
+                               step="0.01" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">التكلفة الفعلية (ر.س)</label>
+                        <input type="number" class="form-control" name="actual_cost" 
+                               step="0.01" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الإيراد المتوقع (ر.س)</label>
+                        <input type="number" class="form-control" name="expected_revenue" 
+                               step="0.01" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">الإيراد الفعلي (ر.س)</label>
+                        <input type="number" class="form-control" name="actual_revenue" 
+                               step="0.01" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">عدد العملاء المحتملين المتوقع</label>
+                        <input type="number" class="form-control" name="expected_leads" 
+                               min="0" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">عدد العملاء المحتملين المحققين</label>
+                        <input type="number" class="form-control" name="leads_generated" 
+                               min="0" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">عدد التحويلات</label>
+                        <input type="number" class="form-control" name="conversions" 
+                               min="0" value="0">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label class="form-label">الوصف</label>
+                        <textarea class="form-control" name="description" rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-info">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <a href="{{ url_for('crm.campaigns') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

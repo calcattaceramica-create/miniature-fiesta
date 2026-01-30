@@ -1,718 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌍 نشر نظام DED ERP على الإنترنت</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            line-height: 1.8;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 30px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        .header h1 {
-            color: #667eea;
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
-
-        .header .icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: rotate 3s infinite;
-        }
-
-        @keyframes rotate {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(360deg); }
-        }
-
-        .section {
-            margin: 30px 0;
-            padding: 25px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            border-right: 5px solid #667eea;
-        }
-
-        .section h2 {
-            color: #667eea;
-            font-size: 28px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section h3 {
-            color: #764ba2;
-            font-size: 22px;
-            margin: 20px 0 15px 0;
-        }
-
-        .step {
-            background: white;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .step-number {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 35px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        .code-box {
-            background: #2d3748;
-            color: #68d391;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            margin: 10px 0;
-            overflow-x: auto;
-        }
-
-        .info-box {
-            background: #e3f2fd;
-            border-right: 4px solid #2196f3;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-        }
-
-        .warning-box {
-            background: #fff3cd;
-            border-right: 4px solid #ffc107;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-        }
-
-        .success-box {
-            background: #d4edda;
-            border-right: 4px solid #28a745;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 18px;
-            margin: 10px 5px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
-        }
-
-
-        .comparison-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        .checkmark {
-            color: #28a745;
-            font-size: 20px;
-        }
-
-        .crossmark {
-            color: #dc3545;
-            font-size: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="icon">🌍</div>
-            <h1>نشر نظام DED ERP على الإنترنت</h1>
-            <p style="font-size: 20px; color: #666; margin-top: 10px;">
-                دليل شامل لنشر التطبيق على Render.com مجاناً
-            </p>
-        </div>
-
-        <!-- ملاحظة مهمة -->
-        <div class="warning-box">
-            <h3>⚠️ ملاحظة مهمة جداً</h3>
-            <p><strong>Streamlit Cloud</strong> يدعم فقط تطبيقات Streamlit</p>
-            <p>تطبيق <strong>DED ERP</strong> مبني على <strong>Flask</strong></p>
-            <p>لذلك سنستخدم <strong>Render.com</strong> (مجاني 100% مثل Streamlit)</p>
-        </div>
-
-        <!-- الملفات الجاهزة -->
-        <div class="success-box">
-            <h3>✅ الملفات جاهزة للنشر!</h3>
-            <p>تم رفع جميع الملفات المطلوبة على GitHub:</p>
-            <ul>
-                <li>✅ <strong>render.yaml</strong> - إعدادات النشر</li>
-                <li>✅ <strong>Procfile</strong> - أمر التشغيل</li>
-                <li>✅ <strong>runtime.txt</strong> - إصدار Python</li>
-                <li>✅ <strong>requirements.txt</strong> - المكتبات المطلوبة</li>
-                <li>✅ <strong>run.py</strong> - التطبيق الرئيسي</li>
-                <li>✅ <strong>init_database.py</strong> - إنشاء قاعدة البيانات</li>
-            </ul>
-        </div>
-
-        <!-- الخطوة 1 -->
-        <div class="section">
-            <h2><span class="step-number">1</span> إنشاء حساب على Render</h2>
-            <div class="step">
-                <p>🔗 اذهب إلى الموقع:</p>
-                <div class="code-box">https://render.com/</div>
-                <p>📝 اضغط على <strong>"Get Started for Free"</strong></p>
-                <p>🔐 اختر <strong>"Sign up with GitHub"</strong></p>
-                <div class="info-box">
-                    💡 سيتم ربط حسابك في GitHub تلقائياً مع Render
-                </div>
-                <a href="https://render.com/" target="_blank" class="btn">🚀 افتح Render.com</a>
-            </div>
-        </div>
-
-        <!-- الخطوة 2 -->
-        <div class="section">
-            <h2><span class="step-number">2</span> إنشاء Web Service جديد</h2>
-            <div class="step">
-                <p>📌 من لوحة التحكم في Render:</p>
-                <ul>
-                    <li>اضغط على <strong>"New +"</strong> (أعلى اليمين)</li>
-                    <li>اختر <strong>"Web Service"</strong></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- الخطوة 3 -->
-        <div class="section">
-            <h2><span class="step-number">3</span> ربط المستودع من GitHub</h2>
-            <div class="step">
-                <p>🔗 اختر المستودع:</p>
-                <div class="code-box">calcattaceramica-create/miniature-fiesta</div>
-
-                <div class="warning-box">
-                    <p><strong>📝 إذا لم يظهر المستودع:</strong></p>
-                    <ul>
-                        <li>اضغط على <strong>"Configure account"</strong></li>
-                        <li>امنح Render صلاحية الوصول للمستودع</li>
-                        <li>ارجع واختر المستودع</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- الخطوة 4 -->
-        <div class="section">
-            <h2><span class="step-number">4</span> إعدادات التطبيق</h2>
-            <div class="step">
-                <h3>املأ الحقول التالية:</h3>
-
-                <p><strong>Name:</strong></p>
-                <div class="code-box">ded-erp-system</div>
-
-                <p><strong>Region:</strong></p>
-                <div class="code-box">Frankfurt (EU Central)</div>
-                <div class="info-box">💡 الأقرب للسعودية والشرق الأوسط</div>
-
-                <p><strong>Branch:</strong></p>
-                <div class="code-box">main</div>
-
-                <p><strong>Root Directory:</strong></p>
-                <div class="code-box">(اتركه فارغاً)</div>
-
-                <p><strong>Runtime:</strong></p>
-                <div class="code-box">Python 3</div>
-
-                <p><strong>Build Command:</strong></p>
-                <div class="code-box">pip install -r requirements.txt && python init_database.py</div>
-
-                <p><strong>Start Command:</strong></p>
-                <div class="code-box">gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 run:app</div>
-            </div>
-        </div>
-
-        <!-- الخطوة 5 -->
-        <div class="section">
-            <h2><span class="step-number">5</span> إضافة قاعدة البيانات PostgreSQL</h2>
-            <div class="step">
-                <div class="warning-box">
-                    <strong>⚠️ مهم جداً!</strong> لا تنسى هذه الخطوة!
-                </div>
-
-                <p>في نفس صفحة الإعدادات، انزل لأسفل:</p>
-                <ul>
-                    <li>📊 اضغط على <strong>"Add Database"</strong></li>
-                    <li>اختر <strong>"PostgreSQL"</strong></li>
-                    <li>Name: <code>ded-database</code></li>
-                    <li>Database: <code>ded_erp</code></li>
-                    <li>User: <code>ded_user</code></li>
-                    <li>اضغط <strong>"Create Database"</strong></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- الخطوة 6 -->
-        <div class="section">
-            <h2><span class="step-number">6</span> المتغيرات البيئية</h2>
-            <div class="step">
-                <p>في قسم <strong>"Environment Variables"</strong>:</p>
-                <p>اضغط <strong>"Add Environment Variable"</strong> وأضف:</p>
-
-                <table class="comparison-table">
-                    <tr>
-                        <th>المفتاح (Key)</th>
-                        <th>القيمة (Value)</th>
-                    </tr>
-                    <tr>
-                        <td>FLASK_ENV</td>
-                        <td>production</td>
-                    </tr>
-                    <tr>
-                        <td>SECRET_KEY</td>
-                        <td>(اضغط Generate)</td>
-                    </tr>
-                    <tr>
-                        <td>PYTHON_VERSION</td>
-                        <td>3.11.0</td>
-                    </tr>
-                </table>
-
-                <div class="info-box">
-                    💡 <strong>DATABASE_URL</strong> سيتم إضافته تلقائياً عند ربط قاعدة البيانات!
-                </div>
-            </div>
-        </div>
-
-        <!-- الخطوة 7 -->
-        <div class="section">
-            <h2><span class="step-number">7</span> اختر الخطة المجانية</h2>
-            <div class="step">
-                <p><strong>Plan Type:</strong></p>
-                <div class="code-box">Free (مجاني 100%)</div>
-
-                <div class="info-box">
-                    <p><strong>مميزات الخطة المجانية:</strong></p>
-                    <ul>
-                        <li>✅ 750 ساعة مجانية شهرياً</li>
-                        <li>✅ قاعدة بيانات PostgreSQL مجانية</li>
-                        <li>✅ HTTPS تلقائي ومشفر</li>
-                        <li>✅ نطاق فرعي مجاني (.onrender.com)</li>
-                    </ul>
-                </div>
-
-                <div class="warning-box">
-                    <p><strong>⚠️ ملاحظة:</strong></p>
-                    <ul>
-                        <li>ينام التطبيق بعد 15 دقيقة من عدم الاستخدام</li>
-                        <li>يستيقظ تلقائياً خلال 30-60 ثانية عند الدخول</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- الخطوة 8 -->
-        <div class="section">
-            <h2><span class="step-number">8</span> النشر!</h2>
-            <div class="step">
-                <p>🚀 اضغط على <strong>"Create Web Service"</strong></p>
-
-                <p>⏳ انتظر 5-10 دقائق...</p>
-
-                <div class="info-box">
-                    <p><strong>سترى المراحل التالية:</strong></p>
-                    <ul>
-                        <li>🔨 Building... (بناء التطبيق)</li>
-                        <li>📦 Installing dependencies... (تثبيت المكتبات)</li>
-                        <li>🗄️ Creating database... (إنشاء قاعدة البيانات)</li>
-                        <li>⚙️ Starting application... (تشغيل التطبيق)</li>
-                        <li>✅ Live! (التطبيق يعمل!)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- الرابط النهائي -->
-        <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <h2 style="color: white;">🔗 الرابط النهائي</h2>
-            <div class="step" style="background: rgba(255,255,255,0.95);">
-                <p>بعد اكتمال النشر، ستحصل على رابط مثل:</p>
-                <div class="code-box" style="font-size: 18px;">
-                    🌍 https://ded-erp-system.onrender.com
-                </div>
-                <p style="margin-top: 15px;">أو:</p>
-                <div class="code-box" style="font-size: 18px;">
-                    🌍 https://ded-erp-system-xxxx.onrender.com
-                </div>
-
-                <div class="success-box" style="margin-top: 20px;">
-                    <h3>🎉 مبروك! التطبيق الآن على الإنترنت!</h3>
-                    <p>يمكنك الوصول إليه من أي مكان في العالم! 🌍</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- بيانات الدخول -->
-        <div class="section">
-            <h2>🔐 بيانات الدخول</h2>
-            <div class="step">
-                <table class="comparison-table">
-                    <tr>
-                        <th>البيان</th>
-                        <th>القيمة</th>
-                    </tr>
-                    <tr>
-                        <td>👤 اسم المستخدم</td>
-                        <td><strong>admin</strong></td>
-                    </tr>
-                    <tr>
-                        <td>🔒 كلمة المرور</td>
-                        <td><strong>admin123</strong></td>
-                    </tr>
-                </table>
-
-                <div class="warning-box" style="margin-top: 20px;">
-                    <strong>⚠️ مهم:</strong> غيّر كلمة المرور فوراً بعد الدخول!
-                </div>
-            </div>
-        </div>
-
-        <!-- الأقسام المتاحة -->
-        <div class="section">
-            <h2>📱 الأقسام المتاحة في النظام</h2>
-            <div class="step">
-                <ul style="columns: 2; -webkit-columns: 2; -moz-columns: 2;">
-                    <li>✅ لوحة التحكم - Dashboard</li>
-                    <li>✅ المخزون - Inventory</li>
-                    <li>✅ المبيعات - Sales</li>
-                    <li>✅ المشتريات - Purchases</li>
-                    <li>✅ نقاط البيع - POS</li>
-                    <li>✅ العملاء - CRM</li>
-                    <li>✅ الموارد البشرية - HR</li>
-                    <li>✅ المحاسبة - Accounting</li>
-                    <li>✅ التقارير - Reports</li>
-                    <li>✅ الإعدادات - Settings</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- الاستخدام من أي مكان -->
-        <div class="section">
-            <h2>🌍 استخدم من أي مكان</h2>
-            <div class="step">
-                <p>بعد النشر، يمكنك الوصول للنظام من:</p>
-                <ul>
-                    <li>✅ الكمبيوتر (Windows, Mac, Linux)</li>
-                    <li>✅ الهاتف (iPhone, Android)</li>
-                    <li>✅ التابلت (iPad, Android Tablet)</li>
-                    <li>✅ من أي مكان في العالم 🌍</li>
-                    <li>✅ 24/7 (مع فترات نوم للخطة المجانية)</li>
-                    <li>✅ HTTPS آمن ومشفر 🔒</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- تحديث التطبيق -->
-        <div class="section">
-            <h2>🔄 تحديث التطبيق</h2>
-            <div class="step">
-                <p>إذا أردت تحديث التطبيق لاحقاً:</p>
-                <div class="code-box">
-git add .<br>
-git commit -m "Update ERP"<br>
-git push
-                </div>
-                <div class="success-box">
-                    <p>✅ سيتم تحديث التطبيق تلقائياً على Render! 🎉</p>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- مقارنة المنصات -->
-        <div class="section">
-            <h2>📊 مقارنة منصات النشر المجانية</h2>
-            <div class="step">
-                <table class="comparison-table">
-                    <tr>
-                        <th>الميزة</th>
-                        <th>Render.com</th>
-                        <th>Streamlit Cloud</th>
-                        <th>PythonAnywhere</th>
-                    </tr>
-                    <tr>
-                        <td>يدعم Flask</td>
-                        <td><span class="checkmark">✅</span></td>
-                        <td><span class="crossmark">❌</span></td>
-                        <td><span class="checkmark">✅</span></td>
-                    </tr>
-                    <tr>
-                        <td>قاعدة بيانات PostgreSQL</td>
-                        <td><span class="checkmark">✅</span></td>
-                        <td><span class="crossmark">❌</span></td>
-                        <td><span class="checkmark">✅</span></td>
-                    </tr>
-                    <tr>
-                        <td>HTTPS تلقائي</td>
-                        <td><span class="checkmark">✅</span></td>
-                        <td><span class="checkmark">✅</span></td>
-                        <td><span class="checkmark">✅</span></td>
-                    </tr>
-                    <tr>
-                        <td>لا ينام</td>
-                        <td><span class="crossmark">❌</span></td>
-                        <td><span class="checkmark">✅</span></td>
-                        <td><span class="checkmark">✅</span></td>
-                    </tr>
-                    <tr>
-                        <td>سهولة النشر</td>
-                        <td>⭐⭐⭐⭐⭐</td>
-                        <td>⭐⭐⭐⭐⭐</td>
-                        <td>⭐⭐⭐</td>
-                    </tr>
-                    <tr>
-                        <td>السرعة</td>
-                        <td>⭐⭐⭐⭐⭐</td>
-                        <td>⭐⭐⭐⭐</td>
-                        <td>⭐⭐⭐</td>
-                    </tr>
-                </table>
-
-                <div class="success-box" style="margin-top: 20px;">
-                    <p><strong>🏆 الخلاصة:</strong></p>
-                    <p><strong>Render.com</strong> هو الخيار الأفضل لنشر تطبيق Flask ERP!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- حل المشاكل -->
-        <div class="section">
-            <h2>🔧 حل المشاكل الشائعة</h2>
-
-            <div class="step">
-                <h3>❌ خطأ في البناء (Build Failed)?</h3>
-                <div class="warning-box">
-                    <p><strong>تحقق من:</strong></p>
-                    <ul>
-                        <li>✅ ملف <code>requirements.txt</code> موجود</li>
-                        <li>✅ ملف <code>run.py</code> موجود</li>
-                        <li>✅ لا توجد أخطاء في الكود</li>
-                        <li>✅ جميع الملفات مرفوعة على GitHub</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="step">
-                <h3>❌ خطأ في قاعدة البيانات?</h3>
-                <div class="warning-box">
-                    <p><strong>تحقق من:</strong></p>
-                    <ul>
-                        <li>✅ تم إنشاء PostgreSQL Database</li>
-                        <li>✅ <code>DATABASE_URL</code> موجود في Environment Variables</li>
-                        <li>✅ تم تشغيل <code>init_database.py</code> في Build Command</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="step">
-                <h3>❌ التطبيق لا يفتح?</h3>
-                <div class="warning-box">
-                    <p><strong>تحقق من:</strong></p>
-                    <ul>
-                        <li>✅ Status = "Live" في لوحة تحكم Render</li>
-                        <li>✅ Logs لا تحتوي على أخطاء</li>
-                        <li>✅ انتظر دقيقة إذا كان التطبيق نائماً</li>
-                        <li>✅ جرب فتح الرابط في نافذة تصفح خفي</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="step">
-                <h3>❌ التطبيق بطيء جداً?</h3>
-                <div class="info-box">
-                    <p><strong>السبب:</strong> التطبيق كان نائماً (الخطة المجانية)</p>
-                    <p><strong>الحل:</strong> انتظر 30-60 ثانية حتى يستيقظ</p>
-                    <p><strong>بديل:</strong> ترقية للخطة المدفوعة ($7/شهر) لتجنب النوم</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ملاحظات مهمة -->
-        <div class="section">
-            <h2>⚠️ ملاحظات مهمة</h2>
-            <div class="step">
-                <div class="info-box">
-                    <h3>📌 الخطة المجانية:</h3>
-                    <ul>
-                        <li>ينام التطبيق بعد 15 دقيقة من عدم الاستخدام</li>
-                        <li>يستيقظ خلال 30-60 ثانية عند الدخول</li>
-                        <li>750 ساعة مجانية شهرياً (كافية للاستخدام الشخصي)</li>
-                    </ul>
-                </div>
-
-                <div class="info-box">
-                    <h3>📌 قاعدة البيانات:</h3>
-                    <ul>
-                        <li>PostgreSQL مجانية</li>
-                        <li>90 يوم صلاحية للخطة المجانية</li>
-                        <li>يمكن الترقية لاحقاً</li>
-                        <li>يتم حذف البيانات بعد 90 يوم (احفظ نسخة احتياطية!)</li>
-                    </ul>
-                </div>
-
-                <div class="info-box">
-                    <h3>📌 الأداء:</h3>
-                    <ul>
-                        <li>سريع ومستقر</li>
-                        <li>مناسب للاستخدام الشخصي والشركات الصغيرة</li>
-                        <li>يدعم حتى 100 مستخدم متزامن (الخطة المجانية)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- بدائل أخرى -->
-        <div class="section">
-            <h2>🎯 بدائل أخرى</h2>
-            <div class="step">
-                <h3>1️⃣ PythonAnywhere</h3>
-                <p>🔗 <a href="https://www.pythonanywhere.com/" target="_blank">https://www.pythonanywhere.com/</a></p>
-                <ul>
-                    <li>✅ مجاني</li>
-                    <li>✅ يدعم Flask</li>
-                    <li>✅ لا ينام</li>
-                    <li>❌ محدود (1 تطبيق فقط)</li>
-                    <li>❌ أبطأ من Render</li>
-                </ul>
-
-                <h3 style="margin-top: 20px;">2️⃣ Railway.app</h3>
-                <p>🔗 <a href="https://railway.app/" target="_blank">https://railway.app/</a></p>
-                <ul>
-                    <li>✅ مجاني ($5 رصيد شهري)</li>
-                    <li>✅ يدعم Flask</li>
-                    <li>✅ سريع جداً</li>
-                    <li>❌ الرصيد المجاني محدود</li>
-                </ul>
-
-                <h3 style="margin-top: 20px;">3️⃣ Fly.io</h3>
-                <p>🔗 <a href="https://fly.io/" target="_blank">https://fly.io/</a></p>
-                <ul>
-                    <li>✅ مجاني (محدود)</li>
-                    <li>✅ يدعم Flask</li>
-                    <li>✅ سريع</li>
-                    <li>❌ معقد قليلاً</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- الخاتمة -->
-        <div class="section" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; text-align: center;">
-            <h2 style="color: white; font-size: 36px;">✅ جاهز للنشر!</h2>
-            <div class="step" style="background: rgba(255,255,255,0.95);">
-                <p style="font-size: 20px; margin-bottom: 20px;">
-                    🎉 جميع الملفات جاهزة ومرفوعة على GitHub!
-                </p>
-
-                <div class="success-box">
-                    <h3>🚀 الآن اذهب إلى:</h3>
-                    <div class="code-box" style="font-size: 22px; margin: 20px 0;">
-                        https://render.com/
-                    </div>
-                    <p style="font-size: 18px;">واتبع الخطوات أعلاه!</p>
-                </div>
-
-                <a href="https://render.com/" target="_blank" class="btn" style="font-size: 22px; padding: 20px 50px; margin: 20px 0;">
-                    🚀 ابدأ النشر الآن!
-                </a>
-
-                <div class="info-box" style="margin-top: 30px;">
-                    <p style="font-size: 18px;">
-                        📱 ستحصل على رابط يعمل من أي مكان في العالم! 🌍✨
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div style="text-align: center; margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 15px;">
-            <p style="font-size: 18px; color: #666; margin-bottom: 10px;">
-                💡 <strong>نصيحة:</strong> احفظ هذه الصفحة للرجوع إليها لاحقاً
-            </p>
-            <p style="font-size: 16px; color: #999;">
-                تم إنشاء هذا الدليل بواسطة DED ERP System
-            </p>
-            <p style="font-size: 14px; color: #999; margin-top: 10px;">
-                © 2026 DED ERP - جميع الحقوق محفوظة
-            </p>
-        </div>
-    </div>
-</body>
-</html>
-        ul {
-            margin: 15px 0;
-            padding-right: 30px;
-        }
-
-        li {
-            margin: 10px 0;
-            font-size: 16px;
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        .comparison-table th,
-        .comparison-table td {
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-
-        .comparison-table th {
-            background: #667eea;
-            color: white;
-        }
-

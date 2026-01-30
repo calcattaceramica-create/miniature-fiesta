@@ -1,0 +1,216 @@
+================================================================================
+                    HOW TO LOGIN TO THE APPLICATION
+                    كيفية الدخول إلى التطبيق
+================================================================================
+
+Date: 2026-01-19
+Time: 11:15 PM
+
+================================================================================
+YOUR LICENSE INFORMATION:
+================================================================================
+
+License Key: 9813-26D0-F98D-741C
+
+Admin Username: mohammed
+Admin Password: 121212
+
+License Type: trial
+Max Users: 5
+Max Branches: 1
+
+Expires: 2026-02-18
+Days Remaining: 29 days
+
+================================================================================
+STEP-BY-STEP GUIDE:
+================================================================================
+
+STEP 1: START THE MAIN APPLICATION
+-----------------------------------
+
+Option A: From Desktop (Easiest!)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Go to Desktop
+
+2. Double-click on:
+   - DED System
+   or
+   - نظام DED
+
+3. Click the GREEN button:
+   🚀 تشغيل التطبيق الرئيسي
+      Launch Main Application
+
+4. A black window will open and start the server
+
+5. Your browser will automatically open to:
+   http://localhost:5000
+
+
+Option B: Manual Start
+~~~~~~~~~~~~~~~~~~~~~~
+
+1. Go to project folder:
+   C:\Users\DELL\DED
+
+2. Double-click:
+   Launch_Main_App.bat
+
+3. Browser will open automatically
+
+
+STEP 2: LOGIN PAGE
+------------------
+
+When the browser opens, you will see the LOGIN PAGE:
+
+┌─────────────────────────────────────────┐
+│                                         │
+│         DED ERP SYSTEM                  │
+│                                         │
+│  ┌───────────────────────────────────┐  │
+│  │ License Key:                      │  │
+│  │ [____________________________]    │  │
+│  │                                   │  │
+│  │ Username:                         │  │
+│  │ [____________________________]    │  │
+│  │                                   │  │
+│  │ Password:                         │  │
+│  │ [____________________________]    │  │
+│  │                                   │  │
+│  │        [  LOGIN  ]                │  │
+│  └───────────────────────────────────┘  │
+│                                         │
+└─────────────────────────────────────────┘
+
+
+STEP 3: ENTER YOUR CREDENTIALS
+-------------------------------
+
+Enter the following information:
+
+1. License Key:
+   9813-26D0-F98D-741C
+
+2. Username:
+   mohammed
+
+3. Password:
+   121212
+
+4. Click: LOGIN
+
+
+STEP 4: YOU'RE IN!
+------------------
+
+After successful login, you will see the MAIN DASHBOARD:
+
+- Welcome message
+- Main menu
+- All system features available
+
+================================================================================
+IMPORTANT NOTES:
+================================================================================
+
+1. KEEP THE BLACK WINDOW OPEN
+   - The black CMD window must stay open
+   - It's running the server
+   - Don't close it while using the app
+   - Only close it when you're done
+
+2. LICENSE KEY FORMAT
+   - Must include the dashes (-)
+   - Format: XXXX-XXXX-XXXX-XXXX
+   - Copy it exactly as shown
+
+3. BROWSER
+   - The app works in any browser
+   - Chrome, Firefox, Edge, etc.
+   - If browser doesn't open automatically:
+     * Open browser manually
+     * Go to: http://localhost:5000
+
+4. FIRST TIME LOGIN
+   - You're logging in as ADMIN
+   - You have full access to all features
+   - You can create more users later
+
+5. LICENSE EXPIRY
+   - Your license expires on: 2026-02-18
+   - You have 29 days remaining
+   - You can extend it using License Manager
+
+================================================================================
+TROUBLESHOOTING:
+================================================================================
+
+Problem: Browser doesn't open automatically
+Solution: Open browser and go to http://localhost:5000
+
+Problem: "Connection refused" error
+Solution: Make sure the black CMD window is running
+
+Problem: "Invalid license" error
+Solution: Check that you entered the license key correctly
+
+Problem: "Invalid username or password"
+Solution: 
+  - Username: mohammed (lowercase)
+  - Password: 121212 (exactly as shown)
+
+Problem: Port 5000 already in use
+Solution: Close any other programs using port 5000
+
+================================================================================
+QUICK REFERENCE:
+================================================================================
+
+TO START THE APP:
+-----------------
+Desktop → DED System → Green Button (Launch Main Application)
+
+TO LOGIN:
+---------
+License Key: 9813-26D0-F98D-741C
+Username: mohammed
+Password: 121212
+
+TO STOP THE APP:
+----------------
+Close the black CMD window
+
+TO CREATE MORE LICENSES:
+------------------------
+Desktop → DED System → Blue Button (License Manager)
+
+================================================================================
+WHAT YOU CAN DO IN THE APP:
+================================================================================
+
+As an ADMIN, you can:
+
+✓ Manage Products
+✓ Manage Inventory
+✓ Process Sales
+✓ Manage Customers
+✓ Manage Suppliers
+✓ View Reports
+✓ Manage Users
+✓ Manage Branches
+✓ Configure Settings
+✓ And much more!
+
+================================================================================
+ENJOY YOUR DED ERP SYSTEM!
+================================================================================
+
+Your license is active and ready to use!
+
+If you need help, refer to this guide.
+
+Happy working! 🎉
+

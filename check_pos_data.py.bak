@@ -1,0 +1,77 @@
+import sqlite3
+import os
+from datetime import datetime
+
+# Connect to tenant database
+tenant_db = r'C:\Users\DELL\DED\tenant_databases\tenant_CEC9_79EE_C42F_2DAD.db'
+
+print("=" * 80)
+print("🔍 Checking POS Data in Tenant Database")
+print("=" * 80)
+print()
+
+conn = sqlite3.connect(tenant_db)
+conn.row_factory = sqlite3.Row
+cursor = conn.cursor()
+
+# Check POS Sessions
+print("📋 POS Sessions:")
+cursor.execute("SELECT COUNT(*) as count FROM pos_sessions")
+sessions_count = cursor.fetchone()['count']
+print(f"   Total Sessions: {sessions_count}")
+
+if sessions_count > 0:
+    cursor.execute("SELECT * FROM pos_sessions ORDER BY id LIMIT 5")
+    print("\n   First 5 Sessions:")
+    for row in cursor.fetchall():
+        print(f"   - ID: {row['id']}, Number: {row['session_number']}, Status: {row['status']}")
+
+print()
+
+# Check POS Orders
+print("📋 POS Orders:")
+cursor.execute("SELECT COUNT(*) as count FROM pos_orders")
+orders_count = cursor.fetchone()['count']
+print(f"   Total Orders: {orders_count}")
+
+if orders_count > 0:
+    cursor.execute("SELECT * FROM pos_orders ORDER BY id LIMIT 5")
+    print("\n   First 5 Orders:")
+    for row in cursor.fetchall():
+        print(f"   - ID: {row['id']}, Number: {row['order_number']}, Total: {row['total_amount']}")
+
+print()
+
+# Check POS Order Items
+print("📋 POS Order Items:")
+cursor.execute("SELECT COUNT(*) as count FROM pos_order_items")
+items_count = cursor.fetchone()['count']
+print(f"   Total Order Items: {items_count}")
+
+if items_count > 0:
+    cursor.execute("SELECT * FROM pos_order_items ORDER BY id LIMIT 5")
+    print("\n   First 5 Order Items:")
+    for row in cursor.fetchall():
+        print(f"   - ID: {row['id']}, Order ID: {row['order_id']}, Product ID: {row['product_id']}, Qty: {row['quantity']}")
+
+print()
+
+# Check Quotations
+print("📋 Quotations:")
+cursor.execute("SELECT COUNT(*) as count FROM quotations")
+quotations_count = cursor.fetchone()['count']
+print(f"   Total Quotations: {quotations_count}")
+
+if quotations_count > 0:
+    cursor.execute("SELECT * FROM quotations ORDER BY id LIMIT 5")
+    print("\n   First 5 Quotations:")
+    for row in cursor.fetchall():
+        print(f"   - ID: {row['id']}, Number: {row['quotation_number']}, Total: {row['total_amount']}")
+
+print()
+print("=" * 80)
+print("✅ Check Complete!")
+print("=" * 80)
+
+conn.close()
+

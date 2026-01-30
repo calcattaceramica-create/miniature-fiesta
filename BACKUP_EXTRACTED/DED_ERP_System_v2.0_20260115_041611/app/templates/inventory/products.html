@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Products') }}{% endblock %}
+{% block page_title %}{{ _('Product Management') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div class="mb-2 mb-md-0">
+                <h3><i class="fas fa-boxes"></i> {{ _('Product Management') }}</h3>
+                <p class="text-muted mb-0">{{ _('View and manage all products') }}</p>
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('inventory.add_product') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> <span class="d-none d-sm-inline">{{ _('Add New Product') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('inventory.products') }}">
+                <div class="row g-2">
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="search" placeholder="{{ _('Search by name, code, or barcode...') }}" value="{{ search }}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> <span class="d-none d-sm-inline">{{ _('Search') }}</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <select class="form-select" name="category" onchange="this.form.submit()">
+                            <option value="">{{ _('All Categories') }}</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <a href="{{ url_for('inventory.products') }}" class="btn btn-secondary w-100">
+                            <i class="fas fa-redo"></i> <span class="d-none d-sm-inline">{{ _('Reset') }}</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Code') }}</th>
+                            <th>{{ _('Product Name') }}</th>
+                            <th class="hide-on-mobile">{{ _('Category') }}</th>
+                            <th class="hide-on-mobile">{{ _('Unit') }}</th>
+                            <th class="hide-on-mobile">{{ _('Cost Price') }}</th>
+                            <th>{{ _('Selling Price') }}</th>
+                            <th>{{ _('Stock') }}</th>
+                            <th class="hide-on-mobile">{{ _('Status') }}</th>
+                            <th>{{ _('Actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products.items %}
+                        <tr>
+                            <td><strong>{{ product.code }}</strong></td>
+                            <td>
+                                <div>{{ product.name }}</div>
+                                <small class="text-muted show-on-mobile">
+                                    {{ product.category.name if product.category else '-' }} |
+                                    {{ product.unit.name if product.unit else '-' }}
+                                </small>
+                            </td>
+                            <td class="hide-on-mobile">{{ product.category.name if product.category else '-' }}</td>
+                            <td class="hide-on-mobile">{{ product.unit.name if product.unit else '-' }}</td>
+                            <td class="hide-on-mobile">{{ "%.2f"|format(product.cost_price) }} {{ _('SAR') }}</td>
+                            <td>{{ "%.2f"|format(product.selling_price) }} {{ _('SAR') }}</td>
+                            <td>
+                                {% set stock = product.get_stock() %}
+                                {% if stock <= product.min_stock %}
+                                    <span class="badge bg-danger">{{ stock }}</span>
+                                {% elif stock <= product.reorder_level %}
+                                    <span class="badge bg-warning">{{ stock }}</span>
+                                {% else %}
+                                    <span class="badge bg-success">{{ stock }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="hide-on-mobile">
+                                {% if product.is_active %}
+                                    <span class="badge bg-success">{{ _('Active') }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ _('Inactive') }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('inventory.edit_product', id=product.id) }}"
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="{{ _('Edit') }}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="confirmDelete('{{ product.id }}', '{{ product.name }}')"
+                                            title="{{ _('Delete') }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                        </td>
+                    </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                {{ _('No products found') }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if products.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-3">
+        <ul class="pagination justify-content-center flex-wrap">
+            {% if products.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('inventory.products', page=products.prev_num, search=search, category=category_id) }}">السابق</a>
+            </li>
+            {% endif %}
+
+            {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if page_num == products.page %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('inventory.products', page=page_num, search=search, category=category_id) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('inventory.products', page=products.next_num, search=search, category=category_id) }}">التالي</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Pagination -->
+{% if products.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% if products.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('inventory.products', page=products.prev_num, search=search, category=category_id) }}">السابق</a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == products.page %}
+                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('inventory.products', page=page_num, search=search, category=category_id) }}">{{ page_num }}</a></li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if products.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('inventory.products', page=products.next_num, search=search, category=category_id) }}">التالي</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<div class="card mt-3">
+    <div class="card-body">
+        <p class="mb-0 text-muted">
+            <i class="fas fa-info-circle"></i>
+            عرض {{ products.items|length }} من أصل {{ products.total }} منتج
+        </p>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> تأكيد الحذف
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">هل أنت متأكد من حذف المنتج؟</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>تنبيه:</strong> إذا كان المنتج مرتبطاً بفواتير أو طلبات، سيتم تعطيله بدلاً من حذفه نهائياً.
+                </div>
+                <p class="mb-0"><strong>اسم المنتج:</strong> <span id="productName"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> إلغاء
+                </button>
+                <form id="deleteForm" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> حذف
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+console.log('🔍 Product Delete Script Loaded!');
+console.log('✅ Bootstrap available:', typeof bootstrap !== 'undefined');
+console.log('✅ Modal element exists:', document.getElementById('deleteModal') !== null);
+
+function confirmDelete(productId, productName) {
+    console.log('🗑️ confirmDelete called with:', productId, productName);
+
+    try {
+        // Set product name in modal
+        const productNameElement = document.getElementById('productName');
+        if (!productNameElement) {
+            console.error('❌ Element with id "productName" not found!');
+            alert('خطأ: عنصر اسم المنتج غير موجود في الصفحة');
+            return;
+        }
+        productNameElement.textContent = productName;
+        console.log('✅ Product name set:', productName);
+
+        // Set form action
+        const form = document.getElementById('deleteForm');
+        if (!form) {
+            console.error('❌ Form with id "deleteForm" not found!');
+            alert('خطأ: نموذج الحذف غير موجود في الصفحة');
+            return;
+        }
+        form.action = `/inventory/products/${productId}/delete`;
+        console.log('✅ Form action set:', form.action);
+
+        // Check if bootstrap is available
+        if (typeof bootstrap === 'undefined') {
+            console.error('❌ Bootstrap is not loaded!');
+            alert('خطأ: Bootstrap غير محمّل. يرجى إعادة تحميل الصفحة');
+            return;
+        }
+
+        // Show modal
+        const modalElement = document.getElementById('deleteModal');
+        if (!modalElement) {
+            console.error('❌ Modal element not found!');
+            alert('خطأ: نافذة التأكيد غير موجودة في الصفحة');
+            return;
+        }
+
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        console.log('✅ Modal should be visible now!');
+
+    } catch (error) {
+        console.error('❌ Error in confirmDelete:', error);
+        alert('حدث خطأ: ' + error.message);
+    }
+}
+
+// Test on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 Page loaded - Running diagnostics...');
+    console.log('✅ confirmDelete function:', typeof confirmDelete);
+    console.log('✅ Bootstrap:', typeof bootstrap);
+    console.log('✅ Modal element:', document.getElementById('deleteModal') ? 'Found' : 'Not found');
+    console.log('✅ ProductName element:', document.getElementById('productName') ? 'Found' : 'Not found');
+    console.log('✅ DeleteForm element:', document.getElementById('deleteForm') ? 'Found' : 'Not found');
+
+    // Count delete buttons
+    const deleteButtons = document.querySelectorAll('button[onclick^="confirmDelete"]');
+    console.log('✅ Delete buttons found:', deleteButtons.length);
+
+    console.log('🎉 All diagnostics complete! Check above for any ❌ errors.');
+});
+</script>
+{% endblock %}

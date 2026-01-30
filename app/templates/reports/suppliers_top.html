@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Best Suppliers Report') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+}
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.rank-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+.rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #fff; }
+.rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%); color: #fff; }
+.rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); color: #fff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">{{ _('Best Suppliers Report') }}</h1>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> {{ _('Back to Reports') }}
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <!-- Total Suppliers -->
+        <div class="col-md-4 mb-3">
+            <div class="card bg-gradient-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Suppliers') }}</h6>
+                            <h3 class="mb-0">{{ suppliers_data|length }}</h3>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Purchases -->
+        <div class="col-md-4 mb-3">
+            <div class="card bg-gradient-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Purchases') }}</h6>
+                            <h3 class="mb-0">{{ "{:,.2f}".format(total_purchases) }} {{ currency_symbol }}</h3>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Invoices -->
+        <div class="col-md-4 mb-3">
+            <div class="card bg-gradient-warning text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Invoices') }}</h6>
+                            <h3 class="mb-0">{{ total_invoices }}</h3>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Suppliers Table -->
+    <div class="card shadow">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-trophy"></i> {{ _('Best Suppliers by Purchase Volume') }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Rank') }}</th>
+                            <th>{{ _('Supplier Code') }}</th>
+                            <th>{{ _('Supplier Name') }}</th>
+                            <th>{{ _('Total Purchases') }}</th>
+                            <th>{{ _('Invoice Count') }}</th>
+                            <th>{{ _('Average Purchase') }}</th>
+                            <th>{{ _('Share %') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in suppliers_data %}
+                        <tr>
+                            <td>
+                                {% if loop.index <= 3 %}
+                                    <span class="rank-badge rank-{{ loop.index }}">{{ loop.index }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ loop.index }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ data.supplier.code }}</td>
+                            <td>
+                                <strong>{{ data.supplier.name }}</strong>
+                                {% if loop.index == 1 %}
+                                    <i class="fas fa-crown text-warning ms-2"></i>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ "{:,.2f}".format(data.total_purchases) }} {{ currency_symbol }}</strong></td>
+                            <td>{{ data.invoice_count }}</td>
+                            <td>{{ "{:,.2f}".format(data.average_purchase) }} {{ currency_symbol }}</td>
+                            <td>
+                                {% set share = (data.total_purchases / total_purchases * 100) if total_purchases > 0 else 0 %}
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: {{ share }}%;" 
+                                         aria-valuenow="{{ share }}" aria-valuemin="0" aria-valuemax="100">
+                                        {{ "{:.1f}".format(share) }}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">{{ _('No supplier data found') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

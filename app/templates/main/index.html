@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}لوحة التحكم - نظام إدارة المخزون{% endblock %}
-{% block page_title %}لوحة التحكم{% endblock %}
+{% block title %}{{ _('Dashboard') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Dashboard') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="page-header mb-4">
-        <h3><i class="fas fa-tachometer-alt"></i> لوحة التحكم الرئيسية</h3>
-        <p class="text-muted mb-0">مرحباً {{ current_user.full_name }}، نظرة عامة على النظام</p>
+        <h3><i class="fas fa-tachometer-alt"></i> {{ _('Main Dashboard') }}</h3>
+        <p class="text-muted mb-0">{{ _('Welcome') }} {{ current_user.full_name }}، {{ _('System Overview') }}</p>
     </div>
 
     <!-- Statistics Cards -->
@@ -17,7 +17,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">إجمالي المنتجات</h6>
+                            <h6 class="text-muted mb-2">{{ _('Total Products') }}</h6>
                             <h2 class="mb-0">{{ stats.total_products }}</h2>
                         </div>
                         <div class="text-info">
@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">العملاء</h6>
+                            <h6 class="text-muted mb-2">{{ _('Customers') }}</h6>
                             <h2 class="mb-0">{{ stats.total_customers }}</h2>
                         </div>
                         <div class="text-success">
@@ -49,7 +49,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">الموردين</h6>
+                            <h6 class="text-muted mb-2">{{ _('Suppliers') }}</h6>
                             <h2 class="mb-0">{{ stats.total_suppliers }}</h2>
                         </div>
                         <div class="text-warning">
@@ -65,7 +65,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-2">منتجات منخفضة المخزون</h6>
+                            <h6 class="text-muted mb-2">{{ _('Low Stock Products') }}</h6>
                             <h2 class="mb-0">{{ stats.low_stock_products }}</h2>
                         </div>
                         <div class="text-danger">
@@ -84,9 +84,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-white-50 mb-1">مبيعات هذا الشهر</h6>
+                            <h6 class="text-white-50 mb-1">{{ _('Sales This Month') }}</h6>
                             <h3 class="mb-0">{{ "{:,.2f}".format(stats.sales_this_month) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                         <div>
                             <i class="fas fa-chart-line fa-3x opacity-50"></i>
@@ -101,9 +101,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-white-50 mb-1">مشتريات هذا الشهر</h6>
+                            <h6 class="text-white-50 mb-1">{{ _('Purchases This Month') }}</h6>
                             <h3 class="mb-0">{{ "{:,.2f}".format(stats.purchases_this_month) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                         <div>
                             <i class="fas fa-shopping-cart fa-3x opacity-50"></i>
@@ -118,9 +118,9 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-white-50 mb-1">صافي الربح (الشهر)</h6>
+                        <h6 class="text-white-50 mb-1">{{ _('Net Profit (Month)') }}</h6>
                         <h3 class="mb-0">{{ "{:,.2f}".format(stats.profit_this_month) }}</h3>
-                        <small>ريال سعودي</small>
+                        <small>{{ currency_name }}</small>
                     </div>
                     <div>
                         <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
@@ -136,7 +136,7 @@
         <div class="col-12 col-lg-8">
             <div class="card shadow">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> المبيعات والمشتريات (آخر 6 أشهر)</h5>
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> {{ _('Sales and Purchases (Last 6 Months)') }}</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="salesPurchasesChart" height="80"></canvas>
@@ -147,7 +147,7 @@
         <div class="col-12 col-lg-4">
             <div class="card shadow">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-star"></i> أفضل المنتجات مبيعاً</h5>
+                    <h5 class="mb-0"><i class="fas fa-star"></i> {{ _('Top Selling Products') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
@@ -157,7 +157,7 @@
                             <span class="badge bg-primary rounded-pill">{{ qty }}</span>
                         </div>
                         {% else %}
-                        <p class="text-muted text-center mb-0">لا توجد مبيعات هذا الشهر</p>
+                        <p class="text-muted text-center mb-0">{{ _('No sales this month') }}</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -170,9 +170,9 @@
         <div class="col-12 col-md-6">
         <div class="card shadow">
             <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-warehouse text-info"></i> قيمة المخزون</h5>
-                <h2 class="text-info">{{ "{:,.2f}".format(stats.inventory_value) }} ر.س</h2>
-                <p class="text-muted mb-0">إجمالي قيمة المخزون الحالي</p>
+                <h5 class="card-title"><i class="fas fa-warehouse text-info"></i> {{ _('Inventory Value') }}</h5>
+                <h2 class="text-info">{{ "{:,.2f}".format(stats.inventory_value) }} {{ currency_symbol }}</h2>
+                <p class="text-muted mb-0">{{ _('Total current inventory value') }}</p>
             </div>
             </div>
         </div>
@@ -180,9 +180,9 @@
         <div class="col-12 col-md-6">
             <div class="card shadow">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="fas fa-building text-warning"></i> المستودعات النشطة</h5>
+                    <h5 class="card-title"><i class="fas fa-building text-warning"></i> {{ _('Active Warehouses') }}</h5>
                     <h2 class="text-warning">{{ stats.total_warehouses }}</h2>
-                    <p class="text-muted mb-0">عدد المستودعات النشطة</p>
+                    <p class="text-muted mb-0">{{ _('Number of active warehouses') }}</p>
                 </div>
             </div>
         </div>
@@ -193,17 +193,17 @@
         <div class="col-12 col-lg-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> آخر المبيعات</h5>
+                <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> {{ _('Recent Sales') }}</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th>رقم الفاتورة</th>
-                                <th>العميل</th>
-                                <th>المبلغ</th>
-                                <th>الحالة</th>
+                                <th>{{ _('Invoice Number') }}</th>
+                                <th>{{ _('Customer') }}</th>
+                                <th>{{ _('Amount') }}</th>
+                                <th>{{ _('Status') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -211,20 +211,20 @@
                             <tr>
                                 <td>{{ invoice.invoice_number }}</td>
                                 <td>{{ invoice.customer.name if invoice.customer else '-' }}</td>
-                                <td>{{ "%.2f"|format(invoice.total_amount) }} ر.س</td>
+                                <td>{{ invoice.total_amount|currency }}</td>
                                 <td>
                                     {% if invoice.status == 'confirmed' %}
-                                        <span class="badge bg-success">مؤكد</span>
+                                        <span class="badge bg-success">{{ _('Confirmed') }}</span>
                                     {% elif invoice.status == 'draft' %}
-                                        <span class="badge bg-secondary">مسودة</span>
+                                        <span class="badge bg-secondary">{{ _('Draft') }}</span>
                                     {% else %}
-                                        <span class="badge bg-danger">ملغي</span>
+                                        <span class="badge bg-danger">{{ _('Cancelled') }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="4" class="text-center text-muted">لا توجد مبيعات</td>
+                                <td colspan="4" class="text-center text-muted">{{ _('No sales') }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -237,17 +237,17 @@
         <div class="col-12 col-lg-6">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> آخر المشتريات</h5>
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> {{ _('Recent Purchases') }}</h5>
                 </div>
                 <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th>رقم الفاتورة</th>
-                                <th>المورد</th>
-                                <th>المبلغ</th>
-                                <th>الحالة</th>
+                                <th>{{ _('Invoice Number') }}</th>
+                                <th>{{ _('Supplier') }}</th>
+                                <th>{{ _('Amount') }}</th>
+                                <th>{{ _('Status') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -255,20 +255,20 @@
                             <tr>
                                 <td>{{ invoice.invoice_number }}</td>
                                 <td>{{ invoice.supplier.name if invoice.supplier else '-' }}</td>
-                                <td>{{ "%.2f"|format(invoice.total_amount) }} ر.س</td>
+                                <td>{{ invoice.total_amount|currency }}</td>
                                 <td>
                                     {% if invoice.status == 'confirmed' %}
-                                        <span class="badge bg-success">مؤكد</span>
+                                        <span class="badge bg-success">{{ _('Confirmed') }}</span>
                                     {% elif invoice.status == 'draft' %}
-                                        <span class="badge bg-secondary">مسودة</span>
+                                        <span class="badge bg-secondary">{{ _('Draft') }}</span>
                                     {% else %}
-                                        <span class="badge bg-danger">ملغي</span>
+                                        <span class="badge bg-danger">{{ _('Cancelled') }}</span>
                                     {% endif %}
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="4" class="text-center text-muted">لا توجد مشتريات</td>
+                                <td colspan="4" class="text-center text-muted">{{ _('No purchases') }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -284,36 +284,36 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-bolt"></i> إجراءات سريعة</h5>
+                    <h5 class="mb-0"><i class="fas fa-bolt"></i> {{ _('Quick Actions') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3 text-center">
                         <div class="col-6 col-md-3">
                             <a href="{{ url_for('inventory.add_product') }}" class="btn btn-outline-primary btn-lg w-100">
                                 <i class="fas fa-plus-circle fa-2x d-block mb-2"></i>
-                                <span class="d-none d-sm-inline">إضافة منتج جديد</span>
-                                <span class="d-sm-none">منتج</span>
+                                <span class="d-none d-sm-inline">{{ _('Add New Product') }}</span>
+                                <span class="d-sm-none">{{ _('Product') }}</span>
                             </a>
                         </div>
                         <div class="col-6 col-md-3">
                             <a href="{{ url_for('sales.add_invoice') }}" class="btn btn-outline-success btn-lg w-100">
                                 <i class="fas fa-file-invoice fa-2x d-block mb-2"></i>
-                                <span class="d-none d-sm-inline">فاتورة بيع جديدة</span>
-                                <span class="d-sm-none">بيع</span>
+                                <span class="d-none d-sm-inline">{{ _('New Sales Invoice') }}</span>
+                                <span class="d-sm-none">{{ _('Sale') }}</span>
                             </a>
                         </div>
                         <div class="col-6 col-md-3">
                             <a href="{{ url_for('purchases.add_invoice') }}" class="btn btn-outline-info btn-lg w-100">
                                 <i class="fas fa-shopping-cart fa-2x d-block mb-2"></i>
-                                <span class="d-none d-sm-inline">فاتورة شراء جديدة</span>
-                                <span class="d-sm-none">شراء</span>
+                                <span class="d-none d-sm-inline">{{ _('New Purchase Invoice') }}</span>
+                                <span class="d-sm-none">{{ _('Purchase') }}</span>
                             </a>
                         </div>
                         <div class="col-6 col-md-3">
                             <a href="{{ url_for('reports.index') }}" class="btn btn-outline-warning btn-lg w-100">
                                 <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
-                                <span class="d-none d-sm-inline">عرض التقارير</span>
-                                <span class="d-sm-none">تقارير</span>
+                                <span class="d-none d-sm-inline">{{ _('View Reports') }}</span>
+                                <span class="d-sm-none">{{ _('Reports') }}</span>
                             </a>
                         </div>
                     </div>
@@ -349,18 +349,22 @@
 <script>
 // Sales & Purchases Chart
 const ctx = document.getElementById('salesPurchasesChart').getContext('2d');
+const currentLang = '{{ session.get("language", "ar") }}';
+const currencySymbol = '{{ currency_symbol }}';
+const isRTL = currentLang === 'ar';
+
 new Chart(ctx, {
     type: 'bar',
     data: {
         labels: {{ chart_labels|tojson }},
         datasets: [{
-            label: 'المبيعات',
+            label: '{{ _("Sales") }}',
             data: {{ sales_chart_data|tojson }},
             backgroundColor: 'rgba(75, 192, 192, 0.6)',
             borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1
         }, {
-            label: 'المشتريات',
+            label: '{{ _("Purchases") }}',
             data: {{ purchases_chart_data|tojson }},
             backgroundColor: 'rgba(255, 99, 132, 0.6)',
             borderColor: 'rgba(255, 99, 132, 1)',
@@ -375,7 +379,10 @@ new Chart(ctx, {
                 beginAtZero: true,
                 ticks: {
                     callback: function(value) {
-                        return value.toLocaleString('ar-SA') + ' ر.س';
+                        const formattedValue = value.toLocaleString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
+                        // For RTL (Arabic): value + symbol (e.g., "12,000 ر.س")
+                        // For LTR (English): symbol + value (e.g., "€ 12,000")
+                        return isRTL ? formattedValue + ' ' + currencySymbol : currencySymbol + ' ' + formattedValue;
                     }
                 }
             }
@@ -388,7 +395,8 @@ new Chart(ctx, {
                         if (label) {
                             label += ': ';
                         }
-                        label += context.parsed.y.toLocaleString('ar-SA') + ' ر.س';
+                        const formattedValue = context.parsed.y.toLocaleString(currentLang === 'ar' ? 'ar-SA' : 'en-US');
+                        label += isRTL ? formattedValue + ' ' + currencySymbol : currencySymbol + ' ' + formattedValue;
                         return label;
                     }
                 }

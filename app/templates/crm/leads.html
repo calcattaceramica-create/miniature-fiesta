@@ -99,7 +99,7 @@
                                 <i class="far fa-star text-muted"></i>
                             {% endfor %}
                         </td>
-                        <td>{{ "%.2f"|format(lead.expected_revenue) }} ر.س</td>
+                        <td>{{ lead.expected_revenue|currency }}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{{ url_for('crm.lead_details', id=lead.id) }}" 

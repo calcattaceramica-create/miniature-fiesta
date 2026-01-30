@@ -1,17 +1,30 @@
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, flash, request, make_response, after_this_request
 from flask_login import login_required, current_user
+from app.auth.decorators import permission_required
 from app.main import bp
 from app import db
 from app.models import *
+from app.models_license import License
+from app.license_manager import LicenseManager
 from sqlalchemy import func
 from datetime import datetime, timedelta
 import calendar
 import json
 from pathlib import Path
 
+@bp.after_request
+def add_cache_headers(response):
+    """Add cache-busting headers to all responses to prevent tenant data caching"""
+    if not response.cache_control.no_cache:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
+
 @bp.route('/')
 @bp.route('/index')
 @login_required
+@permission_required('dashboard.view')
 def index():
     """Dashboard - Main page"""
 
@@ -51,8 +64,19 @@ def index():
         PurchaseInvoice.status != 'cancelled'
     ).scalar() or 0
 
-    # Calculate profit this month
-    profit_this_month = sales_this_month - purchases_this_month
+    # Calculate COGS (Cost of Goods Sold) this month
+    sales_invoices = SalesInvoice.query.filter(
+        SalesInvoice.invoice_date >= first_day,
+        SalesInvoice.status != 'cancelled'
+    ).all()
+
+    cogs_this_month = 0
+    for invoice in sales_invoices:
+        for item in invoice.items:
+            cogs_this_month += item.product.cost_price * item.quantity
+
+    # Calculate profit this month (Sales - COGS)
+    profit_this_month = sales_this_month - cogs_this_month
 
     stats['sales_this_month'] = sales_this_month
     stats['purchases_this_month'] = purchases_this_month
@@ -125,6 +149,7 @@ def about():
 
 @bp.route('/license-info')
 @login_required
+@permission_required('dashboard.view')
 def license_info():
     """Display license information for current user"""
     from app.license_manager import LicenseManager
@@ -159,4 +184,88 @@ def license_info():
         flash(f'خطأ في تحميل معلومات الترخيص: {str(e)}', 'danger')
 
     return render_template('license_info.html', license_info=license_data)
+
+
+@bp.route('/activate-license', methods=['GET', 'POST'])
+def activate_license():
+    """صفحة تفعيل الترخيص"""
+    if request.method == 'POST':
+        license_key = request.form.get('license_key', '').strip().upper()
+
+        if not license_key:
+            flash('يرجى إدخال مفتاح الترخيص', 'danger')
+            return redirect(url_for('main.activate_license'))
+
+        # التحقق من صحة الترخيص
+        license = License.query.filter_by(license_key=license_key).first()
+
+        if not license:
+            flash('مفتاح الترخيص غير صحيح', 'danger')
+            return redirect(url_for('main.activate_license'))
+
+        # التحقق من صلاحية الترخيص
+        is_valid, message = license.is_valid()
+
+        if not is_valid:
+            flash(f'الترخيص غير صالح: {message}', 'danger')
+            return redirect(url_for('main.activate_license'))
+
+        # ربط الترخيص بالجهاز
+        machine_id = LicenseManager.get_machine_id()
+        ip_address = LicenseManager.get_ip_address()
+
+        # إذا كان الترخيص مربوط بجهاز آخر
+        if license.machine_id and license.machine_id != machine_id:
+            flash('هذا الترخيص مربوط بجهاز آخر', 'danger')
+            return redirect(url_for('main.activate_license'))
+
+        # تفعيل الترخيص
+        license.machine_id = machine_id
+        license.ip_address = ip_address
+        license.activated_at = datetime.utcnow()
+        license.is_active = True
+
+        db.session.commit()
+
+        flash('تم تفعيل الترخيص بنجاح!', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('license_activation.html')
+
+
+@bp.route('/license-status')
+@login_required
+def license_status():
+    """عرض حالة الترخيص الحالي"""
+    if not current_user.license_id:
+        flash('لا يوجد ترخيص مرتبط بحسابك', 'warning')
+        return redirect(url_for('main.index'))
+
+    license = License.query.get(current_user.license_id)
+
+    if not license:
+        flash('الترخيص غير موجود', 'danger')
+        return redirect(url_for('main.index'))
+
+    is_valid, message = license.is_valid()
+
+    license_info = {
+        'license_key': license.license_key,
+        'client_name': license.client_name,
+        'client_company': license.client_company,
+        'license_type': license.license_type,
+        'max_users': license.max_users,
+        'max_branches': license.max_branches,
+        'is_active': license.is_active,
+        'is_valid': is_valid,
+        'message': message,
+        'created_at': license.created_at,
+        'activated_at': license.activated_at,
+        'expires_at': license.expires_at,
+        'days_remaining': license.days_remaining(),
+        'machine_id': license.machine_id,
+        'ip_address': license.ip_address
+    }
+
+    return render_template('license_status.html', license=license_info)
 

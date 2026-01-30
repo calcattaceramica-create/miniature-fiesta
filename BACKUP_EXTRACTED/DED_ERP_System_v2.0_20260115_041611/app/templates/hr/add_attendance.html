@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}تسجيل حضور{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-clock"></i> تسجيل حضور</h2>
+        <a href="{{ url_for('hr.attendance') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i> العودة
+        </a>
+    </div>
+
+    <!-- Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-clock"></i> بيانات الحضور</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('hr.add_attendance') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الموظف <span class="text-danger">*</span></label>
+                                <select class="form-select" name="employee_id" required>
+                                    <option value="">اختر الموظف...</option>
+                                    {% for emp in employees %}
+                                    <option value="{{ emp.id }}">{{ emp.employee_number }} - {{ emp.first_name }} {{ emp.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">التاريخ <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="attendance_date" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">وقت الدخول</label>
+                                <input type="time" class="form-control" name="check_in">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">وقت الخروج</label>
+                                <input type="time" class="form-control" name="check_out">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">الحالة <span class="text-danger">*</span></label>
+                                <select class="form-select" name="status" required>
+                                    <option value="present">حاضر</option>
+                                    <option value="absent">غائب</option>
+                                    <option value="late">متأخر</option>
+                                    <option value="on_leave">إجازة</option>
+                                    <option value="sick_leave">إجازة مرضية</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">ساعات إضافية</label>
+                                <input type="number" class="form-control" name="overtime_hours" step="0.01" value="0">
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">ملاحظات</label>
+                                <textarea class="form-control" name="notes" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-save"></i> حفظ
+                            </button>
+                            <a href="{{ url_for('hr.attendance') }}" class="btn btn-secondary btn-lg px-5">
+                                <i class="fas fa-times"></i> إلغاء
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set today's date as default
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.querySelector('input[name="attendance_date"]');
+    if (dateInput && !dateInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+});
+</script>
+{% endblock %}
+

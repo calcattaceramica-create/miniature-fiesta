@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة الفروع - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إدارة الفروع{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-code-branch"></i> إدارة الفروع</h2>
+                <p class="text-muted mb-0">عرض وإدارة فروع الشركة</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBranchModal">
+                    <i class="fas fa-plus"></i> إضافة فرع جديد
+                </button>
+                <a href="{{ url_for('settings.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branches Grid -->
+    <div class="row">
+        {% for branch in branches %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 {% if not branch.is_active %}border-danger{% endif %}">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-code-branch"></i> {{ branch.name }}
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-light" onclick="editBranch({{ branch.id }}, '{{ branch.name }}', '{{ branch.name_en or '' }}', '{{ branch.code }}', '{{ branch.address or '' }}', '{{ branch.city or '' }}', '{{ branch.phone or '' }}', {{ branch.manager_id or 'null' }}, {{ 'true' if branch.is_active else 'false' }})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteBranch({{ branch.id }}, '{{ branch.name }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if branch.name_en %}
+                    <p class="text-muted mb-2"><small>{{ branch.name_en }}</small></p>
+                    {% endif %}
+                    
+                    <div class="mb-2">
+                        <strong>الكود:</strong> <code>{{ branch.code }}</code>
+                    </div>
+                    
+                    {% if branch.address %}
+                    <div class="mb-2">
+                        <strong>العنوان:</strong><br>
+                        <small>{{ branch.address }}</small>
+                    </div>
+                    {% endif %}
+                    
+                    {% if branch.city %}
+                    <div class="mb-2">
+                        <strong>المدينة:</strong> {{ branch.city }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if branch.phone %}
+                    <div class="mb-2">
+                        <strong>الهاتف:</strong> {{ branch.phone }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if branch.manager %}
+                    <div class="mb-2">
+                        <strong>المدير:</strong> {{ branch.manager.full_name }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-2">
+                        <strong>الحالة:</strong>
+                        {% if branch.is_active %}
+                        <span class="badge bg-success">نشط</span>
+                        {% else %}
+                        <span class="badge bg-danger">غير نشط</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>تاريخ الإنشاء: {{ branch.created_at.strftime('%Y-%m-%d') }}</small>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle fa-3x mb-3"></i>
+                <h4>لا توجد فروع</h4>
+                <p>لم يتم إضافة أي فروع بعد</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBranchModal">
+                    <i class="fas fa-plus"></i> إضافة فرع جديد
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Branch Modal -->
+<div class="modal fade" id="addBranchModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-plus"></i> إضافة فرع جديد</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('settings.add_branch') }}">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">اسم الفرع (عربي) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="name_en" class="form-label">اسم الفرع (إنجليزي)</label>
+                            <input type="text" class="form-control" id="name_en" name="name_en">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="code" class="form-label">الكود <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="code" name="code" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">العنوان</label>
+                        <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="city" class="form-label">المدينة</label>
+                            <input type="text" class="form-control" id="city" name="city">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">الهاتف</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="manager_id" class="form-label">المدير</label>
+                        <select class="form-select" id="manager_id" name="manager_id">
+                            <option value="">-- اختر المدير --</option>
+                            <!-- Users will be populated here -->
+                        </select>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                        <label class="form-check-label" for="is_active">
+                            فرع نشط
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Branch Modal -->
+<div class="modal fade" id="editBranchModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> تعديل الفرع</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="editBranchForm">
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_name" class="form-label">اسم الفرع (عربي) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_name" name="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_name_en" class="form-label">اسم الفرع (إنجليزي)</label>
+                            <input type="text" class="form-control" id="edit_name_en" name="name_en">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_code" class="form-label">الكود <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_code" name="code" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_address" class="form-label">العنوان</label>
+                        <textarea class="form-control" id="edit_address" name="address" rows="2"></textarea>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_city" class="form-label">المدينة</label>
+                            <input type="text" class="form-control" id="edit_city" name="city">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_phone" class="form-label">الهاتف</label>
+                            <input type="tel" class="form-control" id="edit_phone" name="phone">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_manager_id" class="form-label">المدير</label>
+                        <select class="form-select" id="edit_manager_id" name="manager_id">
+                            <option value="">-- اختر المدير --</option>
+                            <!-- Users will be populated here -->
+                        </select>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="edit_is_active" name="is_active">
+                        <label class="form-check-label" for="edit_is_active">
+                            فرع نشط
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save"></i> تحديث
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Branch Modal -->
+<div class="modal fade" id="deleteBranchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-trash"></i> حذف الفرع</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="deleteBranchForm">
+                <div class="modal-body">
+                    <p>هل أنت متأكد من حذف الفرع <strong id="delete_branch_name"></strong>؟</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        تحذير: سيتم حذف جميع البيانات المرتبطة بهذا الفرع
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> حذف
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editBranch(id, name, name_en, code, address, city, phone, manager_id, is_active) {
+    document.getElementById('editBranchForm').action = "{{ url_for('settings.edit_branch', id=0) }}".replace('0', id);
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_name_en').value = name_en;
+    document.getElementById('edit_code').value = code;
+    document.getElementById('edit_address').value = address;
+    document.getElementById('edit_city').value = city;
+    document.getElementById('edit_phone').value = phone;
+    document.getElementById('edit_manager_id').value = manager_id || '';
+    document.getElementById('edit_is_active').checked = is_active;
+
+    var modal = new bootstrap.Modal(document.getElementById('editBranchModal'));
+    modal.show();
+}
+
+function deleteBranch(id, name) {
+    document.getElementById('deleteBranchForm').action = "{{ url_for('settings.delete_branch', id=0) }}".replace('0', id);
+    document.getElementById('delete_branch_name').textContent = name;
+
+    var modal = new bootstrap.Modal(document.getElementById('deleteBranchModal'));
+    modal.show();
+}
+</script>
+
+<style>
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}
+

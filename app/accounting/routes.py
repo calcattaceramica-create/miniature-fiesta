@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from flask_babel import gettext as _
+from app.auth.decorators import permission_required
 from app.accounting import bp
 from app import db
 from app.models_accounting import Account, JournalEntry, JournalEntryItem, Payment, BankAccount, CostCenter
@@ -12,6 +13,7 @@ from datetime import datetime, date
 
 @bp.route('/accounts')
 @login_required
+@permission_required('accounting.view')
 def accounts():
     """Chart of accounts - دليل الحسابات"""
     accounts = Account.query.order_by(Account.code).all()
@@ -35,6 +37,7 @@ def accounts():
 
 @bp.route('/accounts/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('accounting.accounts.manage')
 def add_account():
     """Add new account - إضافة حساب جديد"""
     if request.method == 'POST':
@@ -66,6 +69,7 @@ def add_account():
 
 @bp.route('/accounts/<int:id>')
 @login_required
+@permission_required('accounting.view')
 def account_details(id):
     """Account details - تفاصيل الحساب"""
     account = Account.query.get_or_404(id)
@@ -85,6 +89,7 @@ def account_details(id):
 
 @bp.route('/journal-entries')
 @login_required
+@permission_required('accounting.transactions.view')
 def journal_entries():
     """List journal entries - قائمة القيود اليومية"""
     page = request.args.get('page', 1, type=int)
@@ -104,6 +109,7 @@ def journal_entries():
 
 @bp.route('/journal-entries/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('accounting.transactions.create')
 def add_journal_entry():
     """Add new journal entry - إضافة قيد يومي جديد"""
     if request.method == 'POST':
@@ -185,6 +191,7 @@ def add_journal_entry():
 
 @bp.route('/journal-entries/<int:id>')
 @login_required
+@permission_required('accounting.transactions.view')
 def journal_entry_details(id):
     """Journal entry details - تفاصيل القيد"""
     entry = JournalEntry.query.get_or_404(id)
@@ -192,6 +199,7 @@ def journal_entry_details(id):
 
 @bp.route('/journal-entries/<int:id>/post', methods=['POST'])
 @login_required
+@permission_required('accounting.transactions.create')
 def post_journal_entry(id):
     """Post journal entry - ترحيل القيد"""
     try:
@@ -230,6 +238,7 @@ def post_journal_entry(id):
 
 @bp.route('/journal-entries/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('accounting.transactions.create')
 def delete_journal_entry(id):
     """Delete journal entry - حذف القيد"""
     try:
@@ -254,6 +263,7 @@ def delete_journal_entry(id):
 
 @bp.route('/payments')
 @login_required
+@permission_required('accounting.payments.view')
 def payments():
     """List payments - قائمة المدفوعات"""
     page = request.args.get('page', 1, type=int)
@@ -273,6 +283,7 @@ def payments():
 
 @bp.route('/payments/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('accounting.payments.create')
 def add_payment():
     """Add new payment - إضافة مدفوعة جديدة"""
     if request.method == 'POST':
@@ -343,6 +354,7 @@ def add_payment():
 
 @bp.route('/payments/<int:id>')
 @login_required
+@permission_required('accounting.payments.view')
 def payment_details(id):
     """Payment details - تفاصيل المدفوعة"""
     payment = Payment.query.get_or_404(id)
@@ -364,6 +376,7 @@ def payment_details(id):
 
 @bp.route('/bank-accounts')
 @login_required
+@permission_required('accounting.view')
 def bank_accounts():
     """List bank accounts - قائمة الحسابات البنكية"""
     accounts = BankAccount.query.filter_by(is_active=True).all()
@@ -377,6 +390,7 @@ def bank_accounts():
 
 @bp.route('/bank-accounts/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('accounting.accounts.manage')
 def add_bank_account():
     """Add new bank account - إضافة حساب بنكي جديد"""
     if request.method == 'POST':
@@ -413,6 +427,7 @@ def add_bank_account():
 
 @bp.route('/cost-centers')
 @login_required
+@permission_required('accounting.accounts.manage')
 def cost_centers():
     """List cost centers - قائمة مراكز التكلفة"""
     centers = CostCenter.query.filter_by(is_active=True).order_by(CostCenter.code).all()
@@ -420,6 +435,7 @@ def cost_centers():
 
 @bp.route('/cost-centers/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('accounting.accounts.manage')
 def add_cost_center():
     """Add new cost center - إضافة مركز تكلفة جديد"""
     if request.method == 'POST':
@@ -452,6 +468,7 @@ def add_cost_center():
 
 @bp.route('/reports/trial-balance')
 @login_required
+@permission_required('reports.financial')
 def trial_balance():
     """Trial balance report - ميزان المراجعة"""
     accounts = Account.query.filter_by(is_active=True).order_by(Account.code).all()
@@ -466,6 +483,7 @@ def trial_balance():
 
 @bp.route('/reports/balance-sheet')
 @login_required
+@permission_required('reports.financial')
 def balance_sheet():
     """Balance sheet report - الميزانية العمومية"""
     # Assets
@@ -490,6 +508,7 @@ def balance_sheet():
 
 @bp.route('/reports/income-statement')
 @login_required
+@permission_required('reports.financial')
 def income_statement():
     """Income statement report - قائمة الدخل"""
     # Get date range from request or use current month
@@ -534,6 +553,7 @@ def income_statement():
 
 @bp.route('/reports/cash-flow')
 @login_required
+@permission_required('reports.financial')
 def cash_flow():
     """Cash flow statement - قائمة التدفقات النقدية"""
     # Get date range
@@ -591,6 +611,7 @@ def cash_flow():
 
 @bp.route('/reports/account-statement')
 @login_required
+@permission_required('reports.financial')
 def account_statement():
     """Account statement - كشف حساب"""
     # Get all accounts for dropdown
@@ -642,6 +663,7 @@ def account_statement():
 
 @bp.route('/reports/aging')
 @login_required
+@permission_required('reports.financial')
 def aging_report():
     """Aging report - تقرير الأعمار"""
     report_type = request.args.get('type', 'receivables')
@@ -694,6 +716,7 @@ def aging_report():
 
 @bp.route('/reports/cost-center')
 @login_required
+@permission_required('reports.financial')
 def cost_center_report():
     """Cost center report - تقرير مراكز التكلفة"""
     start_date = request.args.get('start_date', date.today().replace(day=1).strftime('%Y-%m-%d'))
@@ -736,6 +759,7 @@ def cost_center_report():
 
 @bp.route('/reports')
 @login_required
+@permission_required('reports.view')
 def reports():
     """Reports main page - صفحة التقارير الرئيسية"""
     # Get summary data
@@ -752,6 +776,7 @@ def reports():
 
 @bp.route('/dashboard')
 @login_required
+@permission_required('accounting.view')
 def dashboard():
     """Accounting dashboard - لوحة التحكم المحاسبية"""
     # Summary data

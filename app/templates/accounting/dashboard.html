@@ -14,7 +14,7 @@
                         <div>
                             <h6 class="text-white-50 mb-1">إجمالي الأصول</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(total_assets) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                         <div>
                             <i class="fas fa-wallet fa-3x opacity-50"></i>
@@ -31,7 +31,7 @@
                         <div>
                             <h6 class="text-white-50 mb-1">الإيرادات (الشهر)</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(monthly_revenue) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                         <div>
                             <i class="fas fa-arrow-up fa-3x opacity-50"></i>
@@ -48,7 +48,7 @@
                         <div>
                             <h6 class="text-white-50 mb-1">المصروفات (الشهر)</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(monthly_expenses) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                         <div>
                             <i class="fas fa-arrow-down fa-3x opacity-50"></i>
@@ -65,7 +65,7 @@
                         <div>
                             <h6 class="text-dark-50 mb-1">صافي الربح (الشهر)</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(monthly_profit) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                         <div>
                             <i class="fas fa-chart-line fa-3x opacity-50"></i>
@@ -152,7 +152,7 @@
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-2">
                             <span>الصندوق</span>
-                            <strong>{{ "{:,.2f}".format(cash_balance) }} ريال</strong>
+                            <strong>{{ cash_balance|currency }}</strong>
                         </div>
                         <div class="progress">
                             <div class="progress-bar bg-success" style="width: {{ (cash_balance / (cash_balance + bank_balance) * 100) if (cash_balance + bank_balance) > 0 else 0 }}%"></div>
@@ -161,7 +161,7 @@
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-2">
                             <span>البنوك</span>
-                            <strong>{{ "{:,.2f}".format(bank_balance) }} ريال</strong>
+                            <strong>{{ bank_balance|currency }}</strong>
                         </div>
                         <div class="progress">
                             <div class="progress-bar bg-primary" style="width: {{ (bank_balance / (cash_balance + bank_balance) * 100) if (cash_balance + bank_balance) > 0 else 0 }}%"></div>
@@ -170,7 +170,7 @@
                     <hr>
                     <div class="d-flex justify-content-between">
                         <h6>إجمالي النقدية:</h6>
-                        <h5 class="text-primary mb-0">{{ "{:,.2f}".format(cash_balance + bank_balance) }} ريال</h5>
+                        <h5 class="text-primary mb-0">{{ (cash_balance + bank_balance)|currency }}</h5>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Record Damaged Inventory') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="fas fa-exclamation-triangle text-warning"></i> {{ _('Record Damaged Inventory') }}</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('inventory.add_damaged_inventory') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="product_id" class="form-label">{{ _('Product') }} <span class="text-danger">*</span></label>
+                                <select name="product_id" id="product_id" class="form-control" required onchange="updateStock()">
+                                    <option value="">{{ _('Select Product') }}</option>
+                                    {% for product in products %}
+                                    <option value="{{ product.id }}" data-cost="{{ product.cost_price }}">
+                                        {{ product.name }} ({{ product.code }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="warehouse_id" class="form-label">{{ _('Warehouse') }} <span class="text-danger">*</span></label>
+                                <select name="warehouse_id" id="warehouse_id" class="form-control" required onchange="updateStock()">
+                                    <option value="">{{ _('Select Warehouse') }}</option>
+                                    {% for warehouse in warehouses %}
+                                    <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity" class="form-label">{{ _('Quantity') }} <span class="text-danger">*</span></label>
+                                <input type="number" name="quantity" id="quantity" class="form-control" 
+                                       step="0.01" min="0.01" required onchange="calculateValue()">
+                                <small id="stock_info" class="form-text text-muted"></small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="damage_type" class="form-label">{{ _('Damage Type') }} <span class="text-danger">*</span></label>
+                                <select name="damage_type" id="damage_type" class="form-control" required>
+                                    <option value="">{{ _('Select Type') }}</option>
+                                    <option value="expired">{{ _('Expired') }}</option>
+                                    <option value="broken">{{ _('Broken') }}</option>
+                                    <option value="defective">{{ _('Defective') }}</option>
+                                    <option value="other">{{ _('Other') }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">{{ _('Reason') }} <span class="text-danger">*</span></label>
+                            <input type="text" name="reason" id="reason" class="form-control" 
+                                   placeholder="{{ _('Enter reason for damage') }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">{{ _('Notes') }}</label>
+                            <textarea name="notes" id="notes" class="form-control" rows="3" 
+                                      placeholder="{{ _('Additional notes (optional)') }}"></textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>{{ _('Estimated Cost Value') }}:</strong>
+                            <span id="cost_value">0.00</span> {{ currency_symbol }}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('inventory.damaged_inventory') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> {{ _('Back') }}
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save"></i> {{ _('Record Damaged Item') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm bg-warning bg-opacity-10">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-info-circle"></i> {{ _('Information') }}</h5>
+                    <p class="card-text">
+                        {{ _('Recording damaged inventory will:') }}
+                    </p>
+                    <ul>
+                        <li>{{ _('Reduce available stock quantity') }}</li>
+                        <li>{{ _('Track damaged items separately') }}</li>
+                        <li>{{ _('Record the cost value of loss') }}</li>
+                        <li>{{ _('Create a stock movement record') }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateStock() {
+    const productId = document.getElementById('product_id').value;
+    const warehouseId = document.getElementById('warehouse_id').value;
+    
+    if (productId && warehouseId) {
+        fetch(`/inventory/api/product-stock/${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                const stockInfo = document.getElementById('stock_info');
+                if (data[warehouseId]) {
+                    stockInfo.textContent = `{{ _('Available in stock') }}: ${data[warehouseId].available}`;
+                    stockInfo.className = 'form-text text-success';
+                } else {
+                    stockInfo.textContent = `{{ _('No stock available in this warehouse') }}`;
+                    stockInfo.className = 'form-text text-danger';
+                }
+                calculateValue();
+            });
+    }
+}
+
+function calculateValue() {
+    const productSelect = document.getElementById('product_id');
+    const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+    
+    if (productSelect.selectedIndex > 0) {
+        const costPrice = parseFloat(productSelect.options[productSelect.selectedIndex].dataset.cost) || 0;
+        const totalValue = quantity * costPrice;
+        document.getElementById('cost_value').textContent = totalValue.toFixed(2);
+    }
+}
+</script>
+{% endblock %}
+

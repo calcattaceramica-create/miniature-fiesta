@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}المهام - CRM{% endblock %}
+{% block page_title %}المهام{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-tasks"></i> المهام</h3>
+        <p class="text-muted mb-0">إدارة المهام والمتابعة</p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.add_task') }}" class="btn btn-warning">
+            <i class="fas fa-plus"></i> إضافة مهمة
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('crm.tasks') }}" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="search" 
+                       placeholder="بحث بالعنوان..." 
+                       value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="status">
+                    <option value="">جميع الحالات</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>معلقة</option>
+                    <option value="in_progress" {% if status == 'in_progress' %}selected{% endif %}>قيد التنفيذ</option>
+                    <option value="completed" {% if status == 'completed' %}selected{% endif %}>مكتملة</option>
+                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>ملغاة</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="priority">
+                    <option value="">جميع الأولويات</option>
+                    <option value="low" {% if priority == 'low' %}selected{% endif %}>منخفضة</option>
+                    <option value="normal" {% if priority == 'normal' %}selected{% endif %}>عادية</option>
+                    <option value="high" {% if priority == 'high' %}selected{% endif %}>عالية</option>
+                    <option value="urgent" {% if priority == 'urgent' %}selected{% endif %}>عاجلة</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="task_type">
+                    <option value="">جميع الأنواع</option>
+                    <option value="call" {% if task_type == 'call' %}selected{% endif %}>مكالمة</option>
+                    <option value="email" {% if task_type == 'email' %}selected{% endif %}>بريد</option>
+                    <option value="meeting" {% if task_type == 'meeting' %}selected{% endif %}>اجتماع</option>
+                    <option value="follow_up" {% if task_type == 'follow_up' %}selected{% endif %}>متابعة</option>
+                    <option value="other" {% if task_type == 'other' %}selected{% endif %}>أخرى</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-1">
+                <a href="{{ url_for('crm.tasks') }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-redo"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h6>معلقة</h6>
+                <h3>{{ stats.pending }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h6>قيد التنفيذ</h6>
+                <h3>{{ stats.in_progress }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h6>مكتملة</h6>
+                <h3>{{ stats.completed }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h6>متأخرة</h6>
+                <h3>{{ stats.overdue }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tasks Table -->
+<div class="card mt-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>العنوان</th>
+                        <th>النوع</th>
+                        <th>الأولوية</th>
+                        <th>الحالة</th>
+                        <th>المرتبط بـ</th>
+                        <th>المسؤول</th>
+                        <th>تاريخ الاستحقاق</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks.items %}
+                    <tr class="{% if task.is_overdue %}table-danger{% endif %}">
+                        <td>
+                            <strong>{{ task.title }}</strong>
+                            {% if task.description %}
+                            <br><small class="text-muted">{{ task.description[:50] }}...</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <i class="fas fa-{{ 'phone' if task.task_type == 'call' else 'envelope' if task.task_type == 'email' else 'handshake' if task.task_type == 'meeting' else 'redo' if task.task_type == 'follow_up' else 'tasks' }}"></i>
+                            {{ task.task_type }}
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ 'danger' if task.priority == 'urgent' else 'warning' if task.priority == 'high' else 'info' if task.priority == 'normal' else 'secondary' }}">
+                                {{ task.priority }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if task.status == 'completed' else 'info' if task.status == 'in_progress' else 'secondary' if task.status == 'pending' else 'dark' }}">
+                                {{ task.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if task.lead %}
+                                <a href="{{ url_for('crm.lead_details', id=task.lead_id) }}">
+                                    <i class="fas fa-user-plus"></i> {{ task.lead.name }}
+                                </a>
+                            {% elif task.customer %}
+                                <a href="{{ url_for('customers.customer_details', id=task.customer_id) }}">
+                                    <i class="fas fa-user"></i> {{ task.customer.name }}
+                                </a>
+                            {% elif task.opportunity %}
+                                <a href="{{ url_for('crm.opportunity_details', id=task.opportunity_id) }}">
+                                    <i class="fas fa-bullseye"></i> {{ task.opportunity.name }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ task.assigned_user.full_name if task.assigned_user else '-' }}</td>
+                        <td>
+                            {{ task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '-' }}
+                            {% if task.is_overdue %}
+                                <br><span class="badge bg-danger">متأخرة</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if task.status != 'completed' %}
+                                <button class="btn btn-success" onclick="completeTask({{ task.id }})" title="إكمال">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-danger" onclick="deleteTask({{ task.id }})" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                            لا توجد مهام
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if tasks.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not tasks.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.tasks', page=tasks.prev_num, search=search, status=status, priority=priority, task_type=task_type) }}">
+                السابق
+            </a>
+        </li>
+        
+        {% for page_num in tasks.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == tasks.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('crm.tasks', page=page_num, search=search, status=status, priority=priority, task_type=task_type) }}">
+                        {{ page_num }}
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if not tasks.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.tasks', page=tasks.next_num, search=search, status=status, priority=priority, task_type=task_type) }}">
+                التالي
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function completeTask(taskId) {
+    if (confirm('هل أنت متأكد من إكمال هذه المهمة؟')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/crm/tasks/${taskId}/complete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function deleteTask(taskId) {
+    if (confirm('هل أنت متأكد من حذف هذه المهمة؟')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/crm/tasks/${taskId}/delete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
+

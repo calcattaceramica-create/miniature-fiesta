@@ -52,10 +52,10 @@
                         </p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>المبلغ:</strong> {{ "%.2f"|format(opportunity.amount) }} ر.س</p>
+                        <p><strong>المبلغ:</strong> {{ opportunity.amount|currency }}</p>
                         <p><strong>الاحتمالية:</strong> {{ opportunity.probability }}%</p>
-                        <p><strong>القيمة المتوقعة:</strong> {{ "%.2f"|format(opportunity.amount * opportunity.probability / 100) }} ر.س</p>
-                        <p><strong>تاريخ الإغلاق المتوقع:</strong> 
+                        <p><strong>القيمة المتوقعة:</strong> {{ (opportunity.amount * opportunity.probability / 100)|currency }}</p>
+                        <p><strong>تاريخ الإغلاق المتوقع:</strong>
                             {{ opportunity.expected_close_date.strftime('%Y-%m-%d') if opportunity.expected_close_date else '-' }}
                         </p>
                         <p><strong>المسؤول:</strong> 

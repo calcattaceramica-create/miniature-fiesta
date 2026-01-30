@@ -15,18 +15,23 @@ class Config:
     if database_url and database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
+    # Multi-Tenancy: Use master database for license management
+    # Tenant databases are switched dynamically by tenant_middleware
     SQLALCHEMY_DATABASE_URI = database_url or \
-        'sqlite:///' + os.path.join(basedir, 'erp_system.db')
+        'sqlite:///' + os.path.join(basedir, 'licenses_master.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
 
     # Application
     APP_NAME = os.environ.get('APP_NAME') or 'نظام إدارة المخزون المتكامل'
-    DEFAULT_LANGUAGE = 'ar'  # Arabic only
+    DEFAULT_LANGUAGE = 'ar'
     BABEL_DEFAULT_LOCALE = 'ar'
     BABEL_DEFAULT_TIMEZONE = 'Asia/Riyadh'
     BABEL_TRANSLATION_DIRECTORIES = 'translations'
-    LANGUAGES = ['ar']  # Arabic only - no language switching
+    LANGUAGES = {
+        'ar': {'name': 'العربية', 'flag': '🇸🇦', 'dir': 'rtl'},
+        'en': {'name': 'English', 'flag': '🇬🇧', 'dir': 'ltr'}
+    }
 
     # Session Security
     PERMANENT_SESSION_LIFETIME = timedelta(hours=2)  # Session expires after 2 hours
@@ -55,11 +60,11 @@ class Config:
     ITEMS_PER_PAGE = 20
     
     # Currency
-    DEFAULT_CURRENCY = 'SAR'
+    DEFAULT_CURRENCY = 'EUR'
     CURRENCIES = {
+        'EUR': {'name': 'يورو', 'symbol': '€'},
         'SAR': {'name': 'ريال سعودي', 'symbol': 'ر.س'},
         'USD': {'name': 'دولار أمريكي', 'symbol': '$'},
-        'EUR': {'name': 'يورو', 'symbol': '€'},
         'AED': {'name': 'درهم إماراتي', 'symbol': 'د.إ'},
         'KWD': {'name': 'دينار كويتي', 'symbol': 'د.ك'},
         'BHD': {'name': 'دينار بحريني', 'symbol': 'د.ب'},

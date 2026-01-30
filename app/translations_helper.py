@@ -125,6 +125,11 @@ def format_currency(amount, currency='SAR'):
         'SAR': 'ر.س',
         'USD': '$',
         'EUR': '€',
+        'AED': 'د.إ',
+        'KWD': 'د.ك',
+        'BHD': 'د.ب',
+        'OMR': 'ر.ع',
+        'QAR': 'ر.ق',
         'EGP': 'ج.م',
     }
     

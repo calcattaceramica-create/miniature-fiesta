@@ -1,258 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كيفية تشخيص مشكلة زر الحذف</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            line-height: 1.8;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        
-        .step {
-            background: #f8f9fa;
-            padding: 25px;
-            margin: 20px 0;
-            border-radius: 15px;
-            border-right: 5px solid #667eea;
-        }
-        
-        .step h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-        
-        .step-number {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background: #667eea;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 40px;
-            font-weight: bold;
-            margin-left: 10px;
-            font-size: 1.2em;
-        }
-        
-        .code-box {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            overflow-x: auto;
-        }
-        
-        .success {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-        
-        .error {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-        
-        .warning {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-        
-        .screenshot {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        
-        .screenshot img {
-            max-width: 100%;
-            border: 3px solid #2196F3;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-        
-        kbd {
-            background: #333;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-weight: bold;
-        }
-        
-        .icon {
-            font-size: 3em;
-            text-align: center;
-            margin: 20px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="icon">🔍</div>
-        <h1>كيفية تشخيص مشكلة زر الحذف</h1>
-        
-        <div class="warning">
-            <h3>⚠️ مهم جداً!</h3>
-            <p>تم إضافة كود تشخيص تلقائي في صفحة المنتجات. اتبع الخطوات أدناه لمعرفة المشكلة بالضبط.</p>
-        </div>
-        
-        <div class="step">
-            <h2><span class="step-number">1</span> افتح صفحة المنتجات</h2>
-            <p>اذهب إلى:</p>
-            <div class="code-box">http://localhost:5000/inventory/products</div>
-        </div>
-        
-        <div class="step">
-            <h2><span class="step-number">2</span> افتح Developer Tools</h2>
-            <p>اضغط على لوحة المفاتيح:</p>
-            <div class="code-box"><kbd>F12</kbd></div>
-            <p style="margin-top: 10px;">أو اضغط بزر الماوس الأيمن في أي مكان واختر "Inspect" أو "فحص"</p>
-        </div>
-        
-        <div class="step">
-            <h2><span class="step-number">3</span> اذهب إلى تبويب Console</h2>
-            <p>في النافذة التي ظهرت، اضغط على تبويب <strong>"Console"</strong></p>
-            <div class="screenshot">
-                <p>ستجد التبويب في الأعلى، يبدو هكذا:</p>
-                <div style="background: white; padding: 10px; display: inline-block; border-radius: 5px; margin-top: 10px;">
-                    <strong>Elements | Console | Sources | Network ...</strong>
-                </div>
-            </div>
-        </div>
-        
-        <div class="step">
-            <h2><span class="step-number">4</span> اقرأ رسائل التشخيص</h2>
-            <p>ستجد رسائل تبدأ بهذه الرموز:</p>
-            
-            <div class="success">
-                <strong>✅ رسالة خضراء</strong> = كل شيء يعمل بشكل صحيح
-            </div>
-            
-            <div class="error">
-                <strong>❌ رسالة حمراء</strong> = هناك مشكلة! (هذا ما نبحث عنه)
-            </div>
-            
-            <p style="margin-top: 20px;"><strong>مثال على الرسائل التي ستراها:</strong></p>
-            <div class="code-box">
-🔍 Product Delete Script Loaded!<br>
-✅ Bootstrap available: true<br>
-✅ Modal element exists: true<br>
-📄 Page loaded - Running diagnostics...<br>
-✅ confirmDelete function: function<br>
-✅ Bootstrap: object<br>
-✅ Modal element: Found<br>
-✅ ProductName element: Found<br>
-✅ DeleteForm element: Found<br>
-✅ Delete buttons found: 4<br>
-🎉 All diagnostics complete!
-            </div>
-        </div>
-        
-        <div class="step">
-            <h2><span class="step-number">5</span> اضغط على زر الحذف</h2>
-            <p>اضغط على أي زر حذف 🗑️ في الصفحة</p>
-            <p style="margin-top: 10px;">راقب الرسائل الجديدة في Console:</p>
-            <div class="code-box">
-🗑️ confirmDelete called with: 1 "اسم المنتج"<br>
-✅ Product name set: اسم المنتج<br>
-✅ Form action set: /inventory/products/1/delete<br>
-✅ Modal should be visible now!
-            </div>
-        </div>
-        
-        <div class="step">
-            <h2><span class="step-number">6</span> حدد المشكلة</h2>
-            
-            <h3 style="margin-top: 20px;">السيناريو 1: كل الرسائل ✅</h3>
-            <div class="success">
-                <p><strong>المعنى:</strong> الكود يعمل بشكل صحيح!</p>
-                <p><strong>الحل:</strong> يجب أن تظهر النافذة المنبثقة. إذا لم تظهر، جرب متصفح آخر.</p>
-            </div>
-            
-            <h3 style="margin-top: 20px;">السيناريو 2: ❌ Bootstrap is not loaded</h3>
-            <div class="error">
-                <p><strong>المعنى:</strong> Bootstrap لم يتم تحميله</p>
-                <p><strong>الحل:</strong> تحقق من الاتصال بالإنترنت، أو أعد تحميل الصفحة بـ <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></p>
-            </div>
-            
-            <h3 style="margin-top: 20px;">السيناريو 3: ❌ Modal element not found</h3>
-            <div class="error">
-                <p><strong>المعنى:</strong> نافذة التأكيد غير موجودة في الصفحة</p>
-                <p><strong>الحل:</strong> المشكلة في ملف products.html - تحقق من وجود الـ Modal</p>
-            </div>
-            
-            <h3 style="margin-top: 20px;">السيناريو 4: لا توجد رسائل على الإطلاق</h3>
-            <div class="error">
-                <p><strong>المعنى:</strong> الـ JavaScript لم يتم تحميله</p>
-                <p><strong>الحل:</strong> المشكلة في block extra_js - تحقق من base.html</p>
-            </div>
-        </div>
-        
-        <div class="step">
-            <h2><span class="step-number">7</span> أرسل لي النتائج</h2>
-            <p>انسخ كل الرسائل من Console والصقها في الرد</p>
-            <p style="margin-top: 10px;">أو خذ لقطة شاشة (Screenshot) وأرسلها</p>
-            <div class="warning">
-                <p><strong>كيفية أخذ لقطة شاشة:</strong></p>
-                <ul style="margin-right: 20px; margin-top: 10px;">
-                    <li>Windows: <kbd>Win</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></li>
-                    <li>أو: <kbd>PrtScn</kbd> ثم الصق في Paint</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div style="background: #e8f5e9; padding: 25px; border-radius: 15px; margin-top: 30px; text-align: center;">
-            <h2 style="color: #2e7d32; margin-bottom: 15px;">🎯 الخلاصة</h2>
-            <ol style="text-align: right; margin-right: 40px; font-size: 1.1em;">
-                <li>افتح http://localhost:5000/inventory/products</li>
-                <li>اضغط <kbd>F12</kbd></li>
-                <li>اذهب لتبويب Console</li>
-                <li>اقرأ الرسائل</li>
-                <li>اضغط زر الحذف</li>
-                <li>انسخ كل الرسائل وأرسلها لي</li>
-            </ol>
-        </div>
-    </div>
-</body>
-</html>
-

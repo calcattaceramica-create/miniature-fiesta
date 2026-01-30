@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}مستخدمي الترخيص - License Users{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h2>
+                        <i class="fas fa-users-cog text-primary"></i>
+                        إدارة مستخدمي الترخيص
+                        <small class="text-muted">License Users: {{ license.client_name }}</small>
+                    </h2>
+                    <p class="text-muted mb-0">
+                        مفتاح الترخيص: <code>{{ license.license_key }}</code> | 
+                        الحد الأقصى: <strong>{{ users|length }} / {{ license.max_users }}</strong>
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ url_for('security.license_info') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right"></i> العودة للترخيص
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Assigned Users -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">المستخدمين المرتبطين بهذا الترخيص</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>اسم المستخدم</th>
+                                    <th>الاسم الكامل</th>
+                                    <th>الدور</th>
+                                    <th>آخر دخول</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.full_name }}</td>
+                                    <td>{{ user.role.name_ar if user.role else 'بدون دور' }}</td>
+                                    <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'لم يدخل بعد' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('security.remove_user_license', user_id=user.id) }}" 
+                                           class="btn btn-sm btn-outline-danger" 
+                                           onclick="return confirm('هل أنت متأكد من فك ارتباط هذا المستخدم بهذا الترخيص؟ لن يتمكن من تسجيل الدخول.')">
+                                            <i class="fas fa-unlink"></i> فك الارتباط
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">لا يوجد مستخدمين مرتبطين بهذا الترخيص حالياً</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assign New User -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">ربط مستخدم جديد</h5>
+                </div>
+                <div class="card-body">
+                    {% if users|length >= license.max_users %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> تم الوصول للحد الأقصى للمستخدمين ({{ license.max_users }}). يرجى ترقية الترخيص لإضافة المزيد.
+                    </div>
+                    {% else %}
+                    <form action="{{ url_for('security.assign_user_license') }}" method="POST">
+                        <input type="hidden" name="license_id" value="{{ license.id }}">
+                        <div class="mb-3">
+                            <label for="user_id" class="form-label">اختر مستخدم للربط:</label>
+                            <select name="user_id" id="user_id" class="form-select" required>
+                                <option value="">-- اختر مستخدم --</option>
+                                {% for u in all_users if not u.license_id or u.license_id != license.id %}
+                                <option value="{{ u.id }}">{{ u.username }} ({{ u.full_name }}) {% if u.license_id %} [مرتبط بترخيص آخر] {% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-plus"></i> ربط المستخدم بالترخيص
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">ملاحظات</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0 small">
+                        <li>لا يتم احتساب مديري النظام (Admins) ضمن عدد المستخدمين المسموح به.</li>
+                        <li>المستخدم غير المرتبط بترخيص لن يتمكن من تسجيل الدخول للنظام.</li>
+                        <li>يمكنك فك ارتباط مستخدم لربط مستخدم آخر مكانه في حال الوصول للحد الأقصى.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

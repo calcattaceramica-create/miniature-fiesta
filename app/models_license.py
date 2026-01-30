@@ -78,6 +78,12 @@ class License(db.Model):
         
         return True, "الترخيص صالح"
     
+    def can_add_user(self):
+        """Check if more users can be added to this license"""
+        from app.models import User
+        current_users = User.query.filter_by(license_id=self.id).count()
+        return current_users < self.max_users
+    
     def days_remaining(self):
         """Get remaining days until expiration"""
         if not self.expires_at:

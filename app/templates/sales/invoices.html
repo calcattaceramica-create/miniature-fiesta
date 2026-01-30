@@ -78,13 +78,13 @@
                                 <small class="text-muted show-on-mobile d-block">{{ invoice.warehouse.name if invoice.warehouse else '-' }}</small>
                             </td>
                             <td class="hide-on-mobile">{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
-                            <td><strong>{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
-                            <td class="hide-on-mobile">{{ "%.2f"|format(invoice.paid_amount) }} {{ _('SAR') }}</td>
+                            <td><strong>{{ invoice.total_amount|currency }}</strong></td>
+                            <td class="hide-on-mobile">{{ invoice.paid_amount|currency }}</td>
                             <td class="hide-on-mobile">
                                 {% if invoice.remaining_amount > 0 %}
-                                    <span class="text-danger">{{ "%.2f"|format(invoice.remaining_amount) }} {{ _('SAR') }}</span>
+                                    <span class="text-danger">{{ invoice.remaining_amount|currency }}</span>
                                 {% else %}
-                                    <span class="text-success">0.00 {{ _('SAR') }}</span>
+                                    <span class="text-success">{{ 0|currency }}</span>
                                 {% endif %}
                             </td>
                             <td>
@@ -124,6 +124,14 @@
                             <a href="{{ url_for('sales.confirm_invoice', id=invoice.id) }}" class="btn btn-sm btn-outline-success" title="{{ _('Confirm Invoice') }}">
                                 <i class="fas fa-check"></i>
                             </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" title="{{ _('Delete') }}" onclick="confirmDeleteInvoice({{ invoice.id }}, '{{ invoice.invoice_number }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                            {% if invoice.status in ['confirmed', 'paid'] %}
+                            <button type="button" class="btn btn-sm btn-outline-warning" title="{{ _('Cancel Invoice') }}" onclick="confirmCancelInvoice({{ invoice.id }}, '{{ invoice.invoice_number }}')">
+                                <i class="fas fa-ban"></i>
+                            </button>
                             <button type="button" class="btn btn-sm btn-outline-danger" title="{{ _('Delete') }}" onclick="confirmDeleteInvoice({{ invoice.id }}, '{{ invoice.invoice_number }}')">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -216,6 +224,38 @@
     </div>
 </div>
 
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelInvoiceModal" tabindex="-1" aria-labelledby="cancelInvoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="cancelInvoiceModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> {{ _('Confirm Cancel') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">{{ _('Are you sure you want to cancel this invoice?') }}</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>{{ _('Note') }}:</strong> {{ _('Stock will be restored and customer balance will be updated.') }}
+                </div>
+                <p class="mb-0"><strong>{{ _('Invoice Number') }}:</strong> <span id="cancelInvoiceNumber"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> {{ _('Close') }}
+                </button>
+                <form id="cancelInvoiceForm" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-ban"></i> {{ _('Cancel Invoice') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% block scripts %}
 <script>
 function confirmDeleteInvoice(invoiceId, invoiceNumber) {
@@ -228,6 +268,19 @@ function confirmDeleteInvoice(invoiceId, invoiceNumber) {
 
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('deleteInvoiceModal'));
+    modal.show();
+}
+
+function confirmCancelInvoice(invoiceId, invoiceNumber) {
+    // Set invoice number in modal
+    document.getElementById('cancelInvoiceNumber').textContent = invoiceNumber;
+
+    // Set form action
+    const form = document.getElementById('cancelInvoiceForm');
+    form.action = `/sales/invoices/${invoiceId}/cancel`;
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('cancelInvoiceModal'));
     modal.show();
 }
 </script>

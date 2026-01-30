@@ -107,45 +107,67 @@ class Warehouse(db.Model):
 
 class Stock(db.Model):
     __tablename__ = 'stocks'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'), nullable=False)
     quantity = db.Column(db.Float, default=0.0)
     reserved_quantity = db.Column(db.Float, default=0.0)  # Reserved for orders
-    available_quantity = db.Column(db.Float, default=0.0)  # quantity - reserved
+    damaged_quantity = db.Column(db.Float, default=0.0)  # Damaged/defective items
+    available_quantity = db.Column(db.Float, default=0.0)  # quantity - reserved - damaged
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+
     product = db.relationship('Product', backref='stocks')
     warehouse = db.relationship('Warehouse', backref='stocks')
-    
+
     __table_args__ = (
         db.UniqueConstraint('product_id', 'warehouse_id', name='unique_product_warehouse'),
     )
-    
+
     def __repr__(self):
         return f'<Stock Product:{self.product_id} Warehouse:{self.warehouse_id} Qty:{self.quantity}>'
 
 class StockMovement(db.Model):
     __tablename__ = 'stock_movements'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'), nullable=False)
-    
-    movement_type = db.Column(db.String(20))  # in, out, transfer, adjustment
+
+    movement_type = db.Column(db.String(20))  # in, out, transfer, adjustment, damaged
     quantity = db.Column(db.Float, nullable=False)
-    reference_type = db.Column(db.String(50))  # purchase, sale, transfer, adjustment
+    reference_type = db.Column(db.String(50))  # purchase, sale, transfer, adjustment, damaged
     reference_id = db.Column(db.Integer)
-    
+
     notes = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     product = db.relationship('Product')
     warehouse = db.relationship('Warehouse')
     user = db.relationship('User')
-    
+
     def __repr__(self):
         return f'<StockMovement {self.movement_type} {self.quantity}>'
+
+class DamagedInventory(db.Model):
+    __tablename__ = 'damaged_inventory'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouses.id'), nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    reason = db.Column(db.String(200))  # Reason for damage
+    damage_type = db.Column(db.String(50))  # expired, broken, defective, etc.
+    cost_value = db.Column(db.Float, default=0.0)  # Cost value of damaged items
+    notes = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    product = db.relationship('Product')
+    warehouse = db.relationship('Warehouse')
+    user = db.relationship('User')
+
+    def __repr__(self):
+        return f'<DamagedInventory Product:{self.product_id} Qty:{self.quantity}>'
 

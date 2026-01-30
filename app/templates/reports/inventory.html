@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Inventory Valuation Report') }} - {{ _('Inventory Management System') }}{% endblock %}
+
+{% block extra_head %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- Version: 2.0.1 - {{ now().strftime('%Y%m%d%H%M%S') }} -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%) !important;
+}
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.display-4 {
+    font-size: 2.5rem !important;
+    font-weight: 300 !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-boxes"></i> {{ _('Inventory Valuation Report') }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-0 text-muted">
+                            <i class="fas fa-info-circle"></i> {{ _('Current inventory value based on cost price') }}
+                        </p>
+                        <div>
+                            <button type="button" onclick="window.print()" class="btn btn-dark">
+                                <i class="fas fa-print"></i> {{ _('Print') }}
+                            </button>
+                            <button type="button" onclick="exportToExcel()" class="btn btn-success">
+                                <i class="fas fa-file-excel"></i> {{ _('Export to Excel') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <!-- Total Inventory Value -->
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-gradient-primary text-white shadow-lg h-100">
+                        <div class="card-body d-flex flex-column justify-content-center">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-2">
+                                        <i class="fas fa-warehouse"></i> إجمالي قيمة المخزون
+                                    </h6>
+                                    <h2 class="mb-0">{{ "{:,.2f}".format(total_value) }} {{ currency_symbol }}</h2>
+                                </div>
+                                <div class="text-white-50">
+                                    <i class="fas fa-warehouse fa-3x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Products -->
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-gradient-success text-white shadow-lg h-100">
+                        <div class="card-body d-flex flex-column justify-content-center">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-2">
+                                        <i class="fas fa-boxes"></i> إجمالي المنتجات
+                                    </h6>
+                                    <h2 class="mb-0">{{ inventory_data|length }}</h2>
+                                    <small class="text-white-50">منتج</small>
+                                </div>
+                                <div class="text-white-50">
+                                    <i class="fas fa-boxes fa-3x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Average Value -->
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-gradient-info text-white shadow-lg h-100">
+                        <div class="card-body d-flex flex-column justify-content-center">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-2">
+                                        <i class="fas fa-chart-line"></i> متوسط القيمة
+                                    </h6>
+                                    <h2 class="mb-0">
+                                        {% if inventory_data|length > 0 %}
+                                            {{ "{:,.2f}".format(total_value / inventory_data|length) }} {{ currency_symbol }}
+                                        {% else %}
+                                            0.00 {{ currency_symbol }}
+                                        {% endif %}
+                                    </h2>
+                                    <small class="text-white-50">لكل منتج</small>
+                                </div>
+                                <div class="text-white-50">
+                                    <i class="fas fa-chart-line fa-3x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Product Inventory Details') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped" id="inventoryTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th><i class="fas fa-barcode"></i> {{ _('SKU') }}</th>
+                                    <th><i class="fas fa-box"></i> {{ _('Product Name') }}</th>
+                                    <th><i class="fas fa-tag"></i> {{ _('Category') }}</th>
+                                    <th class="text-center"><i class="fas fa-cubes"></i> {{ _('Stock Quantity') }}</th>
+                                    <th class="text-end"><i class="fas fa-dollar-sign"></i> {{ _('Cost Price') }}</th>
+                                    <th class="text-end"><i class="fas fa-calculator"></i> {{ _('Total Value') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if inventory_data %}
+                                    {% for item in inventory_data %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td><code>{{ item.product.sku }}</code></td>
+                                        <td>
+                                            <strong>{{ item.product.name }}</strong>
+                                            {% if item.product.barcode %}
+                                                <br><small class="text-muted">{{ _('Barcode') }}: {{ item.product.barcode }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if item.product.category %}
+                                                <span class="badge bg-info">{{ item.product.category.name }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ _('No Category') }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge {% if item.stock <= item.product.min_stock %}bg-danger{% elif item.stock <= item.product.min_stock * 2 %}bg-warning{% else %}bg-success{% endif %} fs-6">
+                                                {{ "{:,.2f}".format(item.stock) }} {{ item.product.unit }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">{{ "{:,.2f}".format(item.product.cost_price) }} {{ currency_symbol }}</td>
+                                        <td class="text-end">
+                                            <strong class="text-primary">{{ "{:,.2f}".format(item.value) }} {{ currency_symbol }}</strong>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-5">
+                                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                                            <p class="mb-0">{{ _('No inventory data available') }}</p>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="6" class="text-end">
+                                        <h5 class="mb-0"><i class="fas fa-calculator"></i> {{ _('Total Inventory Value') }}:</h5>
+                                    </th>
+                                    <th class="text-end">
+                                        <h5 class="mb-0 text-primary">{{ "{:,.2f}".format(total_value) }} {{ currency_symbol }}</h5>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card bg-gradient-info text-white shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-white-50 mb-1"><i class="fas fa-boxes"></i> إجمالي المنتجات</h6>
+                            <h4 class="mb-0">{{ inventory_data|length }}</h4>
+                            <small>منتج</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-gradient-success text-white shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-white-50 mb-1"><i class="fas fa-check-circle"></i> متوفر في المخزون</h6>
+                            <h4 class="mb-0">{{ inventory_data|selectattr('stock', 'gt', 0)|list|length }}</h4>
+                            <small>منتج</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-gradient-warning text-white shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-white-50 mb-1"><i class="fas fa-exclamation-triangle"></i> مخزون منخفض</h6>
+                            <h4 class="mb-0">{{ inventory_data|selectattr('stock', 'le', inventory_data[0].product.min_stock if inventory_data else 0)|list|length }}</h4>
+                            <small>منتج</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-gradient-primary text-white shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-white-50 mb-1"><i class="fas fa-dollar-sign"></i> متوسط القيمة</h6>
+                            <h4 class="mb-0">
+                                {% if inventory_data|length > 0 %}
+                                    {{ "{:,.2f}".format(total_value / inventory_data|length) }} {{ currency_symbol }}
+                                {% else %}
+                                    0.00 {{ currency_symbol }}
+                                {% endif %}
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+}
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+@media print {
+    .btn, .card-header { display: none !important; }
+}
+</style>
+
+<script>
+function exportToExcel() {
+    // Get table
+    var table = document.getElementById('inventoryTable');
+
+    // Create workbook
+    var wb = XLSX.utils.table_to_book(table, {sheet: "Inventory"});
+
+    // Export
+    XLSX.writeFile(wb, 'inventory_report_' + new Date().toISOString().split('T')[0] + '.xlsx');
+}
+</script>
+
+<!-- SheetJS library for Excel export -->
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+{% endblock %}
+

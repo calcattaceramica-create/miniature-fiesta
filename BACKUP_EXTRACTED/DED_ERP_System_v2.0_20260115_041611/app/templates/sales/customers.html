@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Customers') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Customer Management') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div class="mb-2 mb-md-0">
+                <h3><i class="fas fa-users"></i> {{ _('Customer Management') }}</h3>
+                <p class="text-muted mb-0">{{ _('View and manage all customers') }}</p>
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('sales.add_customer') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> <span class="d-none d-sm-inline">{{ _('Add New Customer') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('sales.customers') }}">
+                <div class="row g-2">
+                    <div class="col-12 col-md-10">
+                        <input type="text" class="form-control" name="search" placeholder="{{ _('Search by name, code, or phone...') }}" value="{{ search }}">
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-search"></i> <span class="d-none d-sm-inline">{{ _('Search') }}</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Code') }}</th>
+                            <th>{{ _('Customer Name') }}</th>
+                            <th class="hide-on-mobile">{{ _('Phone') }}</th>
+                            <th class="hide-on-mobile">{{ _('Email') }}</th>
+                            <th class="hide-on-mobile">{{ _('City') }}</th>
+                            <th class="hide-on-mobile">{{ _('Current Balance') }}</th>
+                            <th class="hide-on-mobile">{{ _('Category') }}</th>
+                            <th>{{ _('Status') }}</th>
+                            <th>{{ _('Actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers.items %}
+                        <tr>
+                            <td><strong>{{ customer.code }}</strong></td>
+                            <td>
+                                {{ customer.name }}
+                                <small class="text-muted show-on-mobile d-block">
+                                    {{ customer.phone or '-' }}
+                                </small>
+                            </td>
+                            <td class="hide-on-mobile">{{ customer.phone or '-' }}</td>
+                            <td class="hide-on-mobile">{{ customer.email or '-' }}</td>
+                            <td class="hide-on-mobile">{{ customer.city or '-' }}</td>
+                            <td class="hide-on-mobile">
+                                {% if customer.current_balance > 0 %}
+                                    <span class="text-danger">{{ "%.2f"|format(customer.current_balance) }} {{ _('SAR') }}</span>
+                                {% elif customer.current_balance < 0 %}
+                                    <span class="text-success">{{ "%.2f"|format(customer.current_balance|abs) }} {{ _('SAR') }}</span>
+                                {% else %}
+                                    <span class="text-muted">0.00 {{ _('SAR') }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="hide-on-mobile">
+                                {% if customer.category %}
+                                    <span class="badge bg-info">{{ customer.category }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if customer.is_active %}
+                                    <span class="badge bg-success">{{ _('Active') }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ _('Inactive') }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="#" class="btn btn-outline-primary" title="{{ _('Edit') }}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-info" title="{{ _('View') }}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                <p class="mb-0">{{ _('No customers found') }}</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if customers.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% if customers.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('sales.customers', page=customers.prev_num, search=search) }}">{{ _('Previous') }}</a>
+        </li>
+        {% endif %}
+
+        {% for page_num in customers.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == customers.page %}
+                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('sales.customers', page=page_num, search=search) }}">{{ page_num }}</a></li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if customers.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('sales.customers', page=customers.next_num, search=search) }}">{{ _('Next') }}</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+

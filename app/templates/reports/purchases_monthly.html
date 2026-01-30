@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Monthly Purchases Report') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+}
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.fs-1 {
+    font-size: 3rem !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-chart-bar"></i>
+            {{ _('Monthly Purchases Report') }}
+        </h1>
+        <div>
+            <a href="{{ url_for('reports.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right"></i>
+                {{ _('Back to Reports') }}
+            </a>
+        </div>
+    </div>
+
+    <!-- Year Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="year" class="form-label">{{ _('Year') }}</label>
+                    <select name="year" id="year" class="form-select" onchange="this.form.submit()">
+                        {% for y in available_years %}
+                        <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-gradient-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Invoices') }}</h6>
+                            <h3 class="mb-0">{{ total_invoices }}</h3>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-gradient-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Purchases') }}</h6>
+                            <h3 class="mb-0">{{ "{:,.2f}".format(total_purchases) }} {{ currency_symbol }}</h3>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-gradient-info text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Tax') }}</h6>
+                            <h3 class="mb-0">{{ "{:,.2f}".format(total_tax) }} {{ currency_symbol }}</h3>
+                        </div>
+                        <div class="fs-1">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Data Table -->
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                {{ _('Monthly Breakdown') }} - {{ year }}
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="monthlyTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{{ _('Month') }}</th>
+                            <th class="text-center">{{ _('Invoice Count') }}</th>
+                            <th class="text-end">{{ _('Total Amount') }}</th>
+                            <th class="text-end">{{ _('Tax Amount') }}</th>
+                            <th class="text-end">{{ _('Net Amount') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for month in months_data %}
+                        <tr>
+                            <td>
+                                <strong>{{ month.month_name }}</strong>
+                            </td>
+                            <td class="text-center">
+                                {% if month.invoice_count > 0 %}
+                                    <span class="badge bg-primary">{{ month.invoice_count }}</span>
+                                {% else %}
+                                    <span class="text-muted">0</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if month.total_amount > 0 %}
+                                    {{ "{:,.2f}".format(month.total_amount) }} {{ currency_symbol }}
+                                {% else %}
+                                    <span class="text-muted">0.00 {{ currency_symbol }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if month.total_tax > 0 %}
+                                    {{ "{:,.2f}".format(month.total_tax) }} {{ currency_symbol }}
+                                {% else %}
+                                    <span class="text-muted">0.00 {{ currency_symbol }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if month.total_amount > 0 %}
+                                    <strong>{{ "{:,.2f}".format(month.total_amount - month.total_tax) }} {{ currency_symbol }}</strong>
+                                {% else %}
+                                    <span class="text-muted">0.00 {{ currency_symbol }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th>{{ _('Total') }}</th>
+                            <th class="text-center">{{ total_invoices }}</th>
+                            <th class="text-end">{{ "{:,.2f}".format(total_purchases) }} {{ currency_symbol }}</th>
+                            <th class="text-end">{{ "{:,.2f}".format(total_tax) }} {{ currency_symbol }}</th>
+                            <th class="text-end"><strong>{{ "{:,.2f}".format(total_purchases - total_tax) }} {{ currency_symbol }}</strong></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

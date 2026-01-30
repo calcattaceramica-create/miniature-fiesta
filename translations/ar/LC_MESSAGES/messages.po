@@ -547,6 +547,18 @@ msgstr "إدارة الموردين لديك"
 msgid "Add New Supplier"
 msgstr "إضافة مورد جديد"
 
+msgid "Cannot delete supplier because it has purchase invoices"
+msgstr "لا يمكن حذف المورد لأنه يحتوي على فواتير مشتريات"
+
+msgid "Supplier deleted successfully"
+msgstr "تم حذف المورد بنجاح"
+
+msgid "Are you sure you want to delete supplier"
+msgstr "هل أنت متأكد من حذف المورد"
+
+msgid "Error deleting supplier"
+msgstr "خطأ في حذف المورد"
+
 msgid "Supplier Name"
 msgstr "اسم المورد"
 
@@ -577,6 +589,15 @@ msgstr "نظرة عامة على النظام"
 
 msgid "Total Products"
 msgstr "إجمالي المنتجات"
+
+msgid "Total Quantity"
+msgstr "إجمالي الكمية"
+
+msgid "Total Amount"
+msgstr "إجمالي المبلغ"
+
+msgid "Total Invoices"
+msgstr "إجمالي الفواتير"
 
 msgid "Total Customers"
 msgstr "إجمالي العملاء"
@@ -1481,4 +1502,1001 @@ msgstr "الطول"
 
 msgid "Area"
 msgstr "المساحة"
+
+# Dashboard Statistics
+msgid "Sales This Month"
+msgstr "المبيعات هذا الشهر"
+
+msgid "Purchases This Month"
+msgstr "المشتريات هذا الشهر"
+
+msgid "Sales Trend This Month"
+msgstr "اتجاه المبيعات هذا الشهر"
+
+msgid "Sales and Purchases (Last 6 Months)"
+msgstr "المبيعات والمشتريات (آخر 6 أشهر)"
+
+msgid "No sales this month"
+msgstr "لا توجد مبيعات هذا الشهر"
+
+msgid "Auto-generated if left empty"
+msgstr "يتم إنشاؤه تلقائياً إذا ترك فارغاً"
+
+msgid "Leave empty to auto-generate"
+msgstr "اتركه فارغاً للإنشاء التلقائي"
+
+msgid "Optional"
+msgstr "اختياري"
+
+# Dashboard - Additional Stats
+msgid "Active Warehouses"
+msgstr "المخازن النشطة"
+
+msgid "Number of active warehouses"
+msgstr "عدد المخازن النشطة"
+
+msgid "Inventory Value"
+msgstr "قيمة المخزون"
+
+msgid "Total current inventory value"
+msgstr "إجمالي قيمة المخزون الحالي"
+
+# Dashboard - Recent Transactions
+msgid "Recent Sales"
+msgstr "المبيعات الأخيرة"
+
+msgid "Recent Purchases"
+msgstr "المشتريات الأخيرة"
+
+msgid "Amount"
+msgstr "المبلغ"
+
+# Dashboard - Quick Actions
+msgid "View Reports"
+msgstr "عرض التقارير"
+
+msgid "New Sales Invoice"
+msgstr "فاتورة مبيعات جديدة"
+
+msgid "New Purchase Invoice"
+msgstr "فاتورة شراء جديدة"
+
+msgid "Sale"
+msgstr "بيع"
+
+msgid "Purchase"
+msgstr "شراء"
+
+msgid "Reports"
+msgstr "التقارير"
+
+# Settings Page - Detailed Translations
+msgid "Manage system settings and configurations"
+msgstr "إدارة إعدادات النظام والتكوينات"
+
+msgid "Company Data"
+msgstr "بيانات الشركة"
+
+msgid "Manage company and branch information"
+msgstr "إدارة معلومات الشركة والفروع"
+
+msgid "Branches"
+msgstr "الفروع"
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Manage company branches"
+msgstr "إدارة فروع الشركة"
+
+msgid "View Branches"
+msgstr "عرض الفروع"
+
+msgid "Manage users and permissions"
+msgstr "إدارة المستخدمين والصلاحيات"
+
+msgid "Manage Users"
+msgstr "إدارة المستخدمين"
+
+msgid "Manage roles and permissions"
+msgstr "إدارة الأدوار والصلاحيات"
+
+msgid "Manage Roles"
+msgstr "إدارة الأدوار"
+
+msgid "View and manage permissions"
+msgstr "عرض وإدارة الأذونات"
+
+msgid "View Permissions"
+msgstr "عرض الأذونات"
+
+msgid "Profile"
+msgstr "الملف الشخصي"
+
+msgid "Edit your personal information"
+msgstr "تعديل معلوماتك الشخصية"
+
+msgid "Edit Profile"
+msgstr "تعديل الملف الشخصي"
+
+msgid "Language Settings"
+msgstr "إعدادات اللغة"
+
+msgid "Change application language"
+msgstr "تغيير لغة التطبيق"
+
+msgid "Change Language"
+msgstr "تغيير اللغة"
+
+msgid "Update your password"
+msgstr "تحديث كلمة المرور"
+
+msgid "Manage product categories"
+msgstr "إدارة تصنيفات المنتجات"
+
+msgid "Manage Categories"
+msgstr "إدارة التصنيفات"
+
+msgid "Manage warehouses"
+msgstr "إدارة المستودعات"
+
+msgid "Manage Warehouses"
+msgstr "إدارة المستودعات"
+
+msgid "Currencies"
+msgstr "العملات"
+
+msgid "Manage currencies and exchange rates"
+msgstr "إدارة العملات وأسعار الصرف"
+
+msgid "Manage Currencies"
+msgstr "إدارة العملات"
+
+msgid "Accounting Settings"
+msgstr "إعدادات المحاسبة"
+
+msgid "Link operations to accounting accounts"
+msgstr "ربط العمليات بالحسابات المحاسبية"
+
+msgid "Invoice Settings"
+msgstr "إعدادات الفواتير"
+
+msgid "Customize invoice and quotation templates"
+msgstr "تخصيص قوالب الفواتير وعروض الأسعار"
+
+msgid "Invoice Templates"
+msgstr "قوالب الفواتير"
+
+msgid "Taxes"
+msgstr "الضرائب"
+
+msgid "Tax configuration"
+msgstr "إعدادات الضرائب"
+
+msgid "Tax Settings"
+msgstr "إعدادات الضرائب"
+
+msgid "Backup"
+msgstr "النسخ الاحتياطي"
+
+msgid "Backup and restore data"
+msgstr "النسخ الاحتياطي واستعادة البيانات"
+
+# Roles and Permissions Management Page
+msgid "Roles Management"
+msgstr "إدارة الأدوار"
+
+msgid "Roles and Permissions Management"
+msgstr "إدارة الأدوار والصلاحيات"
+
+msgid "Add New Role"
+msgstr "إضافة دور جديد"
+
+msgid "Permissions:"
+msgstr "الصلاحيات:"
+
+msgid "Save Permissions"
+msgstr "حفظ الصلاحيات"
+
+msgid "Number of Users:"
+msgstr "عدد المستخدمين:"
+
+msgid "Role Name (English)"
+msgstr "اسم الدور (بالإنجليزية)"
+
+msgid "Example: sales_manager"
+msgstr "مثال: sales_manager"
+
+msgid "Role Name (Arabic)"
+msgstr "اسم الدور (بالعربية)"
+
+msgid "Description"
+msgstr "الوصف"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Edit Role"
+msgstr "تعديل دور"
+
+msgid "Save Changes"
+msgstr "حفظ التغييرات"
+
+msgid "Confirm Deletion"
+msgstr "تأكيد الحذف"
+
+msgid "Are you sure you want to delete the role"
+msgstr "هل أنت متأكد من حذف الدور"
+
+msgid "?"
+msgstr "؟"
+
+msgid "This action cannot be undone!"
+msgstr "هذا الإجراء لا يمكن التراجع عنه!"
+
+msgid "Delete"
+msgstr "حذف"
+
+# Delete Product Modal
+msgid "Are you sure you want to delete this product?"
+msgstr "هل أنت متأكد من حذف هذا المنتج؟"
+
+msgid "Warning:"
+msgstr "تنبيه:"
+
+msgid "If the product is linked to invoices or orders, it will be deactivated instead of permanently deleted."
+msgstr "إذا كان المنتج مرتبطاً بفواتير أو طلبات، سيتم تعطيله بدلاً من حذفه نهائياً."
+
+msgid "Product Name:"
+msgstr "اسم المنتج:"
+
+# Profile Page
+msgid "Profile"
+msgstr "الملف الشخصي"
+
+msgid "Inventory Management System"
+msgstr "نظام إدارة المخزون"
+
+msgid "Edit your personal information"
+msgstr "تعديل معلوماتك الشخصية"
+
+msgid "Edit Information"
+msgstr "تعديل المعلومات"
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Username cannot be changed"
+msgstr "لا يمكن تغيير اسم المستخدم"
+
+msgid "Full Name"
+msgstr "الاسم الكامل"
+
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+msgid "Phone Number"
+msgstr "رقم الهاتف"
+
+msgid "Preferred Language"
+msgstr "اللغة المفضلة"
+
+msgid "Change Password"
+msgstr "تغيير كلمة المرور"
+
+msgid "New Password"
+msgstr "كلمة المرور الجديدة"
+
+msgid "Leave blank if you do not want to change"
+msgstr "اتركه فارغاً إذا لم ترد التغيير"
+
+msgid "Confirm Password"
+msgstr "تأكيد كلمة المرور"
+
+msgid "Re-enter new password"
+msgstr "أعد إدخال كلمة المرور الجديدة"
+
+msgid "Account Information"
+msgstr "معلومات الحساب"
+
+msgid "Role:"
+msgstr "الدور:"
+
+msgid "Not specified"
+msgstr "غير محدد"
+
+msgid "Branch:"
+msgstr "الفرع:"
+
+msgid "Last Login:"
+msgstr "آخر تسجيل دخول:"
+
+msgid "Not recorded"
+msgstr "لم يسجل"
+
+msgid "Created Date:"
+msgstr "تاريخ الإنشاء:"
+
+msgid "Status:"
+msgstr "الحالة:"
+
+msgid "Active"
+msgstr "نشط"
+
+msgid "Inactive"
+msgstr "غير نشط"
+
+msgid "You are a system administrator"
+msgstr "أنت مدير النظام"
+
+msgid "Security"
+msgstr "الأمان"
+
+msgid "Make sure to use a strong password that contains:"
+msgstr "تأكد من استخدام كلمة مرور قوية تحتوي على:"
+
+msgid "At least 8 characters"
+msgstr "8 أحرف على الأقل"
+
+msgid "Uppercase and lowercase letters"
+msgstr "أحرف كبيرة وصغيرة"
+
+msgid "Numbers and symbols"
+msgstr "أرقام ورموز"
+
+# Company Settings Page
+msgid "Company Data"
+msgstr "بيانات الشركة"
+
+msgid "Company Data and Invoice Settings"
+msgstr "بيانات الشركة وإعدادات الفواتير"
+
+msgid "Manage company information, logo, and invoice and quotation data"
+msgstr "إدارة معلومات الشركة، الشعار، وبيانات الفواتير وعروض الأسعار"
+
+msgid "Invoice Templates"
+msgstr "أشكال الفواتير"
+
+msgid "Back to Settings"
+msgstr "العودة للإعدادات"
+
+msgid "Important Note"
+msgstr "ملاحظة مهمة"
+
+msgid "The data you enter here will appear on all invoices and quotations printed from the POS and system"
+msgstr "البيانات التي تدخلها هنا ستظهر في جميع الفواتير وعروض الأسعار المطبوعة من نقاط البيع والنظام"
+
+msgid "Company Information"
+msgstr "معلومات الشركة"
+
+msgid "Basic Information"
+msgstr "المعلومات الأساسية"
+
+msgid "Company Name (Arabic)"
+msgstr "اسم الشركة (عربي)"
+
+msgid "Company Name (English)"
+msgstr "اسم الشركة (إنجليزي)"
+
+msgid "Appears on invoices"
+msgstr "يظهر في الفواتير"
+
+msgid "Example: Advanced Trading Company"
+msgstr "مثال: شركة التجارة المتقدمة"
+
+msgid "Tax Number"
+msgstr "الرقم الضريبي"
+
+msgid "Tax number registered with the Zakat and Tax Authority"
+msgstr "الرقم الضريبي المسجل في هيئة الزكاة والضريبة"
+
+msgid "Commercial Register"
+msgstr "السجل التجاري"
+
+msgid "Phone"
+msgstr "الهاتف"
+
+# Currency Names
+msgid "Saudi Riyal"
+msgstr "ريال سعودي"
+
+msgid "US Dollar"
+msgstr "دولار أمريكي"
+
+msgid "Euro"
+msgstr "يورو"
+
+msgid "UAE Dirham"
+msgstr "درهم إماراتي"
+
+msgid "Kuwaiti Dinar"
+msgstr "دينار كويتي"
+
+msgid "Bahraini Dinar"
+msgstr "دينار بحريني"
+
+msgid "Omani Riyal"
+msgstr "ريال عماني"
+
+msgid "Qatari Riyal"
+msgstr "ريال قطري"
+
+msgid "Egyptian Pound"
+msgstr "جنيه مصري"
+
+# Reports Center
+msgid "Reports Center"
+msgstr "مركز التقارير"
+
+msgid "Select the required report"
+msgstr "اختر التقرير المطلوب"
+
+msgid "Sales Reports"
+msgstr "تقارير المبيعات"
+
+msgid "Detailed Sales Report"
+msgstr "تقرير المبيعات التفصيلي"
+
+msgid "Sales Report by Product"
+msgstr "تقرير المبيعات حسب المنتج"
+
+msgid "Sales Report by Customer"
+msgstr "تقرير المبيعات حسب العميل"
+
+msgid "Purchase Reports"
+msgstr "تقارير المشتريات"
+
+msgid "Detailed Purchase Report"
+msgstr "تقرير المشتريات التفصيلي"
+
+msgid "Purchase Report by Product"
+msgstr "تقرير المشتريات حسب المنتج"
+
+msgid "Purchase Report by Supplier"
+msgstr "تقرير المشتريات حسب المورد"
+
+msgid "Inventory Reports"
+msgstr "تقارير المخزون"
+
+msgid "Current Stock Report"
+msgstr "تقرير المخزون الحالي"
+
+msgid "Low Stock Report"
+msgstr "تقرير المنتجات منخفضة المخزون"
+
+msgid "Stock Movement Report"
+msgstr "تقرير حركة المخزون"
+
+msgid "Inventory Valuation Report"
+msgstr "تقرير تقييم المخزون"
+
+msgid "Financial Reports"
+msgstr "التقارير المالية"
+
+msgid "Profit and Loss Statement"
+msgstr "قائمة الأرباح والخسائر"
+
+msgid "Profit & Loss Statement"
+msgstr "قائمة الأرباح والخسائر"
+
+msgid "Financial Summary"
+msgstr "الملخص المالي"
+
+msgid "Revenue"
+msgstr "الإيرادات"
+
+msgid "Total Sales"
+msgstr "إجمالي المبيعات"
+
+msgid "Total Revenue"
+msgstr "إجمالي الإيرادات"
+
+msgid "Cost of Goods Sold (COGS)"
+msgstr "تكلفة البضاعة المباعة"
+
+msgid "Total Purchases"
+msgstr "إجمالي المشتريات"
+
+msgid "Total COGS"
+msgstr "إجمالي تكلفة البضاعة المباعة"
+
+msgid "Gross Profit"
+msgstr "الربح الإجمالي"
+
+msgid "Revenue - COGS"
+msgstr "الإيرادات - تكلفة البضاعة المباعة"
+
+msgid "Net Profit/Loss"
+msgstr "صافي الربح/الخسارة"
+
+msgid "Profit Margin"
+msgstr "هامش الربح"
+
+msgid "Profitable"
+msgstr "مربح"
+
+msgid "Loss"
+msgstr "خسارة"
+
+msgid "Balance Sheet"
+msgstr "الميزانية العمومية"
+
+msgid "Cash Flow Statement"
+msgstr "قائمة التدفقات النقدية"
+
+msgid "Trial Balance"
+msgstr "ميزان المراجعة"
+
+msgid "Customer Reports"
+msgstr "تقارير العملاء"
+
+msgid "Customer Statement"
+msgstr "كشف حساب عميل"
+
+msgid "Customer Aging Report"
+msgstr "تقرير أعمار الديون - العملاء"
+
+msgid "Top Customers Report"
+msgstr "تقرير أفضل العملاء"
+
+msgid "Supplier Reports"
+msgstr "تقارير الموردين"
+
+msgid "Supplier Statement"
+msgstr "كشف حساب مورد"
+
+msgid "Supplier Aging Report"
+msgstr "تقرير أعمار الديون - الموردين"
+
+msgid "Top Suppliers Report"
+msgstr "تقرير أفضل الموردين"
+
+msgid "Monthly Sales Report"
+msgstr "تقرير المبيعات الشهري"
+
+msgid "Monthly Purchase Report"
+msgstr "تقرير المشتريات الشهري"
+
+msgid "Current Inventory Report"
+msgstr "تقرير المخزون الحالي"
+
+msgid "Low Stock Products Report"
+msgstr "تقرير المنتجات منخفضة المخزون"
+
+msgid "Inventory Valuation"
+msgstr "تقييم المخزون"
+
+msgid "HR Reports"
+msgstr "تقارير الموارد البشرية"
+
+msgid "Employee Report"
+msgstr "تقرير الموظفين"
+
+msgid "Attendance Report"
+msgstr "تقرير الحضور"
+
+msgid "Payroll Report"
+msgstr "تقرير الرواتب"
+
+msgid "Leave Report"
+msgstr "تقرير الإجازات"
+
+# Additional Reports Translations
+msgid "Cash Flow Report"
+msgstr "تقرير التدفقات النقدية"
+
+msgid "Accounts Receivable Report"
+msgstr "تقرير الذمم المدينة"
+
+msgid "Inventory Value Report"
+msgstr "تقرير قيمة المخزون"
+
+msgid "Supplier List"
+msgstr "قائمة الموردين"
+
+msgid "Customer List"
+msgstr "قائمة العملاء"
+
+msgid "Supplier Balances Report"
+msgstr "تقرير أرصدة الموردين"
+
+msgid "Customer Balances Report"
+msgstr "تقرير أرصدة العملاء"
+
+msgid "Supplier History Report"
+msgstr "تقرير سجل المورد"
+
+msgid "Customer History Report"
+msgstr "تقرير سجل العميل"
+
+msgid "Session"
+msgstr "الجلسة"
+
+msgid "Cashier"
+msgstr "الصراف"
+
+msgid "Default Customer"
+msgstr "عميل افتراضي"
+
+msgid "Walk-in Customer"
+msgstr "عميل افتراضي"
+
+msgid "Payment terms not available for customer"
+msgstr "شروط الدفع غير متوفرة للعميل"
+
+# POS Sessions Page Translations
+msgid "Sessions - Point of Sale"
+msgstr "الورديات - نقاط البيع"
+
+msgid "Sessions Log"
+msgstr "سجل الورديات"
+
+msgid "Open Sessions"
+msgstr "الورديات المفتوحة"
+
+msgid "Closed Sessions Today"
+msgstr "الورديات المغلقة اليوم"
+
+msgid "Total Sales Today"
+msgstr "إجمالي المبيعات اليوم"
+
+msgid "Total Orders Today"
+msgstr "عدد الطلبات اليوم"
+
+msgid "Sessions List"
+msgstr "قائمة الورديات"
+
+msgid "Session Number"
+msgstr "رقم الوردية"
+
+msgid "Opening Time"
+msgstr "وقت الفتح"
+
+msgid "Closing Time"
+msgstr "وقت الإغلاق"
+
+msgid "Open"
+msgstr "مفتوحة"
+
+msgid "Closed"
+msgstr "مغلقة"
+
+msgid "Details"
+msgstr "التفاصيل"
+
+msgid "Continue Selling"
+msgstr "متابعة البيع"
+
+msgid "Print Report"
+msgstr "طباعة التقرير"
+
+msgid "No sessions found"
+msgstr "لا توجد ورديات"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Cannot delete session with orders. Please delete orders first."
+msgstr "لا يمكن حذف وردية تحتوي على طلبات. يرجى حذف الطلبات أولاً."
+
+msgid "Cannot delete an open session. Please close it first."
+msgstr "لا يمكن حذف وردية مفتوحة. يرجى إغلاقها أولاً."
+
+msgid "Session %(number)s deleted successfully"
+msgstr "تم حذف الوردية %(number)s بنجاح"
+
+msgid "Error deleting session: %(error)s"
+msgstr "خطأ في حذف الوردية: %(error)s"
+
+msgid "Are you sure you want to delete this session?"
+msgstr "هل أنت متأكد من حذف هذه الوردية؟"
+
+# Product Images
+msgid "Product Image"
+msgstr "صورة المنتج"
+
+msgid "Allowed formats: PNG, JPG, JPEG, GIF (Max: 16MB)"
+msgstr "الصيغ المسموحة: PNG, JPG, JPEG, GIF (الحد الأقصى: 16 ميجابايت)"
+
+msgid "Current image"
+msgstr "الصورة الحالية"
+
+msgid "Leave empty to keep current image"
+msgstr "اتركه فارغاً للاحتفاظ بالصورة الحالية"
+
+msgid "Invalid image file. Allowed formats: PNG, JPG, JPEG, GIF"
+msgstr "ملف صورة غير صالح. الصيغ المسموحة: PNG, JPG, JPEG, GIF"
+
+msgid "Damaged Inventory"
+msgstr "المخزون التالف"
+
+msgid "Record Damaged Item"
+msgstr "تسجيل صنف تالف"
+
+msgid "Total Damaged Value"
+msgstr "إجمالي قيمة التالف"
+
+msgid "Damage Type"
+msgstr "نوع التلف"
+
+msgid "Expired"
+msgstr "منتهي الصلاحية"
+
+msgid "Broken"
+msgstr "مكسور"
+
+msgid "Defective"
+msgstr "معيب"
+
+msgid "Other"
+msgstr "أخرى"
+
+msgid "Reason"
+msgstr "السبب"
+
+msgid "Cost Value"
+msgstr "القيمة التكلفة"
+
+msgid "Recorded By"
+msgstr "سجل بواسطة"
+
+msgid "No damaged inventory records found"
+msgstr "لا توجد سجلات مخزون تالف"
+
+msgid "Record Damaged Inventory"
+msgstr "تسجيل مخزون تالف"
+
+msgid "Select Type"
+msgstr "اختر النوع"
+
+msgid "Enter reason for damage"
+msgstr "أدخل سبب التلف"
+
+msgid "Additional notes (optional)"
+msgstr "ملاحظات إضافية (اختياري)"
+
+msgid "Estimated Cost Value"
+msgstr "القيمة التكلفة المقدرة"
+
+msgid "Information"
+msgstr "معلومات"
+
+msgid "Recording damaged inventory will:"
+msgstr "تسجيل المخزون التالف سيؤدي إلى:"
+
+msgid "Reduce available stock quantity"
+msgstr "تقليل كمية المخزون المتاحة"
+
+msgid "Track damaged items separately"
+msgstr "تتبع الأصناف التالفة بشكل منفصل"
+
+msgid "Record the cost value of loss"
+msgstr "تسجيل قيمة الخسارة التكلفة"
+
+msgid "Create a stock movement record"
+msgstr "إنشاء سجل حركة مخزون"
+
+msgid "Available in stock"
+msgstr "متوفر في المخزون"
+
+msgid "No stock available in this warehouse"
+msgstr "لا يوجد مخزون متاح في هذا المستودع"
+
+msgid "Damaged inventory recorded successfully"
+msgstr "تم تسجيل المخزون التالف بنجاح"
+
+msgid "Damaged inventory record deleted successfully"
+msgstr "تم حذف سجل المخزون التالف بنجاح"
+
+msgid "Are you sure you want to delete this record?"
+msgstr "هل أنت متأكد من حذف هذا السجل؟"
+
+msgid "Damaged inventory"
+msgstr "مخزون تالف"
+
+# License Management Page
+msgid "License Management"
+msgstr "إدارة التراخيص"
+
+msgid "Advanced License Management System"
+msgstr "نظام إدارة التراخيص المتقدم"
+
+msgid "New License"
+msgstr "ترخيص جديد"
+
+msgid "Total Licenses"
+msgstr "إجمالي التراخيص"
+
+msgid "Active Licenses"
+msgstr "التراخيص النشطة"
+
+msgid "Suspended Licenses"
+msgstr "التراخيص الموقوفة"
+
+msgid "Expiring Soon"
+msgstr "تنتهي قريباً"
+
+msgid "All Licenses"
+msgstr "جميع التراخيص"
+
+msgid "License Key"
+msgstr "مفتاح الترخيص"
+
+msgid "Active"
+msgstr "نشط"
+
+msgid "Inactive"
+msgstr "غير نشط"
+
+msgid "Suspended"
+msgstr "موقوف"
+
+msgid "Click to select"
+msgstr "اضغط للتحديد"
+
+msgid "Copy"
+msgstr "نسخ"
+
+msgid "Copy key"
+msgstr "نسخ المفتاح"
+
+msgid "Auto Fill"
+msgstr "ملء تلقائي"
+
+msgid "Auto fill"
+msgstr "ملء تلقائي"
+
+msgid "Type"
+msgstr "النوع"
+
+msgid "Expires"
+msgstr "الانتهاء"
+
+msgid "days"
+msgstr "يوم"
+
+msgid "Lifetime"
+msgstr "دائم"
+
+msgid "Users"
+msgstr "المستخدمين"
+
+msgid "Admin"
+msgstr "المسؤول"
+
+msgid "Details"
+msgstr "التفاصيل"
+
+msgid "Activate"
+msgstr "تفعيل"
+
+msgid "Suspend"
+msgstr "توقيف"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Do you want to activate this license?"
+msgstr "هل تريد تفعيل هذا الترخيص؟"
+
+msgid "Do you want to suspend this license?"
+msgstr "هل تريد توقيف هذا الترخيص؟"
+
+msgid "Do you want to delete this license? This cannot be undone!"
+msgstr "هل تريد حذف هذا الترخيص؟ لن يمكن التراجع!"
+
+msgid "No licenses found"
+msgstr "لا توجد تراخيص"
+
+msgid "Start by creating a new license"
+msgstr "ابدأ بإنشاء ترخيص جديد"
+
+msgid "Create New License"
+msgstr "إنشاء ترخيص جديد"
+
+msgid "License key copied successfully!"
+msgstr "تم نسخ مفتاح الترخيص بنجاح!"
+
+msgid "Copy failed! Try again"
+msgstr "فشل النسخ! حاول مرة أخرى"
+
+msgid "Key saved! It will be auto-filled in the activation page"
+msgstr "تم حفظ المفتاح! سيتم ملؤه تلقائياً في صفحة التفعيل"
+
+msgid "Do you want to go to the activation page now?"
+msgstr "هل تريد الانتقال إلى صفحة التفعيل الآن؟"
+
+# Create License Form
+msgid "Create New License"
+msgstr "إنشاء ترخيص جديد"
+
+msgid "Fill in the details to create a new license"
+msgstr "املأ التفاصيل لإنشاء ترخيص جديد"
+
+msgid "Client Information"
+msgstr "معلومات العميل"
+
+msgid "Client Name"
+msgstr "اسم العميل"
+
+msgid "Company Name"
+msgstr "اسم الشركة"
+
+msgid "License Details"
+msgstr "تفاصيل الترخيص"
+
+msgid "License Type"
+msgstr "نوع الترخيص"
+
+msgid "Trial"
+msgstr "تجريبي"
+
+msgid "Monthly"
+msgstr "شهري"
+
+msgid "Yearly"
+msgstr "سنوي"
+
+msgid "Lifetime"
+msgstr "مدى الحياة"
+
+msgid "Duration (days)"
+msgstr "المدة (بالأيام)"
+
+msgid "Leave empty for lifetime license"
+msgstr "اتركه فارغاً للترخيص مدى الحياة"
+
+msgid "Max Users"
+msgstr "الحد الأقصى للمستخدمين"
+
+msgid "Max Branches"
+msgstr "الحد الأقصى للفروع"
+
+msgid "Admin Credentials"
+msgstr "بيانات المسؤول"
+
+msgid "Admin Username"
+msgstr "اسم مستخدم المسؤول"
+
+msgid "Admin Password"
+msgstr "كلمة مرور المسؤول"
+
+msgid "Default: admin"
+msgstr "الافتراضي: admin"
+
+msgid "Default: admin123"
+msgstr "الافتراضي: admin123"
+
+msgid "Additional Notes"
+msgstr "ملاحظات إضافية"
+
+msgid "Enter any additional notes about this license..."
+msgstr "أدخل أي ملاحظات إضافية عن هذا الترخيص..."
+
+msgid "Create License"
+msgstr "إنشاء ترخيص"
+
+msgid "Note"
+msgstr "ملاحظة"
+
+msgid "A unique license key will be generated automatically after creation."
+msgstr "سيتم إنشاء مفتاح ترخيص فريد تلقائياً بعد الإنشاء."
+
+msgid "License created successfully! License Key: {}"
+msgstr "تم إنشاء الترخيص بنجاح! مفتاح الترخيص: {}"
+
+msgid "Client name is required"
+msgstr "اسم العميل مطلوب"
+
+msgid "Error creating license: {}"
+msgstr "خطأ في إنشاء الترخيص: {}"
+
+msgid "License created successfully! License Key: {} - Tenant database created"
+msgstr "تم إنشاء الترخيص بنجاح! مفتاح الترخيص: {} - تم إنشاء قاعدة بيانات منفصلة"
+
+msgid "License created successfully! License Key: {} - Warning: Tenant database creation failed"
+msgstr "تم إنشاء الترخيص بنجاح! مفتاح الترخيص: {} - تحذير: فشل إنشاء قاعدة البيانات المنفصلة"
 

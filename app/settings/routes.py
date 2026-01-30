@@ -12,14 +12,12 @@ from werkzeug.utils import secure_filename
 
 @bp.route('/')
 @login_required
-@permission_required('settings.view')
 def index():
     """Settings dashboard"""
     return render_template('settings/index.html')
 
 @bp.route('/company')
 @login_required
-@permission_required('settings.company')
 def company():
     """Company settings"""
     company = Company.query.first()
@@ -27,7 +25,6 @@ def company():
 
 @bp.route('/company/update', methods=['POST'])
 @login_required
-@permission_required('settings.company')
 def update_company():
     """Update company information"""
     try:
@@ -271,6 +268,40 @@ def add_user():
         )
         user.set_password(password)
 
+        # Automatically assign current tenant's license
+        from flask import session as flask_session
+        tenant_license_key = flask_session.get('tenant_license_key')
+
+        if tenant_license_key:
+            # Get license ID from master database
+            from app.models_license import License
+            from app.tenant_manager import TenantManager
+
+            # Save current database URI
+            current_db_uri = current_app.config['SQLALCHEMY_DATABASE_URI']
+
+            try:
+                # Switch to master database temporarily
+                master_db_uri = f'sqlite:///{TenantManager.get_master_db_path()}'
+                current_app.config['SQLALCHEMY_DATABASE_URI'] = master_db_uri
+                db.engine.dispose()
+
+                # Get license
+                license = License.query.filter_by(license_key=tenant_license_key).first()
+
+                if license:
+                    license_id = license.id
+                else:
+                    license_id = None
+
+            finally:
+                # Switch back to tenant database
+                current_app.config['SQLALCHEMY_DATABASE_URI'] = current_db_uri
+                db.engine.dispose()
+
+            if license_id:
+                user.license_id = license_id
+
         db.session.add(user)
         db.session.commit()
 
@@ -330,6 +361,41 @@ def delete_user(id):
         flash(f'حدث خطأ: {str(e)}', 'danger')
 
     return redirect(url_for('settings.users'))
+
+@bp.route('/users/<int:id>/permissions')
+@login_required
+@permission_required('settings.users.view')
+def get_user_permissions(id):
+    """Get user permissions as JSON"""
+    from flask import jsonify
+
+    user = User.query.get_or_404(id)
+
+    if user.is_admin:
+        return jsonify({
+            'is_admin': True,
+            'permissions': []
+        })
+
+    if not user.role:
+        return jsonify({
+            'is_admin': False,
+            'permissions': []
+        })
+
+    permissions_list = []
+    for perm in user.role.permissions:
+        permissions_list.append({
+            'id': perm.id,
+            'name': perm.name,
+            'name_ar': perm.name_ar,
+            'module': perm.module or 'general'
+        })
+
+    return jsonify({
+        'is_admin': False,
+        'permissions': permissions_list
+    })
 
 @bp.route('/roles')
 @login_required
@@ -514,41 +580,51 @@ def language_settings():
     available_languages = current_app.config.get('LANGUAGES', ['ar', 'en'])
     return render_template('settings/language.html', available_languages=available_languages)
 
-@bp.route('/language/change', methods=['POST'])
+@bp.route('/language/change', methods=['POST', 'GET'])
 @login_required
 def change_language():
     """Change application language"""
     try:
-        language = request.form.get('language', 'ar')
+        # Get language from POST or GET
+        language = request.form.get('language') or request.args.get('lang', 'ar')
 
         # Validate language
-        from flask import current_app
-        available_languages = current_app.config.get('LANGUAGES', ['ar', 'en'])
+        from flask import current_app, session
+        available_languages = current_app.config.get('LANGUAGES', {})
 
         if language not in available_languages:
             flash(_('Selected language is not supported'), 'danger')
-            return redirect(url_for('settings.language_settings'))
+            return redirect(request.referrer or url_for('main.index'))
 
         # Update user language
         current_user.language = language
 
         # Update session
-        from flask import session
         session['language'] = language
+        session.modified = True
 
         db.session.commit()
 
-        flash(_('Language changed successfully'), 'success')
+        # Success message based on language
+        if language == 'ar':
+            flash('تم تغيير اللغة بنجاح', 'success')
+        else:
+            flash('Language changed successfully', 'success')
 
     except Exception as e:
         db.session.rollback()
         flash(_('An error occurred: %(error)s', error=str(e)), 'danger')
 
-    return redirect(url_for('settings.language_settings'))
+    # Redirect back to previous page or home with cache-busting parameter
+    import time
+    redirect_url = request.referrer or url_for('main.index')
+    # Add timestamp to force reload
+    separator = '&' if '?' in redirect_url else '?'
+    redirect_url = f"{redirect_url}{separator}_t={int(time.time())}"
+    return redirect(redirect_url)
 
 @bp.route('/accounting-settings')
 @login_required
-@permission_required('accounting.settings')
 def accounting_settings():
     """Accounting settings page"""
     settings = AccountingSettings.query.first()
@@ -568,7 +644,6 @@ def accounting_settings():
 
 @bp.route('/accounting-settings/save', methods=['POST'])
 @login_required
-@permission_required('accounting.settings')
 def save_accounting_settings():
     """Save accounting settings"""
     try:
@@ -614,4 +689,39 @@ def save_accounting_settings():
         flash(f'حدث خطأ: {str(e)}', 'danger')
 
     return redirect(url_for('settings.accounting_settings'))
+
+@bp.route('/tax-settings')
+@login_required
+def tax_settings():
+    """Tax settings page"""
+    company = Company.query.first()
+    return render_template('settings/tax_settings.html', company=company)
+
+@bp.route('/tax-settings/save', methods=['POST'])
+@login_required
+def save_tax_settings():
+    """Save tax settings"""
+    try:
+        company = Company.query.first()
+
+        if not company:
+            flash('لم يتم العثور على بيانات الشركة', 'danger')
+            return redirect(url_for('settings.tax_settings'))
+
+        # Update tax settings
+        tax_rate = request.form.get('default_tax_rate')
+        tax_number = request.form.get('tax_number', '')
+
+        if tax_rate:
+            company.tax_rate = float(tax_rate)
+        company.tax_number = tax_number
+
+        db.session.commit()
+        flash('تم حفظ إعدادات الضرائب بنجاح', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'حدث خطأ: {str(e)}', 'danger')
+
+    return redirect(url_for('settings.tax_settings'))
 

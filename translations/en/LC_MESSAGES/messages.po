@@ -1,0 +1,3471 @@
+# English translations for DED ERP System.
+# Copyright (C) 2026 DED
+# This file is distributed under the same license as the DED project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DED 1.0\n"
+"Report-Msgid-Bugs-To: support@ded.com\n"
+"POT-Creation-Date: 2026-01-21 18:00+0300\n"
+"PO-Revision-Date: 2026-01-21 18:00+0300\n"
+"Last-Translator: DED Team <support@ded.com>\n"
+"Language: en\n"
+"Language-Team: English\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+# Main Navigation
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Inventory"
+msgstr "Inventory"
+
+msgid "Products"
+msgstr "Products"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Units"
+msgstr "Units"
+
+msgid "Warehouses"
+msgstr "Warehouses"
+
+msgid "Stock"
+msgstr "Stock"
+
+msgid "Stock Transfer"
+msgstr "Stock Transfer"
+
+msgid "Sales"
+msgstr "Sales"
+
+msgid "Sales Invoices"
+msgstr "Sales Invoices"
+
+msgid "New Invoice"
+msgstr "New Invoice"
+
+msgid "Customers"
+msgstr "Customers"
+
+msgid "New Customer"
+msgstr "New Customer"
+
+msgid "Purchases"
+msgstr "Purchases"
+
+msgid "Purchase Invoices"
+msgstr "Purchase Invoices"
+
+msgid "Suppliers"
+msgstr "Suppliers"
+
+msgid "New Supplier"
+msgstr "New Supplier"
+
+msgid "Point of Sale"
+msgstr "Point of Sale"
+
+msgid "POS"
+msgstr "POS"
+
+msgid "POS Screen"
+msgstr "POS Screen"
+
+msgid "Sessions"
+msgstr "Sessions"
+
+msgid "Open New Session"
+msgstr "Open New Session"
+
+msgid "Accounting"
+msgstr "Accounting"
+
+msgid "Chart of Accounts"
+msgstr "Chart of Accounts"
+
+msgid "Journal Entries"
+msgstr "Journal Entries"
+
+msgid "CRM"
+msgstr "CRM"
+
+msgid "HR"
+msgstr "HR"
+
+msgid "Employees"
+msgstr "Employees"
+
+msgid "Attendance"
+msgstr "Attendance"
+
+msgid "Payroll"
+msgstr "Payroll"
+
+msgid "Reports"
+msgstr "Reports"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Logout"
+msgstr "Logout"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Company Settings"
+msgstr "Company Settings"
+
+msgid "User Management"
+msgstr "User Management"
+
+msgid "Roles & Permissions"
+msgstr "Roles & Permissions"
+
+msgid "System Settings"
+msgstr "System Settings"
+
+msgid "Backup & Restore"
+msgstr "Backup & Restore"
+
+msgid "About"
+msgstr "About"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Documentation"
+msgstr "Documentation"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Contact Us"
+msgstr "Contact Us"
+
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
+
+msgid "Terms of Service"
+msgstr "Terms of Service"
+
+# Common Actions
+msgid "Add"
+msgstr "Add"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Print"
+msgstr "Print"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Upload"
+msgstr "Upload"
+
+msgid "View"
+msgstr "View"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Inactive"
+msgstr "Inactive"
+
+msgid "Pending"
+msgstr "Pending"
+
+msgid "Approved"
+msgstr "Approved"
+
+msgid "Rejected"
+msgstr "Rejected"
+
+msgid "Completed"
+msgstr "Completed"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "Draft"
+msgstr "Draft"
+
+msgid "Published"
+msgstr "Published"
+
+msgid "Archived"
+msgstr "Archived"
+
+# Form Fields
+msgid "Name"
+msgstr "Name"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Code"
+msgstr "Code"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Cost"
+msgstr "Cost"
+
+msgid "Quantity"
+msgstr "Quantity"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Subtotal"
+msgstr "Subtotal"
+
+msgid "Tax"
+msgstr "Tax"
+
+msgid "Discount"
+msgstr "Discount"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Time"
+msgstr "Time"
+
+msgid "From"
+msgstr "From"
+
+msgid "To"
+msgstr "To"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Remarks"
+msgstr "Remarks"
+
+msgid "Reference"
+msgstr "Reference"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Unit"
+msgstr "Unit"
+
+msgid "Warehouse"
+msgstr "Warehouse"
+
+msgid "Branch"
+msgstr "Branch"
+
+msgid "Department"
+msgstr "Department"
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Mobile"
+msgstr "Mobile"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "City"
+msgstr "City"
+
+msgid "Country"
+msgstr "Country"
+
+msgid "Postal Code"
+msgstr "Postal Code"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Tax Number"
+msgstr "Tax Number"
+
+msgid "Commercial Register"
+msgstr "Commercial Register"
+
+msgid "Currency"
+msgstr "Currency"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Timezone"
+msgstr "Timezone"
+
+msgid "Date Format"
+msgstr "Date Format"
+
+msgid "Time Format"
+msgstr "Time Format"
+
+# Messages
+msgid "Success"
+msgstr "Success"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Warning"
+msgstr "Warning"
+
+msgid "Info"
+msgstr "Info"
+
+msgid "Confirmation"
+msgstr "Confirmation"
+
+msgid "Are you sure?"
+msgstr "Are you sure?"
+
+msgid "This action cannot be undone"
+msgstr "This action cannot be undone"
+
+msgid "Please confirm"
+msgstr "Please confirm"
+
+msgid "Operation completed successfully"
+msgstr "Operation completed successfully"
+
+msgid "An error occurred"
+msgstr "An error occurred"
+
+msgid "Please try again"
+msgstr "Please try again"
+
+msgid "No data available"
+msgstr "No data available"
+
+msgid "Loading..."
+msgstr "Loading..."
+
+msgid "Please wait..."
+msgstr "Please wait..."
+
+msgid "Processing..."
+msgstr "Processing..."
+
+msgid "Saving..."
+msgstr "Saving..."
+
+msgid "Deleting..."
+msgstr "Deleting..."
+
+msgid "Uploading..."
+msgstr "Uploading..."
+
+msgid "Downloading..."
+msgstr "Downloading..."
+
+# Reports
+msgid "Sales Report"
+msgstr "Sales Report"
+
+msgid "Purchase Report"
+msgstr "Purchase Report"
+
+msgid "Inventory Report"
+msgstr "Inventory Report"
+
+msgid "Financial Report"
+msgstr "Financial Report"
+
+msgid "Profit & Loss"
+msgstr "Profit & Loss"
+
+msgid "Balance Sheet"
+msgstr "Balance Sheet"
+
+msgid "Cash Flow"
+msgstr "Cash Flow"
+
+msgid "Trial Balance"
+msgstr "Trial Balance"
+
+msgid "General Ledger"
+msgstr "General Ledger"
+
+msgid "Accounts Receivable"
+msgstr "Accounts Receivable"
+
+msgid "Accounts Payable"
+msgstr "Accounts Payable"
+
+msgid "Inventory Valuation"
+msgstr "Inventory Valuation"
+
+msgid "Stock Movement"
+msgstr "Stock Movement"
+
+msgid "Sales by Customer"
+msgstr "Sales by Customer"
+
+msgid "Sales by Product"
+msgstr "Sales by Product"
+
+msgid "Purchase by Supplier"
+msgstr "Purchase by Supplier"
+
+msgid "Top Selling Products"
+msgstr "Top Selling Products"
+
+msgid "Low Stock Items"
+msgstr "Low Stock Items"
+
+msgid "Expired Items"
+msgstr "Expired Items"
+
+msgid "Daily Sales"
+msgstr "Daily Sales"
+
+msgid "Monthly Sales"
+msgstr "Monthly Sales"
+
+msgid "Yearly Sales"
+msgstr "Yearly Sales"
+
+msgid "Custom Report"
+msgstr "Custom Report"
+
+msgid "Generate Report"
+msgstr "Generate Report"
+
+msgid "Export to PDF"
+msgstr "Export to PDF"
+
+msgid "Export to Excel"
+msgstr "Export to Excel"
+
+msgid "Export to CSV"
+msgstr "Export to CSV"
+
+msgid "Print Report"
+msgstr "Print Report"
+
+msgid "Report Period"
+msgstr "Report Period"
+
+msgid "Start Date"
+msgstr "Start Date"
+
+msgid "End Date"
+msgstr "End Date"
+
+msgid "Today"
+msgstr "Today"
+
+msgid "Yesterday"
+msgstr "Yesterday"
+
+msgid "This Week"
+msgstr "This Week"
+
+msgid "Last Week"
+msgstr "Last Week"
+
+msgid "This Month"
+msgstr "This Month"
+
+msgid "Last Month"
+msgstr "Last Month"
+
+msgid "This Year"
+msgstr "This Year"
+
+msgid "Last Year"
+msgstr "Last Year"
+
+msgid "Custom Period"
+msgstr "Custom Period"
+
+msgid "All Time"
+msgstr "All Time"
+
+# Inventory Specific
+msgid "Product Name"
+msgstr "Product Name"
+
+msgid "Product Code"
+msgstr "Product Code"
+
+msgid "Barcode"
+msgstr "Barcode"
+
+msgid "SKU"
+msgstr "SKU"
+
+msgid "Cost Price"
+msgstr "Cost Price"
+
+msgid "Selling Price"
+msgstr "Selling Price"
+
+msgid "Stock Quantity"
+msgstr "Stock Quantity"
+
+msgid "Minimum Stock"
+msgstr "Minimum Stock"
+
+msgid "Maximum Stock"
+msgstr "Maximum Stock"
+
+msgid "Reorder Level"
+msgstr "Reorder Level"
+
+msgid "Stock Value"
+msgstr "Stock Value"
+
+msgid "Total Value"
+msgstr "Total Value"
+
+msgid "Total Inventory Value"
+msgstr "Total Inventory Value"
+
+msgid "Average Value"
+msgstr "Average Value"
+
+msgid "In Stock"
+msgstr "In Stock"
+
+msgid "Out of Stock"
+msgstr "Out of Stock"
+
+msgid "Low Stock"
+msgstr "Low Stock"
+
+msgid "Overstocked"
+msgstr "Overstocked"
+
+msgid "Stock Alert"
+msgstr "Stock Alert"
+
+msgid "Stock Level"
+msgstr "Stock Level"
+
+msgid "Available Stock"
+msgstr "Available Stock"
+
+msgid "Reserved Stock"
+msgstr "Reserved Stock"
+
+msgid "Damaged Stock"
+msgstr "Damaged Stock"
+
+msgid "Expired Stock"
+msgstr "Expired Stock"
+
+msgid "Expiry Date"
+msgstr "Expiry Date"
+
+msgid "Manufacturing Date"
+msgstr "Manufacturing Date"
+
+msgid "Batch Number"
+msgstr "Batch Number"
+
+msgid "Serial Number"
+msgstr "Serial Number"
+
+msgid "Location"
+msgstr "Location"
+
+msgid "Shelf"
+msgstr "Shelf"
+
+msgid "Rack"
+msgstr "Rack"
+
+msgid "Bin"
+msgstr "Bin"
+
+msgid "Zone"
+msgstr "Zone"
+
+msgid "Aisle"
+msgstr "Aisle"
+
+msgid "Stock In"
+msgstr "Stock In"
+
+msgid "Stock Out"
+msgstr "Stock Out"
+
+msgid "Stock Adjustment"
+msgstr "Stock Adjustment"
+
+msgid "Stock Count"
+msgstr "Stock Count"
+
+msgid "Physical Count"
+msgstr "Physical Count"
+
+msgid "Cycle Count"
+msgstr "Cycle Count"
+
+msgid "Stock Take"
+msgstr "Stock Take"
+
+msgid "Variance"
+msgstr "Variance"
+
+msgid "Adjustment Reason"
+msgstr "Adjustment Reason"
+
+msgid "Transfer From"
+msgstr "Transfer From"
+
+msgid "Transfer To"
+msgstr "Transfer To"
+
+msgid "Transfer Date"
+msgstr "Transfer Date"
+
+msgid "Transfer Status"
+msgstr "Transfer Status"
+
+msgid "Transfer Note"
+msgstr "Transfer Note"
+
+msgid "Received"
+msgstr "Received"
+
+msgid "Shipped"
+msgstr "Shipped"
+
+msgid "In Transit"
+msgstr "In Transit"
+
+msgid "Delivered"
+msgstr "Delivered"
+
+msgid "Returned"
+msgstr "Returned"
+
+msgid "Damaged"
+msgstr "Damaged"
+
+msgid "Lost"
+msgstr "Lost"
+
+msgid "Found"
+msgstr "Found"
+
+msgid "Disposed"
+msgstr "Disposed"
+
+msgid "Sold"
+msgstr "Sold"
+
+msgid "Purchased"
+msgstr "Purchased"
+
+msgid "Manufactured"
+msgstr "Manufactured"
+
+msgid "Assembled"
+msgstr "Assembled"
+
+msgid "Disassembled"
+msgstr "Disassembled"
+
+msgid "Packed"
+msgstr "Packed"
+
+msgid "Unpacked"
+msgstr "Unpacked"
+
+# Sales & Purchases
+msgid "Invoice Number"
+msgstr "Invoice Number"
+
+msgid "Invoice Date"
+msgstr "Invoice Date"
+
+msgid "Due Date"
+msgstr "Due Date"
+
+msgid "Payment Terms"
+msgstr "Payment Terms"
+
+msgid "Payment Method"
+msgstr "Payment Method"
+
+msgid "Payment Status"
+msgstr "Payment Status"
+
+msgid "Paid"
+msgstr "Paid"
+
+msgid "Unpaid"
+msgstr "Unpaid"
+
+msgid "Partially Paid"
+msgstr "Partially Paid"
+
+msgid "Overdue"
+msgstr "Overdue"
+
+msgid "Cash"
+msgstr "Cash"
+
+msgid "Credit Card"
+msgstr "Credit Card"
+
+msgid "Debit Card"
+msgstr "Debit Card"
+
+msgid "Bank Transfer"
+msgstr "Bank Transfer"
+
+msgid "Cheque"
+msgstr "Cheque"
+
+msgid "Online Payment"
+msgstr "Online Payment"
+
+msgid "Customer Name"
+msgstr "Customer Name"
+
+msgid "Customer Code"
+msgstr "Customer Code"
+
+msgid "Customer Type"
+msgstr "Customer Type"
+
+msgid "Credit Limit"
+msgstr "Credit Limit"
+
+msgid "Balance"
+msgstr "Balance"
+
+msgid "Outstanding Balance"
+msgstr "Outstanding Balance"
+
+msgid "Supplier Name"
+msgstr "Supplier Name"
+
+msgid "Supplier Code"
+msgstr "Supplier Code"
+
+msgid "Supplier Type"
+msgstr "Supplier Type"
+
+msgid "Contact Person"
+msgstr "Contact Person"
+
+msgid "Contact Number"
+msgstr "Contact Number"
+
+msgid "Fax"
+msgstr "Fax"
+
+msgid "VAT Number"
+msgstr "VAT Number"
+
+msgid "Tax Rate"
+msgstr "Tax Rate"
+
+msgid "Tax Amount"
+msgstr "Tax Amount"
+
+msgid "Tax Inclusive"
+msgstr "Tax Inclusive"
+
+msgid "Tax Exclusive"
+msgstr "Tax Exclusive"
+
+msgid "Before Tax"
+msgstr "Before Tax"
+
+msgid "After Tax"
+msgstr "After Tax"
+
+msgid "Grand Total"
+msgstr "Grand Total"
+
+msgid "Net Total"
+msgstr "Net Total"
+
+msgid "Gross Total"
+msgstr "Gross Total"
+
+msgid "Discount Amount"
+msgstr "Discount Amount"
+
+msgid "Discount Percentage"
+msgstr "Discount Percentage"
+
+msgid "Shipping Cost"
+msgstr "Shipping Cost"
+
+msgid "Handling Fee"
+msgstr "Handling Fee"
+
+msgid "Other Charges"
+msgstr "Other Charges"
+
+msgid "Round Off"
+msgstr "Round Off"
+
+msgid "Amount Paid"
+msgstr "Amount Paid"
+
+msgid "Amount Due"
+msgstr "Amount Due"
+
+msgid "Change"
+msgstr "Change"
+
+msgid "Receipt"
+msgstr "Receipt"
+
+msgid "Receipt Number"
+msgstr "Receipt Number"
+
+msgid "Receipt Date"
+msgstr "Receipt Date"
+
+msgid "Payment Receipt"
+msgstr "Payment Receipt"
+
+msgid "Sales Receipt"
+msgstr "Sales Receipt"
+
+msgid "Purchase Receipt"
+msgstr "Purchase Receipt"
+
+msgid "Return"
+msgstr "Return"
+
+msgid "Sales Return"
+msgstr "Sales Return"
+
+msgid "Purchase Return"
+msgstr "Purchase Return"
+
+msgid "Return Reason"
+msgstr "Return Reason"
+
+msgid "Return Date"
+msgstr "Return Date"
+
+msgid "Return Amount"
+msgstr "Return Amount"
+
+msgid "Refund"
+msgstr "Refund"
+
+msgid "Refund Amount"
+msgstr "Refund Amount"
+
+msgid "Refund Date"
+msgstr "Refund Date"
+
+msgid "Refund Method"
+msgstr "Refund Method"
+
+# Accounting
+msgid "Account Name"
+msgstr "Account Name"
+
+msgid "Account Code"
+msgstr "Account Code"
+
+msgid "Account Type"
+msgstr "Account Type"
+
+msgid "Parent Account"
+msgstr "Parent Account"
+
+msgid "Debit"
+msgstr "Debit"
+
+msgid "Credit"
+msgstr "Credit"
+
+msgid "Opening Balance"
+msgstr "Opening Balance"
+
+msgid "Closing Balance"
+msgstr "Closing Balance"
+
+msgid "Current Balance"
+msgstr "Current Balance"
+
+msgid "Journal Entry"
+msgstr "Journal Entry"
+
+msgid "Entry Number"
+msgstr "Entry Number"
+
+msgid "Entry Date"
+msgstr "Entry Date"
+
+msgid "Entry Type"
+msgstr "Entry Type"
+
+msgid "Narration"
+msgstr "Narration"
+
+msgid "Posted"
+msgstr "Posted"
+
+msgid "Unposted"
+msgstr "Unposted"
+
+msgid "Reversed"
+msgstr "Reversed"
+
+msgid "Void"
+msgstr "Void"
+
+msgid "Bank Account"
+msgstr "Bank Account"
+
+msgid "Bank Name"
+msgstr "Bank Name"
+
+msgid "Account Number"
+msgstr "Account Number"
+
+msgid "IBAN"
+msgstr "IBAN"
+
+msgid "SWIFT Code"
+msgstr "SWIFT Code"
+
+msgid "Branch Name"
+msgstr "Branch Name"
+
+msgid "Reconciliation"
+msgstr "Reconciliation"
+
+msgid "Reconciled"
+msgstr "Reconciled"
+
+msgid "Unreconciled"
+msgstr "Unreconciled"
+
+msgid "Statement Date"
+msgstr "Statement Date"
+
+msgid "Statement Balance"
+msgstr "Statement Balance"
+
+msgid "Book Balance"
+msgstr "Book Balance"
+
+msgid "Difference"
+msgstr "Difference"
+
+# HR
+msgid "Employee Name"
+msgstr "Employee Name"
+
+msgid "Employee Code"
+msgstr "Employee Code"
+
+msgid "Employee ID"
+msgstr "Employee ID"
+
+msgid "Join Date"
+msgstr "Join Date"
+
+msgid "Resignation Date"
+msgstr "Resignation Date"
+
+msgid "Employment Type"
+msgstr "Employment Type"
+
+msgid "Full Time"
+msgstr "Full Time"
+
+msgid "Part Time"
+msgstr "Part Time"
+
+msgid "Contract"
+msgstr "Contract"
+
+msgid "Temporary"
+msgstr "Temporary"
+
+msgid "Intern"
+msgstr "Intern"
+
+msgid "Salary"
+msgstr "Salary"
+
+msgid "Basic Salary"
+msgstr "Basic Salary"
+
+msgid "Gross Salary"
+msgstr "Gross Salary"
+
+msgid "Net Salary"
+msgstr "Net Salary"
+
+msgid "Allowance"
+msgstr "Allowance"
+
+msgid "Deduction"
+msgstr "Deduction"
+
+msgid "Bonus"
+msgstr "Bonus"
+
+msgid "Commission"
+msgstr "Commission"
+
+msgid "Overtime"
+msgstr "Overtime"
+
+msgid "Leave"
+msgstr "Leave"
+
+msgid "Leave Type"
+msgstr "Leave Type"
+
+msgid "Leave Balance"
+msgstr "Leave Balance"
+
+msgid "Leave Request"
+msgstr "Leave Request"
+
+msgid "Annual Leave"
+msgstr "Annual Leave"
+
+msgid "Sick Leave"
+msgstr "Sick Leave"
+
+msgid "Casual Leave"
+msgstr "Casual Leave"
+
+msgid "Maternity Leave"
+msgstr "Maternity Leave"
+
+msgid "Paternity Leave"
+msgstr "Paternity Leave"
+
+msgid "Unpaid Leave"
+msgstr "Unpaid Leave"
+
+msgid "Check In"
+msgstr "Check In"
+
+msgid "Check Out"
+msgstr "Check Out"
+
+msgid "Present"
+msgstr "Present"
+
+msgid "Absent"
+msgstr "Absent"
+
+msgid "Late"
+msgstr "Late"
+
+msgid "Half Day"
+msgstr "Half Day"
+
+msgid "On Leave"
+msgstr "On Leave"
+
+msgid "Holiday"
+msgstr "Holiday"
+
+msgid "Weekend"
+msgstr "Weekend"
+
+msgid "Working Hours"
+msgstr "Working Hours"
+
+msgid "Overtime Hours"
+msgstr "Overtime Hours"
+
+msgid "Total Hours"
+msgstr "Total Hours"
+
+# Settings & Security
+msgid "User"
+msgstr "User"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "New Password"
+msgstr "New Password"
+
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+msgid "Old Password"
+msgstr "Old Password"
+
+msgid "Change Password"
+msgstr "Change Password"
+
+msgid "Reset Password"
+msgstr "Reset Password"
+
+msgid "Forgot Password"
+msgstr "Forgot Password"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Sign In"
+msgstr "Sign In"
+
+msgid "Sign Out"
+msgstr "Sign Out"
+
+msgid "Sign Up"
+msgstr "Sign Up"
+
+msgid "Register"
+msgstr "Register"
+
+msgid "Remember Me"
+msgstr "Remember Me"
+
+msgid "Role"
+msgstr "Role"
+
+msgid "Permission"
+msgstr "Permission"
+
+msgid "Access Level"
+msgstr "Access Level"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Manager"
+msgstr "Manager"
+
+msgid "User"
+msgstr "User"
+
+msgid "Guest"
+msgstr "Guest"
+
+msgid "Full Access"
+msgstr "Full Access"
+
+msgid "Read Only"
+msgstr "Read Only"
+
+msgid "No Access"
+msgstr "No Access"
+
+msgid "Create"
+msgstr "Create"
+
+msgid "Read"
+msgstr "Read"
+
+msgid "Update"
+msgstr "Update"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Approve"
+msgstr "Approve"
+
+msgid "Reject"
+msgstr "Reject"
+
+msgid "Submit"
+msgstr "Submit"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "Verify"
+msgstr "Verify"
+
+msgid "Audit Log"
+msgstr "Audit Log"
+
+msgid "Activity Log"
+msgstr "Activity Log"
+
+msgid "System Log"
+msgstr "System Log"
+
+msgid "Error Log"
+msgstr "Error Log"
+
+msgid "Access Log"
+msgstr "Access Log"
+
+msgid "Login History"
+msgstr "Login History"
+
+msgid "Last Login"
+msgstr "Last Login"
+
+msgid "IP Address"
+msgstr "IP Address"
+
+msgid "Browser"
+msgstr "Browser"
+
+msgid "Device"
+msgstr "Device"
+
+msgid "Session"
+msgstr "Session"
+
+msgid "Session Timeout"
+msgstr "Session Timeout"
+
+msgid "Locked"
+msgstr "Locked"
+
+msgid "Unlocked"
+msgstr "Unlocked"
+
+msgid "Enabled"
+msgstr "Enabled"
+
+msgid "Disabled"
+msgstr "Disabled"
+
+msgid "Verified"
+msgstr "Verified"
+
+msgid "Unverified"
+msgstr "Unverified"
+
+msgid "Suspended"
+msgstr "Suspended"
+
+msgid "Blocked"
+msgstr "Blocked"
+
+msgid "Deleted"
+msgstr "Deleted"
+
+msgid "Restored"
+msgstr "Restored"
+
+msgid "Backup"
+msgstr "Backup"
+
+msgid "Restore"
+msgstr "Restore"
+
+msgid "Backup Date"
+msgstr "Backup Date"
+
+msgid "Backup Size"
+msgstr "Backup Size"
+
+msgid "Backup Location"
+msgstr "Backup Location"
+
+msgid "Auto Backup"
+msgstr "Auto Backup"
+
+msgid "Manual Backup"
+msgstr "Manual Backup"
+
+msgid "Full Backup"
+msgstr "Full Backup"
+
+msgid "Incremental Backup"
+msgstr "Incremental Backup"
+
+msgid "Differential Backup"
+msgstr "Differential Backup"
+
+msgid "Database"
+msgstr "Database"
+
+msgid "Files"
+msgstr "Files"
+
+msgid "Configuration"
+msgstr "Configuration"
+
+msgid "Preferences"
+msgstr "Preferences"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Advanced"
+msgstr "Advanced"
+
+msgid "Basic"
+msgstr "Basic"
+
+msgid "General"
+msgstr "General"
+
+msgid "Specific"
+msgstr "Specific"
+
+msgid "Custom"
+msgstr "Custom"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Template"
+msgstr "Template"
+
+msgid "Theme"
+msgstr "Theme"
+
+msgid "Layout"
+msgstr "Layout"
+
+msgid "Color"
+msgstr "Color"
+
+msgid "Font"
+msgstr "Font"
+
+msgid "Size"
+msgstr "Size"
+
+msgid "Style"
+msgstr "Style"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Alignment"
+msgstr "Alignment"
+
+msgid "Left"
+msgstr "Left"
+
+msgid "Right"
+msgstr "Right"
+
+msgid "Center"
+msgstr "Center"
+
+msgid "Justify"
+msgstr "Justify"
+
+msgid "Top"
+msgstr "Top"
+
+msgid "Bottom"
+msgstr "Bottom"
+
+msgid "Middle"
+msgstr "Middle"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "First"
+msgstr "First"
+
+msgid "Last"
+msgstr "Last"
+
+msgid "Finish"
+msgstr "Finish"
+
+msgid "Continue"
+msgstr "Continue"
+
+msgid "Skip"
+msgstr "Skip"
+
+msgid "Retry"
+msgstr "Retry"
+
+msgid "Refresh"
+msgstr "Refresh"
+
+msgid "Reload"
+msgstr "Reload"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Undo"
+msgstr "Undo"
+
+msgid "Redo"
+msgstr "Redo"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Paste"
+msgstr "Paste"
+
+msgid "Cut"
+msgstr "Cut"
+
+msgid "Select All"
+msgstr "Select All"
+
+msgid "Deselect All"
+msgstr "Deselect All"
+
+msgid "Select"
+msgstr "Select"
+
+msgid "Deselect"
+msgstr "Deselect"
+
+msgid "Show"
+msgstr "Show"
+
+msgid "Hide"
+msgstr "Hide"
+
+msgid "Expand"
+msgstr "Expand"
+
+msgid "Collapse"
+msgstr "Collapse"
+
+msgid "Maximize"
+msgstr "Maximize"
+
+msgid "Minimize"
+msgstr "Minimize"
+
+msgid "Full Screen"
+msgstr "Full Screen"
+
+msgid "Exit Full Screen"
+msgstr "Exit Full Screen"
+
+msgid "Zoom In"
+msgstr "Zoom In"
+
+msgid "Zoom Out"
+msgstr "Zoom Out"
+
+msgid "Fit to Page"
+msgstr "Fit to Page"
+
+msgid "Actual Size"
+msgstr "Actual Size"
+
+msgid "Page"
+msgstr "Page"
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "of"
+msgstr "of"
+
+msgid "Showing"
+msgstr "Showing"
+
+msgid "to"
+msgstr "to"
+
+msgid "entries"
+msgstr "entries"
+
+msgid "No records found"
+msgstr "No records found"
+
+msgid "No results"
+msgstr "No results"
+
+msgid "Try different search terms"
+msgstr "Try different search terms"
+
+msgid "Language changed successfully"
+msgstr "Language changed successfully"
+
+msgid "Selected language is not supported"
+msgstr "Selected language is not supported"
+
+msgid "An error occurred: %(error)s"
+msgstr "An error occurred: %(error)s"
+
+# Point of Sale (POS)
+msgid "Point of Sale"
+msgstr "Point of Sale"
+
+msgid "Search for product (name, barcode, code)..."
+msgstr "Search for product (name, barcode, code)..."
+
+msgid "Shopping Cart"
+msgstr "Shopping Cart"
+
+msgid "Session"
+msgstr "Session"
+
+msgid "Cashier"
+msgstr "Cashier"
+
+msgid "Warehouse"
+msgstr "Warehouse"
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Cart is empty"
+msgstr "Cart is empty"
+
+msgid "Click on products to add them"
+msgstr "Click on products to add them"
+
+msgid "Customer"
+msgstr "Customer"
+
+msgid "Optional"
+msgstr "Optional"
+
+msgid "Walk-in Customer"
+msgstr "Walk-in Customer"
+
+msgid "Subtotal"
+msgstr "Subtotal"
+
+msgid "Discount"
+msgstr "Discount"
+
+msgid "Discount Amount"
+msgstr "Discount Amount"
+
+msgid "Tax"
+msgstr "Tax"
+
+msgid "Grand Total"
+msgstr "Grand Total"
+
+msgid "Payment Method"
+msgstr "Payment Method"
+
+msgid "Cash"
+msgstr "Cash"
+
+msgid "Card"
+msgstr "Card"
+
+msgid "Mixed"
+msgstr "Mixed"
+
+msgid "Complete Sale"
+msgstr "Complete Sale"
+
+msgid "Create Quotation"
+msgstr "Create Quotation"
+
+msgid "Hold Order"
+msgstr "Hold Order"
+
+msgid "Clear Cart"
+msgstr "Clear Cart"
+
+msgid "Close Session"
+msgstr "Close Session"
+
+# Receipt/Invoice
+msgid "Tax Invoice"
+msgstr "Tax Invoice"
+
+msgid "Simplified Tax Invoice"
+msgstr "Simplified Tax Invoice"
+
+msgid "Inventory Management System"
+msgstr "Inventory Management System"
+
+msgid "Tax Number"
+msgstr "Tax Number"
+
+msgid "C.R."
+msgstr "C.R."
+
+msgid "Order Number"
+msgstr "Order Number"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Product Details"
+msgstr "Product Details"
+
+msgid "Product"
+msgstr "Product"
+
+msgid "Quantity"
+msgstr "Quantity"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "VAT"
+msgstr "VAT"
+
+msgid "Payment Details"
+msgstr "Payment Details"
+
+msgid "Amount Paid"
+msgstr "Amount Paid"
+
+msgid "Change"
+msgstr "Change"
+
+msgid "Thank you for your business"
+msgstr "Thank you for your business"
+
+msgid "We wish you a great day and look forward to serving you again"
+msgstr "We wish you a great day and look forward to serving you again"
+
+msgid "Print Invoice"
+msgstr "Print Invoice"
+
+msgid "Close"
+msgstr "Close"
+
+# Quotation
+msgid "Quotation"
+msgstr "Quotation"
+
+msgid "Company Name"
+msgstr "Company Name"
+
+msgid "Customer Information"
+msgstr "Customer Information"
+
+msgid "Customer Name"
+msgstr "Customer Name"
+
+msgid "Phone Number"
+msgstr "Phone Number"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "Tax"
+msgstr "Tax"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "This quotation is valid for 30 days from the date of issue"
+msgstr "This quotation is valid for 30 days from the date of issue"
+
+msgid "Important Information"
+msgstr "Important Information"
+
+msgid "This is a quotation and not a tax invoice"
+msgstr "This is a quotation and not a tax invoice"
+
+msgid "Prices include VAT"
+msgstr "Prices include VAT"
+
+msgid "Please review quantities and prices before approval"
+msgstr "Please review quantities and prices before approval"
+
+msgid "This quotation was created by DED ERP system"
+msgstr "This quotation was created by DED ERP system"
+
+# POS Menu Items
+msgid "نقاط البيع"
+msgstr "Point of Sale"
+
+msgid "شاشة نقطة البيع"
+msgstr "POS Screen"
+
+msgid "الجلسات"
+msgstr "Sessions"
+
+msgid "فتح جلسة جديدة"
+msgstr "Open New Session"
+
+# Customer Receipt
+msgid "Customer Receipt"
+msgstr "Customer Receipt"
+
+msgid "Delivery Acknowledgment"
+msgstr "Delivery Acknowledgment"
+
+msgid "Customer Code"
+msgstr "Customer Code"
+
+msgid "Piece"
+msgstr "Piece"
+
+msgid "Receiver Signature"
+msgstr "Receiver Signature"
+
+msgid "Authorized Signature"
+msgstr "Authorized Signature"
+
+msgid "Acknowledgment"
+msgstr "Acknowledgment"
+
+msgid "I acknowledge that I have received the above goods in good and complete condition"
+msgstr "I acknowledge that I have received the above goods in good and complete condition"
+
+msgid "Printed on"
+msgstr "Printed on"
+
+# Warehouse Paper
+msgid "Warehouse Paper"
+msgstr "Warehouse Paper"
+
+msgid "Warehouse Paper - Picking Request"
+msgstr "Warehouse Paper - Picking Request"
+
+msgid "Warehouse Picking List"
+msgstr "Warehouse Picking List"
+
+msgid "Warning: All items must be verified before delivery"
+msgstr "Warning: All items must be verified before delivery"
+
+msgid "Customer"
+msgstr "Customer"
+
+msgid "Number"
+msgstr "Number"
+
+msgid "Warehouse"
+msgstr "Warehouse"
+
+msgid "Not Specified"
+msgstr "Not Specified"
+
+msgid "Responsible"
+msgstr "Responsible"
+
+msgid "Picking Instructions"
+msgstr "Picking Instructions"
+
+msgid "Check availability of all items • Verify quantities accurately • Inspect product condition • Mark (✓) after picking each item"
+msgstr "Check availability of all items • Verify quantities accurately • Inspect product condition • Mark (✓) after picking each item"
+
+msgid "Product Code"
+msgstr "Product Code"
+
+msgid "Product Name"
+msgstr "Product Name"
+
+msgid "Location/Shelf"
+msgstr "Location/Shelf"
+
+msgid "Summary"
+msgstr "Summary"
+
+msgid "Number of Items"
+msgstr "Number of Items"
+
+msgid "Total Quantities"
+msgstr "Total Quantities"
+
+msgid "units"
+msgstr "units"
+
+msgid "Warehouse Keeper"
+msgstr "Warehouse Keeper"
+
+msgid "Signature"
+msgstr "Signature"
+
+msgid "Receiver"
+msgstr "Receiver"
+
+msgid "Responsible Manager"
+msgstr "Responsible Manager"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "This paper is for internal use - A copy must be kept in the warehouse"
+msgstr "This paper is for internal use - A copy must be kept in the warehouse"
+
+# Reports Center
+msgid "Reports Center"
+msgstr "Reports Center"
+
+msgid "Select the required report"
+msgstr "Select the required report"
+
+msgid "Sales Reports"
+msgstr "Sales Reports"
+
+msgid "Detailed Sales Report"
+msgstr "Detailed Sales Report"
+
+msgid "Sales Report by Product"
+msgstr "Sales Report by Product"
+
+msgid "Sales Report by Customer"
+msgstr "Sales Report by Customer"
+
+msgid "Monthly Sales Report"
+msgstr "Monthly Sales Report"
+
+msgid "Purchase Reports"
+msgstr "Purchase Reports"
+
+msgid "Detailed Purchase Report"
+msgstr "Detailed Purchase Report"
+
+msgid "Purchase Report by Product"
+msgstr "Purchase Report by Product"
+
+msgid "Purchase Report by Supplier"
+msgstr "Purchase Report by Supplier"
+
+msgid "Monthly Purchase Report"
+msgstr "Monthly Purchase Report"
+
+msgid "Products Details"
+msgstr "Products Details"
+
+msgid "Invoices Count"
+msgstr "Invoices Count"
+
+msgid "Average Price"
+msgstr "Average Price"
+
+msgid "All Products"
+msgstr "All Products"
+
+msgid "No data available"
+msgstr "No data available"
+
+msgid "Total Quantity"
+msgstr "Total Quantity"
+
+msgid "Total Amount"
+msgstr "Total Amount"
+
+msgid "Total Invoices"
+msgstr "Total Invoices"
+
+msgid "Total Tax"
+msgstr "Total Tax"
+
+msgid "Inventory Reports"
+msgstr "Inventory Reports"
+
+msgid "Current Inventory Report"
+msgstr "Current Inventory Report"
+
+msgid "Low Stock Products Report"
+msgstr "Low Stock Products Report"
+
+msgid "Stock Movement Report"
+msgstr "Stock Movement Report"
+
+msgid "Inventory Value Report"
+msgstr "Inventory Value Report"
+
+msgid "Financial Reports"
+msgstr "Financial Reports"
+
+msgid "Profit and Loss Statement"
+msgstr "Profit and Loss Statement"
+
+msgid "Profit & Loss Statement"
+msgstr "Profit & Loss Statement"
+
+msgid "Financial Summary"
+msgstr "Financial Summary"
+
+msgid "Revenue"
+msgstr "Revenue"
+
+msgid "Total Sales"
+msgstr "Total Sales"
+
+msgid "Total Revenue"
+msgstr "Total Revenue"
+
+msgid "Cost of Goods Sold (COGS)"
+msgstr "Cost of Goods Sold (COGS)"
+
+msgid "Total Purchases"
+msgstr "Total Purchases"
+
+msgid "Total COGS"
+msgstr "Total COGS"
+
+msgid "Gross Profit"
+msgstr "Gross Profit"
+
+msgid "Revenue - COGS"
+msgstr "Revenue - COGS"
+
+msgid "Net Profit/Loss"
+msgstr "Net Profit/Loss"
+
+msgid "Profit Margin"
+msgstr "Profit Margin"
+
+msgid "Profitable"
+msgstr "Profitable"
+
+msgid "Loss"
+msgstr "Loss"
+
+msgid "Balance Sheet"
+msgstr "Balance Sheet"
+
+msgid "Cash Flow Report"
+msgstr "Cash Flow Report"
+
+msgid "Accounts Receivable Report"
+msgstr "Accounts Receivable Report"
+
+msgid "Customer Reports"
+msgstr "Customer Reports"
+
+msgid "Customer List"
+msgstr "Customer List"
+
+msgid "Top Customers Report"
+msgstr "Top Customers Report"
+
+msgid "Customer Balances Report"
+msgstr "Customer Balances Report"
+
+msgid "Customer History Report"
+msgstr "Customer History Report"
+
+msgid "Supplier Reports"
+msgstr "Supplier Reports"
+
+msgid "Supplier List"
+msgstr "Supplier List"
+
+msgid "Top Suppliers Report"
+msgstr "Top Suppliers Report"
+
+msgid "Supplier Balances Report"
+msgstr "Supplier Balances Report"
+
+msgid "Supplier History Report"
+msgstr "Supplier History Report"
+
+# Settings Page
+msgid "System Settings"
+msgstr "System Settings"
+
+msgid "Manage system settings and configurations"
+msgstr "Manage system settings and configurations"
+
+msgid "Company Data"
+msgstr "Company Data"
+
+msgid "Manage company and branch information"
+msgstr "Manage company and branch information"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Branches"
+msgstr "Branches"
+
+msgid "Manage company branches"
+msgstr "Manage company branches"
+
+msgid "View Branches"
+msgstr "View Branches"
+
+msgid "Users"
+msgstr "Users"
+
+msgid "Manage users and permissions"
+msgstr "Manage users and permissions"
+
+msgid "Manage Users"
+msgstr "Manage Users"
+
+msgid "Roles"
+msgstr "Roles"
+
+msgid "Manage roles and permissions"
+msgstr "Manage roles and permissions"
+
+msgid "Manage Roles"
+msgstr "Manage Roles"
+
+msgid "Permissions"
+msgstr "Permissions"
+
+msgid "View and manage permissions"
+msgstr "View and manage permissions"
+
+msgid "View Permissions"
+msgstr "View Permissions"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Edit your personal information"
+msgstr "Edit your personal information"
+
+msgid "Edit Profile"
+msgstr "Edit Profile"
+
+msgid "Language Settings"
+msgstr "Language Settings"
+
+msgid "Change application language"
+msgstr "Change application language"
+
+msgid "Change Language"
+msgstr "Change Language"
+
+msgid "Change Password"
+msgstr "Change Password"
+
+msgid "Update your password"
+msgstr "Update your password"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Manage product categories"
+msgstr "Manage product categories"
+
+msgid "Manage Categories"
+msgstr "Manage Categories"
+
+msgid "Warehouses"
+msgstr "Warehouses"
+
+msgid "Manage warehouses"
+msgstr "Manage warehouses"
+
+msgid "Manage Warehouses"
+msgstr "Manage Warehouses"
+
+msgid "Currencies"
+msgstr "Currencies"
+
+msgid "Manage currencies and exchange rates"
+msgstr "Manage currencies and exchange rates"
+
+msgid "Manage Currencies"
+msgstr "Manage Currencies"
+
+msgid "Accounting Settings"
+msgstr "Accounting Settings"
+
+msgid "Link operations to accounting accounts"
+msgstr "Link operations to accounting accounts"
+
+msgid "Invoice Settings"
+msgstr "Invoice Settings"
+
+msgid "Customize invoice and quotation templates"
+msgstr "Customize invoice and quotation templates"
+
+msgid "Invoice Templates"
+msgstr "Invoice Templates"
+
+msgid "Taxes"
+msgstr "Taxes"
+
+msgid "Tax configuration"
+msgstr "Tax configuration"
+
+msgid "Tax Settings"
+msgstr "Tax Settings"
+
+msgid "Backup"
+msgstr "Backup"
+
+msgid "Backup and restore data"
+msgstr "Backup and restore data"
+
+# Branch Management Page
+msgid "Branch Management"
+msgstr "Branch Management"
+
+msgid "View and manage company branches"
+msgstr "View and manage company branches"
+
+msgid "Add New Branch"
+msgstr "Add New Branch"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Code"
+msgstr "Code"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "City"
+msgstr "City"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Manager"
+msgstr "Manager"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Inactive"
+msgstr "Inactive"
+
+msgid "Created Date"
+msgstr "Created Date"
+
+msgid "No Branches"
+msgstr "No Branches"
+
+msgid "No branches have been added yet"
+msgstr "No branches have been added yet"
+
+msgid "Branch Name (Arabic)"
+msgstr "Branch Name (Arabic)"
+
+msgid "Branch Name (English)"
+msgstr "Branch Name (English)"
+
+msgid "Select Manager"
+msgstr "Select Manager"
+
+msgid "Active Branch"
+msgstr "Active Branch"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Edit Branch"
+msgstr "Edit Branch"
+
+msgid "Update"
+msgstr "Update"
+
+msgid "Delete Branch"
+msgstr "Delete Branch"
+
+msgid "Are you sure you want to delete the branch"
+msgstr "Are you sure you want to delete the branch"
+
+msgid "Warning: All data associated with this branch will be deleted"
+msgstr "Warning: All data associated with this branch will be deleted"
+
+msgid "Delete"
+msgstr "Delete"
+
+# Company Data Page
+msgid "Company Data and Invoice Settings"
+msgstr "Company Data and Invoice Settings"
+
+msgid "Manage company information, logo, and invoice and quotation data"
+msgstr "Manage company information, logo, and invoice and quotation data"
+
+msgid "Invoice Templates"
+msgstr "Invoice Templates"
+
+msgid "Back to Settings"
+msgstr "Back to Settings"
+
+msgid "Important Note"
+msgstr "Important Note"
+
+msgid "The data you enter here will appear on all invoices and quotations printed from the POS and system"
+msgstr "The data you enter here will appear on all invoices and quotations printed from the POS and system"
+
+msgid "Basic Information"
+msgstr "Basic Information"
+
+msgid "Company Name (Arabic)"
+msgstr "Company Name (Arabic)"
+
+msgid "Company Name (English)"
+msgstr "Company Name (English)"
+
+msgid "Appears on invoices"
+msgstr "Appears on invoices"
+
+msgid "Example: Advanced Trading Company"
+msgstr "Example: Advanced Trading Company"
+
+msgid "Tax Number"
+msgstr "Tax Number"
+
+msgid "Commercial Register"
+msgstr "Commercial Register"
+
+msgid "Tax number registered with the Zakat and Tax Authority"
+msgstr "Tax number registered with the Zakat and Tax Authority"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "City"
+msgstr "City"
+
+msgid "Country"
+msgstr "Country"
+
+msgid "Saudi Arabia"
+msgstr "Saudi Arabia"
+
+msgid "Example: King Fahd Street, Al Olaya District, Riyadh"
+msgstr "Example: King Fahd Street, Al Olaya District, Riyadh"
+
+msgid "Currency"
+msgstr "Currency"
+
+msgid "Tax Rate"
+msgstr "Tax Rate"
+
+msgid "Saudi Riyal"
+msgstr "Saudi Riyal"
+
+msgid "US Dollar"
+msgstr "US Dollar"
+
+msgid "Euro"
+msgstr "Euro"
+
+msgid "UAE Dirham"
+msgstr "UAE Dirham"
+
+msgid "Kuwaiti Dinar"
+msgstr "Kuwaiti Dinar"
+
+msgid "Bahraini Dinar"
+msgstr "Bahraini Dinar"
+
+msgid "Omani Riyal"
+msgstr "Omani Riyal"
+
+msgid "Qatari Riyal"
+msgstr "Qatari Riyal"
+
+msgid "Egyptian Pound"
+msgstr "Egyptian Pound"
+
+msgid "Company Logo"
+msgstr "Company Logo"
+
+msgid "Preferably use a transparent background image (PNG) with a size of 300x100 pixels for best results"
+msgstr "Preferably use a transparent background image (PNG) with a size of 300x100 pixels for best results"
+
+msgid "Current Logo"
+msgstr "Current Logo"
+
+msgid "Save Changes"
+msgstr "Save Changes"
+
+msgid "Invoice Preview"
+msgstr "Invoice Preview"
+
+msgid "This is a preview of how your company data will appear on invoices and quotations"
+msgstr "This is a preview of how your company data will appear on invoices and quotations"
+
+msgid "No Logo"
+msgstr "No Logo"
+
+msgid "Company Name"
+msgstr "Company Name"
+
+msgid "Save changes to update preview"
+msgstr "Save changes to update preview"
+
+msgid "Company Information"
+msgstr "Company Information"
+
+msgid "Created Date"
+msgstr "Created Date"
+
+msgid "Quick Stats"
+msgstr "Quick Stats"
+
+msgid "Company data not found"
+msgstr "Company data not found"
+
+msgid "Please create company data first"
+msgstr "Please create company data first"
+
+msgid "Create Company Data"
+msgstr "Create Company Data"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Save"
+msgstr "Save"
+
+# Invoice Templates Page
+msgid "Invoice and Quotation Templates"
+msgstr "Invoice and Quotation Templates"
+
+msgid "Choose the appropriate template for your invoices and quotations"
+msgstr "Choose the appropriate template for your invoices and quotations"
+
+msgid "Back to Company Data"
+msgstr "Back to Company Data"
+
+msgid "Current Template"
+msgstr "Current Template"
+
+msgid "Modern"
+msgstr "Modern"
+
+msgid "Classic"
+msgstr "Classic"
+
+msgid "Minimal"
+msgstr "Minimal"
+
+msgid "Elegant"
+msgstr "Elegant"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Features"
+msgstr "Features"
+
+msgid "Modern design with gradient colors"
+msgstr "Modern design with gradient colors"
+
+msgid "Attractive invoice header"
+msgstr "Attractive invoice header"
+
+msgid "Elegant information cards"
+msgstr "Elegant information cards"
+
+msgid "Professional product table"
+msgstr "Professional product table"
+
+msgid "Suitable for tech companies"
+msgstr "Suitable for tech companies"
+
+msgid "Currently Active"
+msgstr "Currently Active"
+
+msgid "Select This Template"
+msgstr "Select This Template"
+
+msgid "Professional traditional design"
+msgstr "Professional traditional design"
+
+msgid "Easy to read and print"
+msgstr "Easy to read and print"
+
+msgid "Suitable for traditional companies"
+msgstr "Suitable for traditional companies"
+
+msgid "Clear and organized table"
+msgstr "Clear and organized table"
+
+msgid "Calm colors"
+msgstr "Calm colors"
+
+msgid "Simple and clean design"
+msgstr "Simple and clean design"
+
+msgid "Focuses on content"
+msgstr "Focuses on content"
+
+msgid "Fast printing"
+msgstr "Fast printing"
+
+msgid "Saves ink"
+msgstr "Saves ink"
+
+msgid "Suitable for daily use"
+msgstr "Suitable for daily use"
+
+msgid "Luxurious and elegant design"
+msgstr "Luxurious and elegant design"
+
+msgid "Attractive gradient colors"
+msgstr "Attractive gradient colors"
+
+msgid "Suitable for luxury companies"
+msgstr "Suitable for luxury companies"
+
+msgid "Leaves a strong impression"
+msgstr "Leaves a strong impression"
+
+msgid "Fine details"
+msgstr "Fine details"
+
+msgid "Tip"
+msgstr "Tip"
+
+msgid "To preview the full invoice template, go to POS and create a test invoice"
+msgstr "To preview the full invoice template, go to POS and create a test invoice"
+
+msgid "Go to POS"
+msgstr "Go to POS"
+
+# Main Dashboard translations
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Inventory Management System"
+msgstr "Inventory Management System"
+
+msgid "Main Dashboard"
+msgstr "Main Dashboard"
+
+msgid "Welcome"
+msgstr "Welcome"
+
+msgid "System Overview"
+msgstr "System Overview"
+
+msgid "Total Products"
+msgstr "Total Products"
+
+msgid "Low Stock Products"
+msgstr "Low Stock Products"
+
+msgid "Sales This Month"
+msgstr "Sales This Month"
+
+msgid "Purchases This Month"
+msgstr "Purchases This Month"
+
+msgid "Net Profit (Month)"
+msgstr "Net Profit (Month)"
+
+msgid "Sales and Purchases (Last 6 Months)"
+msgstr "Sales and Purchases (Last 6 Months)"
+
+msgid "Top Selling Products"
+msgstr "Top Selling Products"
+
+msgid "No sales this month"
+msgstr "No sales this month"
+
+msgid "Inventory Value"
+msgstr "Inventory Value"
+
+msgid "Total current inventory value"
+msgstr "Total current inventory value"
+
+msgid "Active Warehouses"
+msgstr "Active Warehouses"
+
+msgid "Number of active warehouses"
+msgstr "Number of active warehouses"
+
+msgid "Recent Sales"
+msgstr "Recent Sales"
+
+msgid "Invoice Number"
+msgstr "Invoice Number"
+
+msgid "No sales"
+msgstr "No sales"
+
+msgid "Recent Purchases"
+msgstr "Recent Purchases"
+
+msgid "No purchases"
+msgstr "No purchases"
+
+msgid "Quick Actions"
+msgstr "Quick Actions"
+
+msgid "Add New Product"
+msgstr "Add New Product"
+
+msgid "Product"
+msgstr "Product"
+
+msgid "New Sales Invoice"
+msgstr "New Sales Invoice"
+
+msgid "Sale"
+msgstr "Sale"
+
+msgid "New Purchase Invoice"
+msgstr "New Purchase Invoice"
+
+msgid "Purchase"
+msgstr "Purchase"
+
+msgid "View Reports"
+msgstr "View Reports"
+
+msgid "Sales"
+msgstr "Sales"
+
+# Roles and Permissions Management Page
+msgid "Roles Management"
+msgstr "Roles Management"
+
+msgid "Roles and Permissions Management"
+msgstr "Roles and Permissions Management"
+
+msgid "Add New Role"
+msgstr "Add New Role"
+
+msgid "Permissions:"
+msgstr "Permissions:"
+
+msgid "Save Permissions"
+msgstr "Save Permissions"
+
+msgid "Number of Users:"
+msgstr "Number of Users:"
+
+msgid "Role Name (English)"
+msgstr "Role Name (English)"
+
+msgid "Example: sales_manager"
+msgstr "Example: sales_manager"
+
+msgid "Role Name (Arabic)"
+msgstr "Role Name (Arabic)"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Edit Role"
+msgstr "Edit Role"
+
+msgid "Save Changes"
+msgstr "Save Changes"
+
+msgid "Confirm Deletion"
+msgstr "Confirm Deletion"
+
+msgid "Are you sure you want to delete the role"
+msgstr "Are you sure you want to delete the role"
+
+msgid "?"
+msgstr "?"
+
+msgid "This action cannot be undone!"
+msgstr "This action cannot be undone!"
+
+msgid "Delete"
+msgstr "Delete"
+
+# Delete Product Modal
+msgid "Are you sure you want to delete this product?"
+msgstr "Are you sure you want to delete this product?"
+
+msgid "Warning:"
+msgstr "Warning:"
+
+msgid "If the product is linked to invoices or orders, it will be deactivated instead of permanently deleted."
+msgstr "If the product is linked to invoices or orders, it will be deactivated instead of permanently deleted."
+
+msgid "Product Name:"
+msgstr "Product Name:"
+
+# Profile Page
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Inventory Management System"
+msgstr "Inventory Management System"
+
+msgid "Edit your personal information"
+msgstr "Edit your personal information"
+
+msgid "Edit Information"
+msgstr "Edit Information"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Username cannot be changed"
+msgstr "Username cannot be changed"
+
+msgid "Full Name"
+msgstr "Full Name"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone Number"
+msgstr "Phone Number"
+
+msgid "Preferred Language"
+msgstr "Preferred Language"
+
+msgid "Change Password"
+msgstr "Change Password"
+
+msgid "New Password"
+msgstr "New Password"
+
+msgid "Leave blank if you do not want to change"
+msgstr "Leave blank if you do not want to change"
+
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+msgid "Re-enter new password"
+msgstr "Re-enter new password"
+
+msgid "Account Information"
+msgstr "Account Information"
+
+msgid "Role:"
+msgstr "Role:"
+
+msgid "Not specified"
+msgstr "Not specified"
+
+msgid "Branch:"
+msgstr "Branch:"
+
+msgid "Last Login:"
+msgstr "Last Login:"
+
+msgid "Not recorded"
+msgstr "Not recorded"
+
+msgid "Created Date:"
+msgstr "Created Date:"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Inactive"
+msgstr "Inactive"
+
+msgid "You are a system administrator"
+msgstr "You are a system administrator"
+
+msgid "Security"
+msgstr "Security"
+
+msgid "Make sure to use a strong password that contains:"
+msgstr "Make sure to use a strong password that contains:"
+
+msgid "At least 8 characters"
+msgstr "At least 8 characters"
+
+msgid "Uppercase and lowercase letters"
+msgstr "Uppercase and lowercase letters"
+
+msgid "Numbers and symbols"
+msgstr "Numbers and symbols"
+
+# Additional Reports Translations
+msgid "Cash Flow Report"
+msgstr "Cash Flow Report"
+
+msgid "Accounts Receivable Report"
+msgstr "Accounts Receivable Report"
+
+msgid "Inventory Value Report"
+msgstr "Inventory Value Report"
+
+msgid "Supplier List"
+msgstr "Supplier List"
+
+msgid "Customer List"
+msgstr "Customer List"
+
+msgid "Supplier Balances Report"
+msgstr "Supplier Balances Report"
+
+msgid "Customer Balances Report"
+msgstr "Customer Balances Report"
+
+msgid "Supplier History Report"
+msgstr "Supplier History Report"
+
+msgid "Customer History Report"
+msgstr "Customer History Report"
+
+# POS Sessions Page Translations
+msgid "Sessions - Point of Sale"
+msgstr "Sessions - Point of Sale"
+
+msgid "Sessions Log"
+msgstr "Sessions Log"
+
+msgid "Open New Session"
+msgstr "Open New Session"
+
+msgid "Open Sessions"
+msgstr "Open Sessions"
+
+msgid "Closed Sessions Today"
+msgstr "Closed Sessions Today"
+
+msgid "Total Sales Today"
+msgstr "Total Sales Today"
+
+msgid "Total Orders Today"
+msgstr "Total Orders Today"
+
+msgid "Sessions List"
+msgstr "Sessions List"
+
+msgid "Session Number"
+msgstr "Session Number"
+
+msgid "Cashier"
+msgstr "Cashier"
+
+msgid "Opening Time"
+msgstr "Opening Time"
+
+msgid "Closing Time"
+msgstr "Closing Time"
+
+msgid "Opening Balance"
+msgstr "Opening Balance"
+
+msgid "Closing Balance"
+msgstr "Closing Balance"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Closed"
+msgstr "Closed"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Continue Selling"
+msgstr "Continue Selling"
+
+msgid "Print Report"
+msgstr "Print Report"
+
+msgid "No sessions found"
+msgstr "No sessions found"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Cannot delete session with orders. Please delete orders first."
+msgstr "Cannot delete session with orders. Please delete orders first."
+
+msgid "Cannot delete an open session. Please close it first."
+msgstr "Cannot delete an open session. Please close it first."
+
+msgid "Session %(number)s deleted successfully"
+msgstr "Session %(number)s deleted successfully"
+
+msgid "Error deleting session: %(error)s"
+msgstr "Error deleting session: %(error)s"
+
+msgid "Are you sure you want to delete this session?"
+msgstr "Are you sure you want to delete this session?"
+
+# Product Images
+msgid "Product Image"
+msgstr "Product Image"
+
+msgid "Allowed formats: PNG, JPG, JPEG, GIF (Max: 16MB)"
+msgstr "Allowed formats: PNG, JPG, JPEG, GIF (Max: 16MB)"
+
+msgid "Current image"
+msgstr "Current image"
+
+msgid "Leave empty to keep current image"
+msgstr "Leave empty to keep current image"
+
+msgid "Invalid image file. Allowed formats: PNG, JPG, JPEG, GIF"
+msgstr "Invalid image file. Allowed formats: PNG, JPG, JPEG, GIF"
+
+msgid "Damaged Inventory"
+msgstr "Damaged Inventory"
+
+msgid "Record Damaged Item"
+msgstr "Record Damaged Item"
+
+msgid "Total Damaged Value"
+msgstr "Total Damaged Value"
+
+msgid "Damage Type"
+msgstr "Damage Type"
+
+msgid "Expired"
+msgstr "Expired"
+
+msgid "Broken"
+msgstr "Broken"
+
+msgid "Defective"
+msgstr "Defective"
+
+msgid "Other"
+msgstr "Other"
+
+msgid "Reason"
+msgstr "Reason"
+
+msgid "Cost Value"
+msgstr "Cost Value"
+
+msgid "Recorded By"
+msgstr "Recorded By"
+
+msgid "No damaged inventory records found"
+msgstr "No damaged inventory records found"
+
+msgid "Record Damaged Inventory"
+msgstr "Record Damaged Inventory"
+
+msgid "Select Type"
+msgstr "Select Type"
+
+msgid "Enter reason for damage"
+msgstr "Enter reason for damage"
+
+msgid "Additional notes (optional)"
+msgstr "Additional notes (optional)"
+
+msgid "Estimated Cost Value"
+msgstr "Estimated Cost Value"
+
+msgid "Information"
+msgstr "Information"
+
+msgid "Recording damaged inventory will:"
+msgstr "Recording damaged inventory will:"
+
+msgid "Reduce available stock quantity"
+msgstr "Reduce available stock quantity"
+
+msgid "Track damaged items separately"
+msgstr "Track damaged items separately"
+
+msgid "Record the cost value of loss"
+msgstr "Record the cost value of loss"
+
+msgid "Create a stock movement record"
+msgstr "Create a stock movement record"
+
+msgid "Available in stock"
+msgstr "Available in stock"
+
+msgid "No stock available in this warehouse"
+msgstr "No stock available in this warehouse"
+
+msgid "Damaged inventory recorded successfully"
+msgstr "Damaged inventory recorded successfully"
+
+msgid "Damaged inventory record deleted successfully"
+msgstr "Damaged inventory record deleted successfully"
+
+msgid "Are you sure you want to delete this record?"
+msgstr "Are you sure you want to delete this record?"
+
+msgid "Damaged inventory"
+msgstr "Damaged inventory"
+
+msgid "Cannot delete supplier because it has purchase invoices"
+msgstr "Cannot delete supplier because it has purchase invoices"
+
+msgid "Supplier deleted successfully"
+msgstr "Supplier deleted successfully"
+
+msgid "Are you sure you want to delete supplier"
+msgstr "Are you sure you want to delete supplier"
+
+msgid "Error deleting supplier"
+msgstr "Error deleting supplier"
+
+msgid "This will delete all data related to this supplier!"
+msgstr "This will delete all data related to this supplier!"
+
+msgid "View Details"
+msgstr "View Details"
+
+# License Page
+msgid "License Management"
+msgstr "License Management"
+
+msgid "Active License"
+msgstr "Active License"
+
+msgid "All Licenses"
+msgstr "All Licenses"
+
+msgid "License Key"
+msgstr "License Key"
+
+msgid "Client Name"
+msgstr "Client Name"
+
+msgid "License Type"
+msgstr "License Type"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Expires At"
+msgstr "Expires At"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Inactive"
+msgstr "Inactive"
+
+msgid "Suspended"
+msgstr "Suspended"
+
+msgid "Trial"
+msgstr "Trial"
+
+msgid "Monthly"
+msgstr "Monthly"
+
+msgid "Yearly"
+msgstr "Yearly"
+
+msgid "Lifetime"
+msgstr "Lifetime"
+
+msgid "Activate"
+msgstr "Activate"
+
+msgid "Suspend"
+msgstr "Suspend"
+
+msgid "Reactivate"
+msgstr "Reactivate"
+
+msgid "Users"
+msgstr "Users"
+
+msgid "Max Users"
+msgstr "Max Users"
+
+msgid "Current Users"
+msgstr "Current Users"
+
+msgid "Days Remaining"
+msgstr "Days Remaining"
+
+msgid "Unlimited"
+msgstr "Unlimited"
+
+msgid "Expired"
+msgstr "Expired"
+
+msgid "days"
+msgstr "days"
+
+msgid "Admin Username"
+msgstr "Admin Username"
+
+msgid "Created At"
+msgstr "Created At"
+
+msgid "Activated At"
+msgstr "Activated At"
+
+msgid "Last Check"
+msgstr "Last Check"
+
+msgid "Machine ID"
+msgstr "Machine ID"
+
+msgid "IP Address"
+msgstr "IP Address"
+
+msgid "Client Email"
+msgstr "Client Email"
+
+msgid "Client Phone"
+msgstr "Client Phone"
+
+msgid "Client Company"
+msgstr "Client Company"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "License Information"
+msgstr "License Information"
+
+msgid "License Details"
+msgstr "License Details"
+
+msgid "License Statistics"
+msgstr "License Statistics"
+
+msgid "User Usage"
+msgstr "User Usage"
+
+msgid "License Validity"
+msgstr "License Validity"
+
+msgid "Valid"
+msgstr "Valid"
+
+msgid "Invalid"
+msgstr "Invalid"
+
+msgid "Activate License"
+msgstr "Activate License"
+
+msgid "Enter License Key"
+msgstr "Enter License Key"
+
+msgid "Activate New License"
+msgstr "Activate New License"
+
+msgid "License activated successfully"
+msgstr "License activated successfully"
+
+msgid "Invalid license key"
+msgstr "Invalid license key"
+
+msgid "License suspended successfully"
+msgstr "License suspended successfully"
+
+msgid "License reactivated successfully"
+msgstr "License reactivated successfully"
+
+msgid "License deleted successfully"
+msgstr "License deleted successfully"
+
+msgid "Cannot delete license with active users"
+msgstr "Cannot delete license with active users"
+
+msgid "Please remove users first"
+msgstr "Please remove users first"
+
+msgid "Are you sure you want to suspend this license?"
+msgstr "Are you sure you want to suspend this license?"
+
+msgid "Are you sure you want to delete this license?"
+msgstr "Are you sure you want to delete this license?"
+
+msgid "License Checks History"
+msgstr "License Checks History"
+
+msgid "Check Date"
+msgstr "Check Date"
+
+msgid "Check Result"
+msgstr "Check Result"
+
+msgid "Success"
+msgstr "Success"
+
+msgid "Failed"
+msgstr "Failed"
+
+# Supplier Page Additional Translations
+msgid "Supplier Management"
+msgstr "Supplier Management"
+
+msgid "Add New Supplier"
+msgstr "Add New Supplier"
+
+msgid "Search suppliers..."
+msgstr "Search suppliers..."
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Print"
+msgstr "Print"
+
+msgid "No suppliers found"
+msgstr "No suppliers found"
+
+msgid "Add your first supplier"
+msgstr "Add your first supplier"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone"
+msgstr "Phone"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "Balance"
+msgstr "Balance"
+
+msgid "Company"
+msgstr "Company"
+
+msgid "Tax Number"
+msgstr "Tax Number"
+
+msgid "Payment Terms"
+msgstr "Payment Terms"
+
+msgid "Credit Days"
+msgstr "Credit Days"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Fax"
+msgstr "Fax"
+
+msgid "Country"
+msgstr "Country"
+
+msgid "City"
+msgstr "City"
+
+msgid "Postal Code"
+msgstr "Postal Code"
+
+msgid "Bank Name"
+msgstr "Bank Name"
+
+msgid "Bank Account"
+msgstr "Bank Account"
+
+msgid "IBAN"
+msgstr "IBAN"
+
+msgid "SWIFT Code"
+msgstr "SWIFT Code"
+
+msgid "Contact Information"
+msgstr "Contact Information"
+
+msgid "Financial Information"
+msgstr "Financial Information"
+
+msgid "Additional Information"
+msgstr "Additional Information"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Submit"
+msgstr "Submit"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Finish"
+msgstr "Finish"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Refresh"
+msgstr "Refresh"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Upload"
+msgstr "Upload"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Sort"
+msgstr "Sort"
+
+msgid "View"
+msgstr "View"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Update"
+msgstr "Update"
+
+msgid "Remove"
+msgstr "Remove"
+
+msgid "Select"
+msgstr "Select"
+
+msgid "Deselect"
+msgstr "Deselect"
+
+msgid "Select All"
+msgstr "Select All"
+
+msgid "Deselect All"
+msgstr "Deselect All"
+
+msgid "Show"
+msgstr "Show"
+
+msgid "Hide"
+msgstr "Hide"
+
+msgid "Expand"
+msgstr "Expand"
+
+msgid "Collapse"
+msgstr "Collapse"
+
+msgid "Loading..."
+msgstr "Loading..."
+
+msgid "Please wait..."
+msgstr "Please wait..."
+
+msgid "Processing..."
+msgstr "Processing..."
+
+msgid "Saving..."
+msgstr "Saving..."
+
+msgid "Deleting..."
+msgstr "Deleting..."
+
+msgid "Updating..."
+msgstr "Updating..."
+
+msgid "Uploading..."
+msgstr "Uploading..."
+
+msgid "Downloading..."
+msgstr "Downloading..."
+
+msgid "Advanced License Management System"
+msgstr "Advanced License Management System"
+
+msgid "New License"
+msgstr "New License"
+
+msgid "Total Licenses"
+msgstr "Total Licenses"
+
+msgid "Suspended Licenses"
+msgstr "Suspended Licenses"
+
+msgid "Expiring Soon"
+msgstr "Expiring Soon"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Expires"
+msgstr "Expires"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Do you want to activate this license?"
+msgstr "Do you want to activate this license?"
+
+msgid "Do you want to suspend this license?"
+msgstr "Do you want to suspend this license?"
+
+msgid "Do you want to delete this license? This cannot be undone!"
+msgstr "Do you want to delete this license? This cannot be undone!"
+
+msgid "No licenses found"
+msgstr "No licenses found"
+
+msgid "Start by creating a new license"
+msgstr "Start by creating a new license"
+
+msgid "Create New License"
+msgstr "Create New License"
+
+msgid "License key copied successfully!"
+msgstr "License key copied successfully!"
+
+msgid "Copy failed! Try again"
+msgstr "Copy failed! Try again"
+
+msgid "Key saved! It will be auto-filled in the activation page"
+msgstr "Key saved! It will be auto-filled in the activation page"
+
+msgid "Do you want to go to the activation page now?"
+msgstr "Do you want to go to the activation page now?"
+
+msgid "Click to select"
+msgstr "Click to select"
+
+msgid "Copy key"
+msgstr "Copy key"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Auto fill"
+msgstr "Auto fill"
+
+msgid "Auto Fill"
+msgstr "Auto Fill"

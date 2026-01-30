@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Add Quotation') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Add Quotation') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h3><i class="fas fa-file-contract"></i> {{ _('Add New Quotation') }}</h3>
+    <p class="text-muted mb-0">{{ _('Enter quotation data and products') }}</p>
+</div>
+
+<form method="POST" action="{{ url_for('sales.add_quotation') }}" id="quotationForm">
+    <div class="row">
+        <!-- Quotation Header -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ _('Quotation Information') }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Quotation Date') }} <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" name="quotation_date" value="{{ today }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Valid for (days)') }} <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="valid_days" value="30" min="1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Customer') }} <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <select class="form-select" name="customer_id" id="customer_id_quotation" required>
+                                        <option value="">{{ _('Select Customer') }}</option>
+                                        {% for customer in customers %}
+                                        <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.code }})</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModalQuotation">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Notes') }}</label>
+                                <textarea class="form-control" name="notes" rows="2" placeholder="{{ _('Quotation terms and conditions...') }}"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quotation Items -->
+        <div class="col-md-12 mt-3">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Products') }}</h5>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="addItem()">
+                        <i class="fas fa-plus"></i> {{ _('Add Product') }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%;">{{ _('Product') }}</th>
+                                    <th style="width: 10%;">{{ _('Quantity') }}</th>
+                                    <th style="width: 15%;">{{ _('Unit Price') }}</th>
+                                    <th style="width: 10%;">{{ _('Discount') }} %</th>
+                                    <th style="width: 15%;">{{ _('Subtotal') }}</th>
+                                    <th style="width: 10%;">{{ _('Tax') }}</th>
+                                    <th style="width: 15%;">{{ _('Total') }}</th>
+                                    <th style="width: 5%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                <!-- Items will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Totals -->
+        <div class="col-md-12 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>{{ _('Subtotal') }}:</th>
+                                    <td class="text-end"><strong id="subtotalDisplay">0.00 {{ currency_symbol }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>{{ _('Tax') }} (15%):</th>
+                                    <td class="text-end"><strong id="taxDisplay">0.00 {{ currency_symbol }}</strong></td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <th>{{ _('Grand Total') }}:</th>
+                                    <td class="text-end"><strong id="totalDisplay">0.00 {{ currency_symbol }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-3">
+        <a href="{{ url_for('sales.quotations') }}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> {{ _('Cancel') }}
+        </a>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> {{ _('Save Quotation') }}
+        </button>
+    </div>
+</form>
+
+<!-- Add Customer Modal -->
+<div class="modal fade" id="addCustomerModalQuotation" tabindex="-1" aria-labelledby="addCustomerModalQuotationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCustomerModalQuotationLabel">
+                    <i class="fas fa-user-plus"></i> {{ _('Add New Customer') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCustomerFormQuotation">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Customer Name (Arabic)') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="name" id="customer_name_quotation" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Customer Name (English)') }}</label>
+                                <input type="text" class="form-control" name="name_en" id="customer_name_en_quotation">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Mobile') }}</label>
+                                <input type="text" class="form-control" name="mobile" id="customer_mobile_quotation">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Phone') }}</label>
+                                <input type="text" class="form-control" name="phone" id="customer_phone_quotation">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Email') }}</label>
+                                <input type="email" class="form-control" name="email" id="customer_email_quotation">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Tax Number') }}</label>
+                                <input type="text" class="form-control" name="tax_number" id="customer_tax_number_quotation">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Address') }}</label>
+                                <textarea class="form-control" name="address" id="customer_address_quotation" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('City') }}</label>
+                                <input type="text" class="form-control" name="city" id="customer_city_quotation">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ _('Country') }}</label>
+                                <input type="text" class="form-control" name="country" id="customer_country_quotation">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> {{ _('Cancel') }}
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveCustomerQuotation()">
+                    <i class="fas fa-save"></i> {{ _('Save Customer') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let itemCounter = 0;
+const products = {{ products|tojson }};
+const currencySymbol = '{{ currency_symbol }}';
+
+function addItem() {
+    const tbody = document.getElementById('itemsBody');
+    const row = document.createElement('tr');
+    row.id = `item-${itemCounter}`;
+
+    row.innerHTML = `
+        <td>
+            <select class="form-select form-select-sm" name="product_id_${itemCounter}" onchange="updateItemPrice(${itemCounter})" required>
+                <option value="">{{ _('Select Product') }}</option>
+                ${products.map(p => `<option value="${p.id}" data-price="${p.selling_price}" data-tax="${p.tax_rate}">${p.name}</option>`).join('')}
+            </select>
+        </td>
+        <td><input type="number" class="form-control form-control-sm" name="quantity_${itemCounter}" value="1" min="0.01" step="0.01" onchange="calculateItem(${itemCounter})" required></td>
+        <td><input type="number" class="form-control form-control-sm" name="unit_price_${itemCounter}" value="0" min="0" step="0.01" onchange="calculateItem(${itemCounter})" required></td>
+        <td><input type="number" class="form-control form-control-sm" name="discount_${itemCounter}" value="0" min="0" max="100" step="0.01" onchange="calculateItem(${itemCounter})"></td>
+        <td><span id="subtotal_${itemCounter}">0.00</span></td>
+        <td><span id="tax_${itemCounter}">0.00</span></td>
+        <td><strong><span id="total_${itemCounter}">0.00</span></strong></td>
+        <td class="text-center">
+            <button type="button" class="btn btn-sm btn-danger" onclick="removeItem(${itemCounter})" title="{{ _('Remove Product') }}" data-bs-toggle="tooltip">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(row);
+    itemCounter++;
+}
+
+function updateItemPrice(index) {
+    const select = document.querySelector(`select[name="product_id_${index}"]`);
+    if (!select) return;
+
+    const option = select.options[select.selectedIndex];
+    if (!option || !option.value) {
+        document.querySelector(`input[name="unit_price_${index}"]`).value = 0;
+        calculateItem(index);
+        return;
+    }
+
+    const price = parseFloat(option.getAttribute('data-price')) || 0;
+    document.querySelector(`input[name="unit_price_${index}"]`).value = price.toFixed(2);
+    calculateItem(index);
+}
+
+function calculateItem(index) {
+    // Get input elements
+    const quantityInput = document.querySelector(`input[name="quantity_${index}"]`);
+    const unitPriceInput = document.querySelector(`input[name="unit_price_${index}"]`);
+    const discountInput = document.querySelector(`input[name="discount_${index}"]`);
+    const select = document.querySelector(`select[name="product_id_${index}"]`);
+
+    if (!quantityInput || !unitPriceInput || !discountInput || !select) {
+        return;
+    }
+
+    const quantity = parseFloat(quantityInput.value) || 0;
+    const unitPrice = parseFloat(unitPriceInput.value) || 0;
+    const discountPercent = parseFloat(discountInput.value) || 0;
+
+    const option = select.options[select.selectedIndex];
+    const taxRate = option && option.value ? (parseFloat(option.getAttribute('data-tax')) || 15) : 15;
+
+    const lineTotal = quantity * unitPrice;
+    const discountAmount = lineTotal * (discountPercent / 100);
+    const subtotal = lineTotal - discountAmount;
+    const taxAmount = subtotal * (taxRate / 100);
+    const total = subtotal + taxAmount;
+
+    const subtotalElement = document.getElementById(`subtotal_${index}`);
+    const taxElement = document.getElementById(`tax_${index}`);
+    const totalElement = document.getElementById(`total_${index}`);
+
+    if (subtotalElement) subtotalElement.textContent = subtotal.toFixed(2);
+    if (taxElement) taxElement.textContent = taxAmount.toFixed(2);
+    if (totalElement) totalElement.textContent = total.toFixed(2);
+
+    calculateTotals();
+}
+
+function removeItem(index) {
+    const row = document.getElementById(`item-${index}`);
+    if (!row) {
+        console.error('Row not found:', index);
+        return;
+    }
+
+    // Check if this is the last item
+    const tbody = document.getElementById('itemsBody');
+    const rowCount = tbody.getElementsByTagName('tr').length;
+
+    if (rowCount <= 1) {
+        alert('{{ _("Cannot remove the last item. At least one product is required.") }}');
+        return;
+    }
+
+    // Confirm deletion
+    if (confirm('{{ _("Are you sure you want to remove this product?") }}')) {
+        row.remove();
+        calculateTotals();
+        console.log('Item removed:', index);
+    }
+}
+
+function calculateTotals() {
+    let subtotal = 0;
+    let tax = 0;
+
+    for (let i = 0; i < itemCounter; i++) {
+        const subtotalElement = document.getElementById(`subtotal_${i}`);
+        const taxElement = document.getElementById(`tax_${i}`);
+
+        if (subtotalElement && taxElement) {
+            const itemSubtotal = parseFloat(subtotalElement.textContent) || 0;
+            const itemTax = parseFloat(taxElement.textContent) || 0;
+
+            subtotal += itemSubtotal;
+            tax += itemTax;
+        }
+    }
+
+    const total = subtotal + tax;
+
+    const subtotalDisplay = document.getElementById('subtotalDisplay');
+    const taxDisplay = document.getElementById('taxDisplay');
+    const totalDisplay = document.getElementById('totalDisplay');
+
+    if (subtotalDisplay) subtotalDisplay.textContent = subtotal.toFixed(2) + ' ' + currencySymbol;
+    if (taxDisplay) taxDisplay.textContent = tax.toFixed(2) + ' ' + currencySymbol;
+    if (totalDisplay) totalDisplay.textContent = total.toFixed(2) + ' ' + currencySymbol;
+
+    console.log('Quotation totals:', { subtotal, tax, total });
+}
+
+// Form submission
+document.getElementById('quotationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const items = [];
+    for (let i = 0; i < itemCounter; i++) {
+        const productSelect = document.querySelector(`select[name="product_id_${i}"]`);
+        if (productSelect && productSelect.value) {
+            items.push(JSON.stringify({
+                product_id: productSelect.value,
+                quantity: document.querySelector(`input[name="quantity_${i}"]`).value,
+                unit_price: document.querySelector(`input[name="unit_price_${i}"]`).value,
+                discount_percentage: document.querySelector(`input[name="discount_${i}"]`).value
+            }));
+        }
+    }
+
+    if (items.length === 0) {
+        alert('{{ _('Please add at least one product') }}');
+        return;
+    }
+
+    // Add items to form
+    items.forEach(item => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'items';
+        input.value = item;
+        this.appendChild(input);
+    });
+
+    this.submit();
+});
+
+// Add first item on page load
+window.addEventListener('load', function() {
+    addItem();
+
+    // Initialize Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+// Save new customer via AJAX for quotation
+function saveCustomerQuotation() {
+    const form = document.getElementById('addCustomerFormQuotation');
+    const formData = new FormData(form);
+
+    // Validate required fields
+    const customerName = document.getElementById('customer_name_quotation').value.trim();
+    if (!customerName) {
+        alert('{{ _("Please enter customer name") }}');
+        return;
+    }
+
+    // Show loading state
+    const saveBtn = event.target;
+    const originalText = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ _("Saving...") }}';
+
+    // Send AJAX request
+    fetch('{{ url_for("sales.add_customer_ajax") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Add new customer to select dropdown
+            const select = document.getElementById('customer_id_quotation');
+            const option = document.createElement('option');
+            option.value = data.customer.id;
+            option.text = data.customer.name + ' (' + data.customer.code + ')';
+            option.selected = true;
+            select.add(option);
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addCustomerModalQuotation'));
+            modal.hide();
+
+            // Reset form
+            form.reset();
+
+            // Show success message
+            alert(data.message);
+        } else {
+            alert('{{ _("Error") }}: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('{{ _("An error occurred while saving the customer") }}');
+    })
+    .finally(() => {
+        // Restore button state
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
+    });
+}
+</script>
+{% endblock %}
+

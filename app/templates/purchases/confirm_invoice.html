@@ -50,19 +50,19 @@
                             <table class="table table-sm">
                                 <tr>
                                     <th style="width: 40%">{{ _('Subtotal') }}:</th>
-                                    <td>{{ "%.2f"|format(invoice.subtotal_amount) }} {{ _('SAR') }}</td>
+                                    <td>{{ "%.2f"|format(invoice.subtotal) }} {{ currency_symbol }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ _('Discount') }}:</th>
-                                    <td>{{ "%.2f"|format(invoice.discount_amount) }} {{ _('SAR') }}</td>
+                                    <td>{{ "%.2f"|format(invoice.discount_amount) }} {{ currency_symbol }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ _('Tax') }}:</th>
-                                    <td>{{ "%.2f"|format(invoice.tax_amount) }} {{ _('SAR') }}</td>
+                                    <td>{{ "%.2f"|format(invoice.tax_amount) }} {{ currency_symbol }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ _('Total') }}:</th>
-                                    <td><strong class="text-success">{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
+                                    <td><strong class="text-success">{{ "%.2f"|format(invoice.total_amount) }} {{ currency_symbol }}</strong></td>
                                 </tr>
                             </table>
                         </div>

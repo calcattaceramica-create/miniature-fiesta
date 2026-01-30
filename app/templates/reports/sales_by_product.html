@@ -60,7 +60,7 @@
             <div class="card-body">
                 <h6 class="text-white-50 mb-1">إجمالي قيمة المبيعات</h6>
                 <h3 class="mb-0">{{ "{:,.2f}".format(total_amount) }}</h3>
-                <small>ريال سعودي</small>
+                <small>{{ currency_name }}</small>
             </div>
         </div>
     </div>
@@ -92,7 +92,7 @@
                         <td>{{ item.code }}</td>
                         <td>{{ item.name }}</td>
                         <td>{{ "{:,.0f}".format(item.total_qty) }}</td>
-                        <td>{{ "{:,.2f}".format(item.total_amount) }} ر.س</td>
+                        <td>{{ item.total_amount|currency }}</td>
                         <td>
                             <div class="progress" style="height: 20px;">
                                 <div class="progress-bar bg-success" role="progressbar" 
@@ -108,7 +108,7 @@
                     <tr>
                         <th colspan="3">الإجمالي</th>
                         <th>{{ "{:,.0f}".format(total_qty) }}</th>
-                        <th>{{ "{:,.2f}".format(total_amount) }} ر.س</th>
+                        <th>{{ total_amount|currency }}</th>
                         <th>100%</th>
                     </tr>
                 </tfoot>

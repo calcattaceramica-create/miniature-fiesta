@@ -38,7 +38,7 @@
         <div class="card bg-warning text-white">
             <div class="card-body">
                 <h6>إجمالي الميزانية</h6>
-                <h3>{{ "%.0f"|format(total_budget) }} ر.س</h3>
+                <h3>{{ total_budget|currency }}</h3>
             </div>
         </div>
     </div>
@@ -97,7 +97,7 @@
                         </td>
                         <td>{{ campaign.start_date.strftime('%Y-%m-%d') if campaign.start_date else '-' }}</td>
                         <td>{{ campaign.end_date.strftime('%Y-%m-%d') if campaign.end_date else '-' }}</td>
-                        <td>{{ "%.2f"|format(campaign.budget) }} ر.س</td>
+                        <td>{{ campaign.budget|currency }}</td>
                         <td>{{ campaign.leads_generated }}</td>
                         <td>{{ campaign.conversions }}</td>
                         <td>

@@ -146,7 +146,7 @@
                         <div class="card-body">
                             <h6 class="card-title">إجمالي الأصول</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(total_assets) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
                         <div class="card-body">
                             <h6 class="card-title">إجمالي الإيرادات</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(total_revenue) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                         <div class="card-body">
                             <h6 class="card-title">إجمالي المصروفات</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(total_expenses) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                     </div>
                 </div>
@@ -176,7 +176,7 @@
                         <div class="card-body">
                             <h6 class="card-title">صافي الربح</h6>
                             <h3 class="mb-0">{{ "{:,.0f}".format(net_profit) }}</h3>
-                            <small>ريال سعودي</small>
+                            <small>{{ currency_name }}</small>
                         </div>
                     </div>
                 </div>

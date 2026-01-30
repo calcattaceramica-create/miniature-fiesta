@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}إعدادات الضرائب - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إعدادات الضرائب{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-percentage"></i> إعدادات الضرائب</h2>
+                <p class="text-muted mb-0">إدارة نسب الضرائب وإعداداتها</p>
+            </div>
+            <div>
+                <a href="{{ url_for('settings.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> العودة للإعدادات
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('settings.save_tax_settings') }}" id="taxSettingsForm">
+        <!-- General Tax Settings -->
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-cog"></i> الإعدادات العامة</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">نسبة الضريبة الافتراضية (%) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="default_tax_rate" 
+                                   value="{{ company.tax_rate or 15 }}" step="0.01" min="0" max="100" required>
+                            <small class="text-muted">النسبة المئوية للضريبة المضافة (VAT)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">الرقم الضريبي للشركة</label>
+                            <input type="text" class="form-control" name="tax_number" 
+                                   value="{{ company.tax_number or '' }}" placeholder="مثال: 300000000000003">
+                            <small class="text-muted">الرقم الضريبي المسجل لدى الهيئة</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="enable_tax" id="enable_tax" checked>
+                            <label class="form-check-label" for="enable_tax">
+                                <strong>تفعيل الضريبة</strong>
+                                <br><small class="text-muted">تطبيق الضريبة على الفواتير</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="tax_inclusive" id="tax_inclusive">
+                            <label class="form-check-label" for="tax_inclusive">
+                                <strong>الضريبة شاملة في السعر</strong>
+                                <br><small class="text-muted">السعر يشمل الضريبة (بدلاً من إضافتها)</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tax Rates by Category -->
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-list"></i> نسب الضرائب حسب الفئة</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> يمكنك تحديد نسب ضريبية مختلفة لفئات مختلفة من المنتجات
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>الفئة</th>
+                                <th style="width: 200px;">نسبة الضريبة (%)</th>
+                                <th style="width: 150px;">الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>المنتجات الغذائية</strong>
+                                    <br><small class="text-muted">الأطعمة والمشروبات</small>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control" name="food_tax_rate" 
+                                           value="15" step="0.01" min="0" max="100">
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" checked>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>الخدمات</strong>
+                                    <br><small class="text-muted">الخدمات المقدمة</small>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control" name="services_tax_rate" 
+                                           value="15" step="0.01" min="0" max="100">
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" checked>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>المنتجات المعفاة</strong>
+                                    <br><small class="text-muted">منتجات معفاة من الضريبة</small>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control" name="exempt_tax_rate" 
+                                           value="0" step="0.01" min="0" max="100" readonly>
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" checked>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('settings.index') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> إلغاء
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> حفظ الإعدادات
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

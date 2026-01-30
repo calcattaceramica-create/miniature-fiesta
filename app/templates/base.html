@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+{% set current_lang = session.get('language', 'ar') %}
+{% set is_rtl = current_lang == 'ar' %}
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if is_rtl else 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ _('Dashboard') }} - DED ERP{% endblock %}</title>
 
-    <!-- Bootstrap CSS RTL (Arabic) -->
+    <!-- Bootstrap CSS -->
+    {% if is_rtl %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    {% else %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% endif %}
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Font Awesome -->
@@ -218,6 +224,7 @@
                                 {% endif %}
                                 {% if current_user.has_permission('inventory.stock.view') %}
                                 <li><a class="dropdown-item" href="{{ url_for('inventory.stock') }}"><i class="fas fa-cubes"></i> {{ _('Stock') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('inventory.damaged_inventory') }}"><i class="fas fa-exclamation-triangle text-warning"></i> {{ _('Damaged Inventory') }}</a></li>
                                 {% endif %}
                                 {% if current_user.has_permission('inventory.stock.transfer') %}
                                 <li><hr class="dropdown-divider"></li>
@@ -269,17 +276,17 @@
                         </li>
                         {% endif %}
 
-                        {% if current_user.has_permission('pos.view') %}
+                        {% if current_user.has_permission('pos.access') %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="posDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-cash-register"></i> {{ _('POS') }}
+                                <i class="fas fa-cash-register"></i> {{ _('نقاط البيع') }}
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="posDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('pos.index') }}"><i class="fas fa-shopping-cart"></i> {{ _('POS Screen') }}</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('pos.sessions') }}"><i class="fas fa-history"></i> {{ _('Sessions') }}</a></li>
-                                {% if current_user.has_permission('pos.sessions.manage') %}
+                                <li><a class="dropdown-item" href="{{ url_for('pos.index') }}"><i class="fas fa-shopping-cart"></i> {{ _('شاشة نقطة البيع') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('pos.sessions') }}"><i class="fas fa-history"></i> {{ _('الجلسات') }}</a></li>
+                                {% if current_user.has_permission('pos.session.manage') %}
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('pos.open_session') }}"><i class="fas fa-door-open"></i> {{ _('Open New Session') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('pos.open_session') }}"><i class="fas fa-door-open"></i> {{ _('فتح جلسة جديدة') }}</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -317,11 +324,13 @@
                         </li>
                         {% endif %}
 
+                        {% if current_user.has_permission('license.view') %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.license_info') }}">
-                                <i class="fas fa-certificate"></i> {{ _('License Info') }}
+                            <a class="nav-link" href="{{ url_for('security.license_info') }}">
+                                <i class="fas fa-certificate"></i> {{ _('License Management') }}
                             </a>
                         </li>
+                        {% endif %}
 
                         {% if current_user.is_admin %}
                         <li class="nav-item">
@@ -341,6 +350,34 @@
                     <div class="container-fluid">
                         <span class="navbar-brand">{% block page_title %}{{ _('Dashboard') }}{% endblock %}</span>
                         <div class="d-flex align-items-center">
+                            <!-- Language Switcher -->
+                            <div class="dropdown me-3">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" title="{{ _('Language') }}">
+                                    <i class="fas fa-language"></i>
+                                    {% if session.get('language', 'ar') == 'ar' %}
+                                        🇸🇦 العربية
+                                    {% else %}
+                                        🇬🇧 English
+                                    {% endif %}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item {% if session.get('language', 'ar') == 'ar' %}active{% endif %}"
+                                           href="{{ url_for('auth.change_language', lang='ar') }}"
+                                           onclick="localStorage.setItem('forceReload', 'true');">
+                                            🇸🇦 العربية
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item {% if session.get('language', 'ar') == 'en' %}active{% endif %}"
+                                           href="{{ url_for('auth.change_language', lang='en') }}"
+                                           onclick="localStorage.setItem('forceReload', 'true');">
+                                            🇬🇧 English
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
                             <!-- User Menu -->
                             <div class="dropdown me-3">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -349,6 +386,7 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="{{ url_for('settings.profile') }}"><i class="fas fa-user-edit"></i> {{ _('Profile') }}</a></li>
                                     <li><a class="dropdown-item" href="{{ url_for('auth.change_password') }}"><i class="fas fa-key"></i> {{ _('Change Password') }}</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.license_status') }}"><i class="fas fa-certificate"></i> حالة الترخيص</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> {{ _('Logout') }}</a></li>
                                 </ul>
@@ -382,7 +420,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    
+
+    <!-- Force reload after language change -->
+    <script>
+        // Check if we need to force reload after language change
+        if (localStorage.getItem('forceReload') === 'true') {
+            localStorage.removeItem('forceReload');
+            // Force hard reload to clear cache
+            window.location.reload(true);
+        }
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

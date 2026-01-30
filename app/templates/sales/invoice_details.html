@@ -13,9 +13,22 @@
         <a href="{{ url_for('sales.invoices') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-right"></i> {{ _('Back to List') }}
         </a>
-        <button class="btn btn-primary" onclick="window.print()">
-            <i class="fas fa-print"></i> {{ _('Print') }}
-        </button>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="fas fa-print"></i> {{ _('Print') }}
+            </button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('sales.customer_receipt', id=invoice.id) }}" target="_blank">
+                    <i class="fas fa-receipt"></i> {{ _('Customer Receipt') }}
+                </a></li>
+                <li><a class="dropdown-item" href="{{ url_for('sales.warehouse_paper', id=invoice.id) }}" target="_blank">
+                    <i class="fas fa-warehouse"></i> {{ _('Warehouse Paper') }}
+                </a></li>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -90,6 +103,14 @@
                 <a href="{{ url_for('sales.delete_invoice', id=invoice.id) }}" class="btn btn-danger w-100" onclick="return confirm('{{ _('Are you sure you want to delete this invoice?') }}')">
                     <i class="fas fa-trash"></i> {{ _('Delete Invoice') }}
                 </a>
+                {% elif invoice.status == 'confirmed' or invoice.status == 'paid' %}
+                <hr>
+                <a href="{{ url_for('sales.cancel_invoice', id=invoice.id) }}" class="btn btn-warning w-100 mb-2" onclick="return confirm('{{ _('Are you sure you want to cancel this invoice? Stock will be restored.') }}')">
+                    <i class="fas fa-ban"></i> {{ _('Cancel Invoice') }}
+                </a>
+                <a href="{{ url_for('sales.delete_invoice', id=invoice.id) }}" class="btn btn-danger w-100" onclick="return confirm('{{ _('Are you sure you want to delete this invoice? Stock will be restored and the invoice will be permanently deleted.') }}')">
+                    <i class="fas fa-trash"></i> {{ _('Delete Invoice') }}
+                </a>
                 {% endif %}
             </div>
         </div>
@@ -123,17 +144,17 @@
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.description or '-' }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ "%.2f"|format(item.unit_price) }} {{ _('SAR') }}</td>
+                        <td>{{ item.unit_price|currency }}</td>
                         <td>
                             {% if item.discount_amount > 0 %}
-                                {{ "%.2f"|format(item.discount_amount) }} {{ _('SAR') }}
+                                {{ item.discount_amount|currency }}
                                 ({{ "%.1f"|format(item.discount_percentage) }}%)
                             {% else %}
                                 -
                             {% endif %}
                         </td>
-                        <td>{{ "%.2f"|format(item.tax_amount) }} {{ _('SAR') }}</td>
-                        <td><strong>{{ "%.2f"|format(item.total) }} {{ _('SAR') }}</strong></td>
+                        <td>{{ item.tax_amount|currency }}</td>
+                        <td><strong>{{ item.total|currency }}</strong></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -151,29 +172,29 @@
                 <table class="table table-sm mb-0">
                     <tr>
                         <th>{{ _('Subtotal Before Tax') }}:</th>
-                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.subtotal) }} {{ _('SAR') }}</strong></td>
+                        <td class="text-end"><strong>{{ invoice.subtotal|currency }}</strong></td>
                     </tr>
                     {% if invoice.discount_amount > 0 %}
                     <tr>
                         <th>{{ _('Discount') }}:</th>
-                        <td class="text-end"><strong class="text-danger">-{{ "%.2f"|format(invoice.discount_amount) }} {{ _('SAR') }}</strong></td>
+                        <td class="text-end"><strong class="text-danger">-{{ invoice.discount_amount|currency }}</strong></td>
                     </tr>
                     {% endif %}
                     <tr>
                         <th>{{ _('Tax (15%)') }}:</th>
-                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.tax_amount) }} {{ _('SAR') }}</strong></td>
+                        <td class="text-end"><strong>{{ invoice.tax_amount|currency }}</strong></td>
                     </tr>
                     <tr class="table-primary">
                         <th>{{ _('Grand Total') }}:</th>
-                        <td class="text-end"><strong class="fs-5">{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
+                        <td class="text-end"><strong class="fs-5">{{ invoice.total_amount|currency }}</strong></td>
                     </tr>
                     <tr class="table-success">
                         <th>{{ _('Paid Amount') }}:</th>
-                        <td class="text-end"><strong>{{ "%.2f"|format(invoice.paid_amount) }} {{ _('SAR') }}</strong></td>
+                        <td class="text-end"><strong>{{ invoice.paid_amount|currency }}</strong></td>
                     </tr>
                     <tr class="table-warning">
                         <th>{{ _('Remaining Amount') }}:</th>
-                        <td class="text-end"><strong class="fs-5">{{ "%.2f"|format(invoice.remaining_amount) }} {{ _('SAR') }}</strong></td>
+                        <td class="text-end"><strong class="fs-5">{{ invoice.remaining_amount|currency }}</strong></td>
                     </tr>
                 </table>
             </div>

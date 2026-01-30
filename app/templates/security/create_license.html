@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Create New License') }}{% endblock %}
+
+{% block content %}
+<style>
+    .create-license-container {
+        max-width: 900px;
+        margin: 2rem auto;
+    }
+    
+    .license-form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        padding: 3rem;
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .form-header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-create {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border-radius: 50px;
+        transition: all 0.3s;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border-radius: 50px;
+        transition: all 0.3s;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        transform: translateY(-3px);
+        color: white;
+    }
+    
+    .info-box {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left: 4px solid #667eea;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="create-license-container">
+    <div class="license-form-card">
+        <div class="form-header">
+            <h2>
+                <i class="fas fa-certificate"></i>
+                {{ _('Create New License') }}
+            </h2>
+            <p class="mb-0">{{ _('Fill in the details to create a new license') }}</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('security.create_license') }}">
+            <!-- Client Information -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-user"></i>
+                    {{ _('Client Information') }}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="client_name" class="form-label">
+                            {{ _('Client Name') }} <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="client_name" name="client_name" required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="client_company" class="form-label">
+                            {{ _('Company Name') }}
+                        </label>
+                        <input type="text" class="form-control" id="client_company" name="client_company">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="client_email" class="form-label">
+                            {{ _('Email') }}
+                        </label>
+                        <input type="email" class="form-control" id="client_email" name="client_email">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="client_phone" class="form-label">
+                            {{ _('Phone') }}
+                        </label>
+                        <input type="text" class="form-control" id="client_phone" name="client_phone">
+                    </div>
+                </div>
+            </div>
+
+            <!-- License Details -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-key"></i>
+                    {{ _('License Details') }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="license_type" class="form-label">
+                            {{ _('License Type') }} <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="license_type" name="license_type" required onchange="updateDuration()">
+                            <option value="trial">{{ _('Trial') }} (تجريبي)</option>
+                            <option value="monthly">{{ _('Monthly') }} (شهري)</option>
+                            <option value="yearly">{{ _('Yearly') }} (سنوي)</option>
+                            <option value="LIFETIME">{{ _('Lifetime') }} (مدى الحياة)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3" id="duration_field">
+                        <label for="duration_days" class="form-label">
+                            {{ _('Duration (days)') }}
+                        </label>
+                        <input type="number" class="form-control" id="duration_days" name="duration_days" value="30" min="1">
+                        <small class="text-muted">{{ _('Leave empty for lifetime license') }}</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="max_users" class="form-label">
+                            {{ _('Max Users') }} <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="max_users" name="max_users" value="10" min="1" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="max_branches" class="form-label">
+                            {{ _('Max Branches') }} <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" class="form-control" id="max_branches" name="max_branches" value="1" min="1" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Credentials -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-user-shield"></i>
+                    {{ _('Admin Credentials') }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="admin_username" class="form-label">
+                            {{ _('Admin Username') }}
+                        </label>
+                        <input type="text" class="form-control" id="admin_username" name="admin_username" value="admin">
+                        <small class="text-muted">{{ _('Default: admin') }}</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="admin_password" class="form-label">
+                            {{ _('Admin Password') }}
+                        </label>
+                        <input type="password" class="form-control" id="admin_password" name="admin_password" value="admin123">
+                        <small class="text-muted">{{ _('Default: admin123') }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-sticky-note"></i>
+                    {{ _('Notes') }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="notes" class="form-label">
+                        {{ _('Additional Notes') }}
+                    </label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="{{ _('Enter any additional notes about this license...') }}"></textarea>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-create me-3">
+                    <i class="fas fa-check-circle"></i>
+                    {{ _('Create License') }}
+                </button>
+                <a href="{{ url_for('security.license_info') }}" class="btn btn-cancel">
+                    <i class="fas fa-times-circle"></i>
+                    {{ _('Cancel') }}
+                </a>
+            </div>
+
+            <div class="info-box">
+                <strong><i class="fas fa-info-circle"></i> {{ _('Note') }}:</strong>
+                {{ _('A unique license key will be generated automatically after creation.') }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function updateDuration() {
+    const licenseType = document.getElementById('license_type').value;
+    const durationField = document.getElementById('duration_field');
+    const durationInput = document.getElementById('duration_days');
+
+    if (licenseType === 'LIFETIME') {
+        durationInput.value = '';
+        durationInput.disabled = true;
+        durationField.style.opacity = '0.5';
+    } else {
+        durationInput.disabled = false;
+        durationField.style.opacity = '1';
+
+        // Set default values based on type
+        if (licenseType === 'trial') {
+            durationInput.value = '30';
+        } else if (licenseType === 'monthly') {
+            durationInput.value = '30';
+        } else if (licenseType === 'yearly') {
+            durationInput.value = '365';
+        }
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateDuration();
+});
+</script>
+
+{% endblock %}
+

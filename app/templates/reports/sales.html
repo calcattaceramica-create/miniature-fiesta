@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Sales Report') }} - {{ _('Inventory Management System') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+}
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+}
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.fs-1 {
+    font-size: 3rem !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-chart-line"></i> {{ _('Sales Report') }}</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Filters -->
+                    <form method="GET" action="{{ url_for('reports.sales_report') }}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ _('From Date') }}</label>
+                                <input type="date" name="start_date" class="form-control" value="{{ start_date or '' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ _('To Date') }}</label>
+                                <input type="date" name="end_date" class="form-control" value="{{ end_date or '' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-search"></i> {{ _('Search') }}
+                                    </button>
+                                    <a href="{{ url_for('reports.sales_report') }}" class="btn btn-secondary">
+                                        <i class="fas fa-redo"></i> {{ _('Reset') }}
+                                    </a>
+                                    <button type="button" onclick="window.print()" class="btn btn-info">
+                                        <i class="fas fa-print"></i> {{ _('Print') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-gradient-success text-white shadow">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-1">{{ _('Total Invoices') }}</h6>
+                                    <h3 class="mb-0">{{ invoices|length }}</h3>
+                                </div>
+                                <div class="fs-1">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-primary text-white shadow">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-1">{{ _('Total Sales') }}</h6>
+                                    <h3 class="mb-0">{{ "{:,.2f}".format(total_sales) }} {{ currency_symbol }}</h3>
+                                </div>
+                                <div class="fs-1">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-warning text-white shadow">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-1">{{ _('Total Tax') }}</h6>
+                                    <h3 class="mb-0">{{ "{:,.2f}".format(total_tax) }} {{ currency_symbol }}</h3>
+                                </div>
+                                <div class="fs-1">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices Table -->
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Sales Invoices') }} ({{ invoices|length }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if invoices %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ _('Invoice Number') }}</th>
+                                    <th>{{ _('Date') }}</th>
+                                    <th>{{ _('Customer') }}</th>
+                                    <th>{{ _('Warehouse') }}</th>
+                                    <th>{{ _('Subtotal') }}</th>
+                                    <th>{{ _('Tax') }}</th>
+                                    <th>{{ _('Total') }}</th>
+                                    <th>{{ _('Payment Status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                    <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ invoice.customer.name if invoice.customer else _('Walk-in Customer') }}</td>
+                                    <td>{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
+                                    <td>{{ "{:,.2f}".format(invoice.subtotal) }} {{ _('SAR') }}</td>
+                                    <td>{{ "{:,.2f}".format(invoice.tax_amount) }} {{ _('SAR') }}</td>
+                                    <td><strong>{{ "{:,.2f}".format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
+                                    <td>
+                                        {% if invoice.payment_status == 'paid' %}
+                                            <span class="badge bg-success">{{ _('Paid') }}</span>
+                                        {% elif invoice.payment_status == 'partial' %}
+                                            <span class="badge bg-warning">{{ _('Partial') }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ _('Unpaid') }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="7">{{ _('Total') }}</th>
+                                    <th colspan="2"><strong>{{ "{:,.2f}".format(total_sales) }} {{ _('SAR') }}</strong></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle fa-3x mb-3"></i>
+                        <p>{{ _('No sales invoices found in the selected period') }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+}
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+@media print {
+    .btn, .card-header { display: none !important; }
+}
+</style>
+{% endblock %}
+

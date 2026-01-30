@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Currency Position</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-box {
+            border: 2px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Currency Symbol Position</h1>
+    
+    <div class="test-box">
+        <h2>Current Language: <span id="current-lang"></span></h2>
+        <button onclick="setLanguage('en')">Switch to English</button>
+        <button onclick="setLanguage('ar')">Switch to Arabic</button>
+    </div>
+
+    <div class="test-box">
+        <h2>Test Results:</h2>
+        <div class="result">
+            formatPrice(100): <span id="result-100"></span>
+        </div>
+        <div class="result">
+            formatPrice(15.50): <span id="result-15"></span>
+        </div>
+        <div class="result">
+            formatPrice(432.99): <span id="result-432"></span>
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>Expected Results:</h2>
+        <p><strong>English (en):</strong> € 100.00, € 15.50, € 432.99</p>
+        <p><strong>Arabic (ar):</strong> 100.00 €, 15.50 €, 432.99 €</p>
+    </div>
+
+    <script>
+        const CURRENCY_SYMBOL = '€';
+
+        // دالة لتنسيق السعر مع رمز العملة حسب اللغة
+        function formatPrice(price) {
+            const formattedPrice = parseFloat(price).toFixed(2);
+            // قراءة اللغة الحالية في كل مرة
+            const currentLang = document.documentElement.lang || 'ar';
+            
+            console.log('formatPrice called:', {price, currentLang, currency: CURRENCY_SYMBOL});
+            
+            if (currentLang === 'ar') {
+                // العربية: السعر ثم العملة (على اليمين)
+                return `${formattedPrice} ${CURRENCY_SYMBOL}`;
+            } else {
+                // الإنجليزية: العملة ثم السعر (على اليسار)
+                return `${CURRENCY_SYMBOL} ${formattedPrice}`;
+            }
+        }
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            updateResults();
+        }
+
+        function updateResults() {
+            const lang = document.documentElement.lang;
+            document.getElementById('current-lang').textContent = lang;
+            document.getElementById('result-100').textContent = formatPrice(100);
+            document.getElementById('result-15').textContent = formatPrice(15.50);
+            document.getElementById('result-432').textContent = formatPrice(432.99);
+        }
+
+        // Initialize
+        updateResults();
+    </script>
+</body>
+</html>
+

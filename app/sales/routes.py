@@ -298,6 +298,22 @@ def invoice_details(id):
     invoice = SalesInvoice.query.get_or_404(id)
     return render_template('sales/invoice_details.html', invoice=invoice)
 
+@bp.route('/invoices/<int:id>/customer-receipt')
+@login_required
+@permission_required('sales.view')
+def customer_receipt(id):
+    """Print customer receipt"""
+    invoice = SalesInvoice.query.get_or_404(id)
+    return render_template('sales/customer_receipt.html', invoice=invoice)
+
+@bp.route('/invoices/<int:id>/warehouse-paper')
+@login_required
+@permission_required('sales.view')
+def warehouse_paper(id):
+    """Print warehouse paper"""
+    invoice = SalesInvoice.query.get_or_404(id)
+    return render_template('sales/warehouse_paper.html', invoice=invoice)
+
 @bp.route('/invoices/<int:id>/confirm', methods=['POST', 'GET'])
 @login_required
 @permission_required('sales.edit')
@@ -462,11 +478,35 @@ def delete_invoice(id):
     """Delete sales invoice"""
     invoice = SalesInvoice.query.get_or_404(id)
 
-    if invoice.status != 'draft':
-        flash(_('Cannot delete a confirmed invoice'), 'error')
-        return redirect(url_for('sales.invoice_details', id=id))
-
     try:
+        # If invoice was confirmed or paid, restore stock and update customer balance
+        if invoice.status in ['confirmed', 'paid']:
+            for item in invoice.items:
+                stock = Stock.query.filter_by(
+                    product_id=item.product_id,
+                    warehouse_id=invoice.warehouse_id
+                ).first()
+
+                if stock:
+                    stock.quantity += item.quantity
+
+                    # Create stock movement record
+                    movement = StockMovement(
+                        product_id=item.product_id,
+                        warehouse_id=invoice.warehouse_id,
+                        movement_type='in',
+                        quantity=item.quantity,
+                        reference_type='sales_invoice_delete',
+                        reference_id=invoice.id,
+                        notes=f'حذف فاتورة مبيعات رقم {invoice.invoice_number}',
+                        user_id=current_user.id
+                    )
+                    db.session.add(movement)
+
+            # Update customer balance
+            invoice.customer.current_balance -= invoice.total_amount
+
+        # Delete invoice
         db.session.delete(invoice)
         db.session.commit()
         flash(_('Invoice deleted successfully'), 'success')

@@ -1,14 +1,43 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, current_app
 from flask_login import login_required, current_user
 from flask_babel import gettext as _
 from app.inventory import bp
 from app import db
-from app.models import Product, Category, Unit, Warehouse, Stock, StockMovement, Branch, User
+from app.models import Product, Category, Unit, Warehouse, Stock, StockMovement, Branch, User, DamagedInventory
 from app.models_sales import SalesInvoiceItem, QuotationItem
 from app.models_purchases import PurchaseInvoiceItem, PurchaseOrderItem, PurchaseReturnItem
 from app.models_pos import POSOrderItem
 from app.auth.decorators import permission_required, any_permission_required
 from datetime import datetime
+import os
+from werkzeug.utils import secure_filename
+
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+def save_product_image(file):
+    """Save product image and return filename"""
+    if file and allowed_file(file.filename):
+        # Create uploads directory if it doesn't exist
+        upload_folder = current_app.config['UPLOAD_FOLDER']
+        products_folder = os.path.join(upload_folder, 'products')
+        os.makedirs(products_folder, exist_ok=True)
+
+        # Generate unique filename
+        filename = secure_filename(file.filename)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        name, ext = os.path.splitext(filename)
+        unique_filename = f"{name}_{timestamp}{ext}"
+
+        # Save file
+        filepath = os.path.join(products_folder, unique_filename)
+        file.save(filepath)
+
+        # Return relative path for database
+        return f"products/{unique_filename}"
+    return None
 
 @bp.route('/products')
 @login_required
@@ -18,30 +47,41 @@ def products():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
     category_id = request.args.get('category', type=int)
-    
+
     query = Product.query
-    
+
     if search:
         query = query.filter(
             (Product.name.contains(search)) |
             (Product.code.contains(search)) |
             (Product.barcode.contains(search))
         )
-    
+
     if category_id:
         query = query.filter_by(category_id=category_id)
-    
+
     products = query.order_by(Product.created_at.desc()).paginate(
         page=page, per_page=20, error_out=False
     )
-    
+
     categories = Category.query.filter_by(is_active=True).all()
-    
+
+    # Get company settings for currency
+    from app.models import Company
+    from flask import current_app
+    company = Company.query.first()
+    currency_code = company.currency if company else current_app.config.get('DEFAULT_CURRENCY', 'SAR')
+    currency_symbol = current_app.config['CURRENCIES'].get(currency_code, {}).get('symbol', 'ر.س')
+    currency_name = current_app.config['CURRENCIES'].get(currency_code, {}).get('name', 'ريال سعودي')
+
     return render_template('inventory/products.html',
                          products=products,
                          categories=categories,
                          search=search,
-                         category_id=category_id)
+                         category_id=category_id,
+                         currency_symbol=currency_symbol,
+                         currency_name=currency_name,
+                         currency_code=currency_code)
 
 @bp.route('/products/add', methods=['GET', 'POST'])
 @login_required
@@ -50,16 +90,64 @@ def add_product():
     """Add new product"""
     if request.method == 'POST':
         try:
-            # Get code, barcode and SKU, set to None if empty
-            code = request.form.get('code')
+            # Get barcode, set to None if empty
             barcode = request.form.get('barcode') or None
-            sku = request.form.get('sku') or None
 
-            # Check if code already exists (required field)
-            if code:
+            # Auto-generate Product Code if not provided
+            code = request.form.get('code')
+            if not code or code.strip() == '':
+                # Generate code: PRD-YYYYMM-XXXX
+                from datetime import datetime
+                today = datetime.utcnow()
+                prefix = f'PRD-{today.year}{today.month:02d}'
+
+                # Find last product with this prefix
+                last_product = Product.query.filter(
+                    Product.code.like(f'{prefix}-%')
+                ).order_by(Product.id.desc()).first()
+
+                if last_product:
+                    try:
+                        last_num = int(last_product.code.split('-')[-1])
+                        code = f'{prefix}-{(last_num + 1):04d}'
+                    except:
+                        code = f'{prefix}-0001'
+                else:
+                    code = f'{prefix}-0001'
+            else:
+                # Check if manually entered code already exists
                 existing_code = Product.query.filter_by(code=code).first()
                 if existing_code:
                     flash(_('Product code %(code)s already exists for product: %(name)s', code=code, name=existing_code.name), 'error')
+                    categories = Category.query.filter_by(is_active=True).all()
+                    units = Unit.query.filter_by(is_active=True).all()
+                    warehouses = Warehouse.query.filter_by(is_active=True).all()
+                    return render_template('inventory/add_product.html',
+                                         categories=categories,
+                                         units=units,
+                                         warehouses=warehouses)
+
+            # Auto-generate SKU if not provided
+            sku = request.form.get('sku')
+            if not sku or sku.strip() == '':
+                # Generate SKU: SKU-XXXX
+                last_product = Product.query.filter(
+                    Product.sku.like('SKU-%')
+                ).order_by(Product.id.desc()).first()
+
+                if last_product and last_product.sku:
+                    try:
+                        last_num = int(last_product.sku.split('-')[-1])
+                        sku = f'SKU-{(last_num + 1):04d}'
+                    except:
+                        sku = f'SKU-0001'
+                else:
+                    sku = f'SKU-0001'
+            else:
+                # Check if manually entered SKU already exists
+                existing_sku = Product.query.filter_by(sku=sku).first()
+                if existing_sku:
+                    flash(_('SKU %(sku)s already exists for product: %(name)s', sku=sku, name=existing_sku.name), 'error')
                     categories = Category.query.filter_by(is_active=True).all()
                     units = Unit.query.filter_by(is_active=True).all()
                     warehouses = Warehouse.query.filter_by(is_active=True).all()
@@ -81,28 +169,25 @@ def add_product():
                                          units=units,
                                          warehouses=warehouses)
 
-            # Check if SKU already exists (if provided)
-            if sku:
-                existing_sku = Product.query.filter_by(sku=sku).first()
-                if existing_sku:
-                    flash(_('SKU %(sku)s already exists for product: %(name)s', sku=sku, name=existing_sku.name), 'error')
-                    categories = Category.query.filter_by(is_active=True).all()
-                    units = Unit.query.filter_by(is_active=True).all()
-                    warehouses = Warehouse.query.filter_by(is_active=True).all()
-                    return render_template('inventory/add_product.html',
-                                         categories=categories,
-                                         units=units,
-                                         warehouses=warehouses)
+            # Handle image upload
+            image_filename = None
+            if 'image' in request.files:
+                file = request.files['image']
+                if file and file.filename != '':
+                    image_filename = save_product_image(file)
+                    if not image_filename:
+                        flash(_('Invalid image file. Allowed formats: PNG, JPG, JPEG, GIF'), 'error')
 
             product = Product(
                 name=request.form.get('name'),
                 name_en=request.form.get('name_en'),
-                code=request.form.get('code'),
+                code=code,
                 barcode=barcode,
                 sku=sku,
                 category_id=request.form.get('category_id', type=int),
                 unit_id=request.form.get('unit_id', type=int),
                 description=request.form.get('description'),
+                image=image_filename,
                 cost_price=request.form.get('cost_price', 0, type=float),
                 selling_price=request.form.get('selling_price', 0, type=float),
                 min_price=request.form.get('min_price', 0, type=float),
@@ -220,6 +305,26 @@ def edit_product(id):
                                          product=product,
                                          categories=categories,
                                          units=units)
+
+            # Handle image upload
+            if 'image' in request.files:
+                file = request.files['image']
+                if file and file.filename != '':
+                    # Delete old image if exists
+                    if product.image:
+                        old_image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], product.image)
+                        if os.path.exists(old_image_path):
+                            try:
+                                os.remove(old_image_path)
+                            except:
+                                pass
+
+                    # Save new image
+                    image_filename = save_product_image(file)
+                    if image_filename:
+                        product.image = image_filename
+                    else:
+                        flash(_('Invalid image file. Allowed formats: PNG, JPG, JPEG, GIF'), 'error')
 
             product.name = request.form.get('name')
             product.name_en = request.form.get('name_en')
@@ -598,4 +703,163 @@ def get_product_stock(product_id):
         }
 
     return jsonify(stock_data)
+
+@bp.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    """Serve uploaded files"""
+    from flask import send_from_directory
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+
+@bp.route('/api/product-stock/<int:product_id>')
+@login_required
+@permission_required('inventory.stock.view')
+def api_product_stock(product_id):
+    """Get product stock information by warehouse"""
+    stocks = Stock.query.filter_by(product_id=product_id).all()
+
+    stock_data = {}
+    for stock in stocks:
+        stock_data[str(stock.warehouse_id)] = {
+            'quantity': float(stock.quantity or 0),
+            'reserved': float(stock.reserved_quantity or 0),
+            'damaged': float(stock.damaged_quantity or 0),
+            'available': float(stock.available_quantity or 0)
+        }
+
+    return jsonify(stock_data)
+
+@bp.route('/damaged-inventory')
+@login_required
+@permission_required('inventory.stock.view')
+def damaged_inventory():
+    """View damaged inventory"""
+    page = request.args.get('page', 1, type=int)
+    warehouse_id = request.args.get('warehouse', type=int)
+
+    query = DamagedInventory.query.join(Product).join(Warehouse)
+
+    if warehouse_id:
+        query = query.filter(DamagedInventory.warehouse_id == warehouse_id)
+
+    damaged_items = query.order_by(DamagedInventory.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+
+    warehouses = Warehouse.query.filter_by(is_active=True).all()
+
+    # Calculate total damaged value
+    total_damaged_value = db.session.query(db.func.sum(DamagedInventory.cost_value)).scalar() or 0
+
+    return render_template('inventory/damaged_inventory.html',
+                         damaged_items=damaged_items,
+                         warehouses=warehouses,
+                         warehouse_id=warehouse_id,
+                         total_damaged_value=total_damaged_value)
+
+@bp.route('/damaged-inventory/add', methods=['GET', 'POST'])
+@login_required
+@permission_required('inventory.stock.edit')
+def add_damaged_inventory():
+    """Add damaged inventory record"""
+    if request.method == 'POST':
+        try:
+            product_id = request.form.get('product_id', type=int)
+            warehouse_id = request.form.get('warehouse_id', type=int)
+            quantity = request.form.get('quantity', type=float)
+            reason = request.form.get('reason')
+            damage_type = request.form.get('damage_type')
+            notes = request.form.get('notes')
+
+            # Get product and stock
+            product = Product.query.get_or_404(product_id)
+            stock = Stock.query.filter_by(
+                product_id=product_id,
+                warehouse_id=warehouse_id
+            ).first()
+
+            if not stock or stock.quantity < quantity:
+                flash(_('Insufficient quantity in stock'), 'error')
+                return redirect(url_for('inventory.add_damaged_inventory'))
+
+            # Calculate cost value
+            cost_value = quantity * product.cost_price
+
+            # Create damaged inventory record
+            damaged = DamagedInventory(
+                product_id=product_id,
+                warehouse_id=warehouse_id,
+                quantity=quantity,
+                reason=reason,
+                damage_type=damage_type,
+                cost_value=cost_value,
+                notes=notes,
+                user_id=current_user.id
+            )
+            db.session.add(damaged)
+            db.session.flush()  # Get the ID without committing
+
+            # Update stock
+            stock.quantity -= quantity
+            stock.damaged_quantity = (stock.damaged_quantity or 0) + quantity
+            stock.available_quantity = stock.quantity - stock.reserved_quantity - stock.damaged_quantity
+
+            # Create stock movement
+            movement = StockMovement(
+                product_id=product_id,
+                warehouse_id=warehouse_id,
+                movement_type='damaged',
+                quantity=-quantity,  # Negative for outgoing
+                reference_type='damaged',
+                reference_id=damaged.id,
+                notes=f'{_("Damaged inventory")}: {reason}',
+                user_id=current_user.id
+            )
+            db.session.add(movement)
+
+            db.session.commit()
+
+            flash(_('Damaged inventory recorded successfully'), 'success')
+            return redirect(url_for('inventory.damaged_inventory'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(_('An error occurred: %(error)s', error=str(e)), 'error')
+
+    products = Product.query.filter_by(is_active=True, track_inventory=True).all()
+    warehouses = Warehouse.query.filter_by(is_active=True).all()
+
+    return render_template('inventory/add_damaged_inventory.html',
+                         products=products,
+                         warehouses=warehouses)
+
+@bp.route('/damaged-inventory/<int:id>/delete', methods=['GET', 'POST'])
+@login_required
+@permission_required('inventory.stock.delete')
+def delete_damaged_inventory(id):
+    """Delete damaged inventory record"""
+    damaged = DamagedInventory.query.get_or_404(id)
+
+    try:
+        # Get stock
+        stock = Stock.query.filter_by(
+            product_id=damaged.product_id,
+            warehouse_id=damaged.warehouse_id
+        ).first()
+
+        if stock:
+            # Restore stock
+            stock.quantity += damaged.quantity
+            stock.damaged_quantity = max(0, (stock.damaged_quantity or 0) - damaged.quantity)
+            stock.available_quantity = stock.quantity - stock.reserved_quantity - stock.damaged_quantity
+
+        # Delete damaged record
+        db.session.delete(damaged)
+        db.session.commit()
+
+        flash(_('Damaged inventory record deleted successfully'), 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(_('An error occurred: %(error)s', error=str(e)), 'error')
+
+    return redirect(url_for('inventory.damaged_inventory'))
 

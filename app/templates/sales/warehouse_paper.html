@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('language', 'ar') }}" dir="{{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Warehouse Paper') }} - {{ invoice.invoice_number }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: {{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }};
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .warehouse-container {
+            max-width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            color: #dc3545;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            font-size: 14px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .alert-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 3px;
+            padding: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .alert-box strong {
+            color: #856404;
+            font-size: 12px;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            border: 1px solid #dc3545;
+            padding: 6px;
+            border-radius: 3px;
+            background: #fff5f5;
+        }
+
+        .info-box h3 {
+            font-size: 11px;
+            color: #dc3545;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .info-box p {
+            margin: 2px 0;
+            color: #333;
+            font-size: 10px;
+        }
+
+        .info-box strong {
+            color: #000;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 10px;
+        }
+
+        .items-table thead {
+            background: #dc3545;
+            color: white;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 4px;
+            text-align: right;
+            border: 1px solid #ddd;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .checkbox-cell {
+            text-align: center;
+            width: 30px;
+        }
+
+        .checkbox {
+            width: 15px;
+            height: 15px;
+            border: 2px solid #333;
+            display: inline-block;
+        }
+
+        .product-code {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-weight: bold;
+            font-size: 9px;
+        }
+
+        .signature-section {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .signature-box {
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 3px;
+        }
+
+        .signature-box h4 {
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .signature-line {
+            border-top: 2px solid #333;
+            margin-top: 30px;
+            padding-top: 5px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .footer {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 9px;
+            border-top: 1px solid #dc3545;
+            padding-top: 8px;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            border: 1px solid #2196F3;
+            border-radius: 3px;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .instructions h4 {
+            color: #1976D2;
+            margin-bottom: 5px;
+            font-size: 11px;
+        }
+
+        .instructions ul {
+            margin-right: 15px;
+            color: #333;
+            font-size: 9px;
+        }
+
+        .instructions li {
+            margin: 2px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .warehouse-container {
+                box-shadow: none;
+                max-width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="warehouse-container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-warehouse"></i> {{ _('Warehouse Paper - Picking Request') }}</h1>
+            <h2>{{ _('Warehouse Picking List') }}</h2>
+        </div>
+
+        <!-- Alert -->
+        <div class="alert-box">
+            <strong><i class="fas fa-exclamation-triangle"></i> {{ _('Warning: All items must be verified before delivery') }}</strong>
+        </div>
+
+        <!-- Invoice Information -->
+        <div class="info-section">
+            <div class="info-box">
+                <h3><i class="fas fa-file-invoice"></i> {{ _('Invoice Information') }}</h3>
+                <p><strong>{{ _('Invoice Number') }}:</strong> {{ invoice.invoice_number }}</p>
+                <p><strong>{{ _('Date') }}:</strong> {{ invoice.invoice_date.strftime('%Y-%m-%d') }}</p>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-user"></i> {{ _('Customer Information') }}</h3>
+                <p><strong>{{ _('Customer') }}:</strong> {{ invoice.customer.name }}</p>
+                <p><strong>{{ _('Number') }}:</strong> {{ invoice.customer.code }}</p>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-warehouse"></i> {{ _('Warehouse') }}</h3>
+                <p><strong>{{ _('Name') }}:</strong> {{ invoice.warehouse.name if invoice.warehouse else _('Not Specified') }}</p>
+                <p><strong>{{ _('Responsible') }}:</strong> {{ invoice.user.username if invoice.user else '-' }}</p>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h4><i class="fas fa-clipboard-list"></i> {{ _('Picking Instructions') }}:</h4>
+            <ul>
+                <li>{{ _('Check availability of all items • Verify quantities accurately • Inspect product condition • Mark (✓) after picking each item') }}</li>
+            </ul>
+        </div>
+
+        <!-- Items Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="checkbox-cell">✓</th>
+                    <th style="width: 30px;">#</th>
+                    <th style="width: 80px;">{{ _('Product Code') }}</th>
+                    <th>{{ _('Product Name') }}</th>
+                    <th style="width: 60px;">{{ _('Quantity') }}</th>
+                    <th style="width: 60px;">{{ _('Unit') }}</th>
+                    <th style="width: 100px;">{{ _('Location/Shelf') }}</th>
+                    <th style="width: 100px;">{{ _('Notes') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.items %}
+                <tr>
+                    <td class="checkbox-cell">
+                        <span class="checkbox"></span>
+                    </td>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <span class="product-code">{{ item.product.code }}</span>
+                    </td>
+                    <td>
+                        <strong>{{ item.product.name }}</strong>
+                    </td>
+                    <td style="text-align: center; font-weight: bold;">
+                        {{ item.quantity }}
+                    </td>
+                    <td>{{ item.product.unit if item.product.unit else _('Piece') }}</td>
+                    <td style="background: #fffacd;"></td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Summary -->
+        <div style="background: #f0f0f0; padding: 6px; border-radius: 3px; margin-bottom: 10px; font-size: 10px;">
+            <strong><i class="fas fa-calculator"></i> {{ _('Summary') }}:</strong>
+            {{ _('Number of Items') }}: {{ invoice.items|length }} •
+            {{ _('Total Quantities') }}: {{ invoice.items|sum(attribute='quantity') }} {{ _('units') }}
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-box">
+                <h4>{{ _('Warehouse Keeper') }}</h4>
+                <div class="signature-line">{{ _('Signature') }}</div>
+                <p style="margin-top: 5px; color: #666; font-size: 8px;">
+                    {{ _('Name') }}: _________<br>
+                    {{ _('Date') }}: _________
+                </p>
+            </div>
+
+            <div class="signature-box">
+                <h4>{{ _('Receiver') }}</h4>
+                <div class="signature-line">{{ _('Signature') }}</div>
+                <p style="margin-top: 5px; color: #666; font-size: 8px;">
+                    {{ _('Name') }}: _________<br>
+                    {{ _('Date') }}: _________
+                </p>
+            </div>
+
+            <div class="signature-box">
+                <h4>{{ _('Responsible Manager') }}</h4>
+                <div class="signature-line">{{ _('Signature') }}</div>
+                <p style="margin-top: 5px; color: #666; font-size: 8px;">
+                    {{ _('Name') }}: _________<br>
+                    {{ _('Date') }}: _________
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>{{ _('Note') }}:</strong> {{ _('This paper is for internal use - A copy must be kept in the warehouse') }}</p>
+            <p style="margin-top: 3px;">{{ _('Printed on') }}: <span id="print-date"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Set print date
+        document.getElementById('print-date').textContent = new Date().toLocaleString('ar-SA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Auto print on load
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>
+

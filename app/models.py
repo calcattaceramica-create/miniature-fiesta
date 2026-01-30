@@ -33,6 +33,7 @@ class User(UserMixin, db.Model):
     # Relationships
     branch = db.relationship('Branch', foreign_keys=[branch_id], backref='users')
     role = db.relationship('Role', backref='users', lazy='joined')
+    license = db.relationship('License', backref='users')
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -106,24 +107,57 @@ class User(UserMixin, db.Model):
         """Check if user has a valid license"""
         if self.is_admin:
             return True  # Admin always has access
-        if not self.license_id:
-            return False
-        return self.license.is_valid()
+
+        try:
+            # If no license is assigned to the user
+            if not self.license_id:
+                # Check if there is ANY active license in the system
+                # If there's an active license, then this user MUST be linked to it
+                from app.models_license import License
+                active_license = License.query.filter_by(is_active=True).first()
+                if active_license:
+                    return False # User must be linked to the active license
+                return True # If no license exists at all in the system, allow access (initial setup)
+
+            if not hasattr(self, 'license') or self.license is None:
+                return False
+
+            # is_valid() returns (bool, message) tuple
+            is_valid, message = self.license.is_valid()
+            return is_valid
+        except Exception as e:
+            print(f"License check error: {e}")
+            return False  # Fail-closed for production
 
     def get_license_status(self):
         """Get license status message"""
         if self.is_admin:
             return 'admin'
-        if not self.license_id:
+
+        try:
+            if not self.license_id:
+                from app.models_license import License
+                active_license = License.query.filter_by(is_active=True).first()
+                if active_license:
+                    return 'no_license'
+                return 'active'  # No license in system yet
+
+            if not hasattr(self, 'license') or self.license is None:
+                return 'no_license'
+
+            # is_valid() returns (bool, message) tuple
+            is_valid, message = self.license.is_valid()
+            if not is_valid:
+                if self.license.is_suspended:
+                    return 'suspended'
+                elif self.license.expires_at and datetime.utcnow() > self.license.expires_at:
+                    return 'expired'
+                else:
+                    return 'inactive'
+            return 'active'
+        except Exception as e:
+            print(f"License status check error: {e}")
             return 'no_license'
-        if not self.license.is_valid():
-            if self.license.status == 'suspended':
-                return 'suspended'
-            elif self.license.status == 'expired':
-                return 'expired'
-            else:
-                return 'inactive'
-        return 'active'
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -135,6 +169,7 @@ class Role(db.Model):
     name = db.Column(db.String(64), unique=True, nullable=False)
     name_ar = db.Column(db.String(64))
     description = db.Column(db.String(256))
+    description_en = db.Column(db.String(256))
     permissions = db.relationship('Permission', secondary='role_permissions', backref='roles', lazy='joined')
 
     def __repr__(self):
@@ -229,7 +264,7 @@ class Company(db.Model):
     website = db.Column(db.String(128))
     logo = db.Column(db.String(256))
     currency = db.Column(db.String(3), default='SAR')
-    tax_rate = db.Column(db.Float, default=15.0)
+    tax_rate = db.Column(db.Float, default=18.0)
     invoice_template = db.Column(db.String(50), default='modern')  # modern, classic, minimal, elegant
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -262,7 +297,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Import all models
-from app.models_inventory import Category, Unit, Product, Warehouse, Stock, StockMovement
+from app.models_inventory import Category, Unit, Product, Warehouse, Stock, StockMovement, DamagedInventory
 from app.models_sales import Customer, SalesInvoice, SalesInvoiceItem, Quotation, QuotationItem, SalesOrder
 from app.models_purchases import Supplier, PurchaseOrder, PurchaseOrderItem, PurchaseInvoice, PurchaseInvoiceItem, PurchaseReturn, PurchaseReturnItem
 from app.models_accounting import Account, JournalEntry, JournalEntryItem, Payment, BankAccount, CostCenter

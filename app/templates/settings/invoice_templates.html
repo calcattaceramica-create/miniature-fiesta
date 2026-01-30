@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}أشكال الفواتير - نظام إدارة المخزون{% endblock %}
-{% block page_title %}أشكال الفواتير{% endblock %}
+{% block title %}{{ _('Invoice Templates') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Invoice Templates') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="page-header mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h2><i class="fas fa-palette"></i> أشكال الفواتير وعروض الأسعار</h2>
-                <p class="text-muted mb-0">اختر الشكل المناسب لفواتيرك وعروض الأسعار</p>
+                <h2><i class="fas fa-palette"></i> {{ _('Invoice and Quotation Templates') }}</h2>
+                <p class="text-muted mb-0">{{ _('Choose the appropriate template for your invoices and quotations') }}</p>
             </div>
             <div>
                 <a href="{{ url_for('settings.company') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-right"></i> العودة لبيانات الشركة
+                    <i class="fas fa-arrow-right"></i> {{ _('Back to Company Data') }}
                 </a>
             </div>
         </div>
@@ -33,17 +33,17 @@
     <!-- Current Template Info -->
     <div class="alert alert-info mb-4">
         <i class="fas fa-info-circle"></i>
-        <strong>الشكل الحالي:</strong> 
+        <strong>{{ _('Current Template') }}:</strong>
         {% if company and company.invoice_template == 'modern' %}
-            <span class="badge bg-primary">عصري (Modern)</span>
+            <span class="badge bg-primary">{{ _('Modern') }}</span>
         {% elif company and company.invoice_template == 'classic' %}
-            <span class="badge bg-success">كلاسيكي (Classic)</span>
+            <span class="badge bg-success">{{ _('Classic') }}</span>
         {% elif company and company.invoice_template == 'minimal' %}
-            <span class="badge bg-info">بسيط (Minimal)</span>
+            <span class="badge bg-info">{{ _('Minimal') }}</span>
         {% elif company and company.invoice_template == 'elegant' %}
-            <span class="badge bg-warning">أنيق (Elegant)</span>
+            <span class="badge bg-warning">{{ _('Elegant') }}</span>
         {% else %}
-            <span class="badge bg-primary">عصري (Modern)</span>
+            <span class="badge bg-primary">{{ _('Modern') }}</span>
         {% endif %}
     </div>
 
@@ -56,37 +56,37 @@
                     <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="fas fa-rocket"></i> عصري (Modern)
+                                <i class="fas fa-rocket"></i> {{ _('Modern') }}
                             </h5>
                             {% if not company or company.invoice_template == 'modern' %}
                                 <span class="badge bg-light text-primary">
-                                    <i class="fas fa-check-circle"></i> مُفعّل
+                                    <i class="fas fa-check-circle"></i> {{ _('Active') }}
                                 </span>
                             {% endif %}
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="template-preview mb-3">
-                            <img src="{{ url_for('static', filename='images/templates/modern-preview.png') }}" 
-                                 alt="Modern Template" 
+                            <img src="{{ url_for('static', filename='images/templates/modern-preview.png') }}"
+                                 alt="Modern Template"
                                  class="img-fluid rounded shadow-sm"
                                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23667eea%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3E%D8%B9%D8%B5%D8%B1%D9%8A%3C/text%3E%3C/svg%3E'">
                         </div>
-                        <h6 class="text-primary mb-3">المميزات:</h6>
+                        <h6 class="text-primary mb-3">{{ _('Features') }}:</h6>
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i> تصميم عصري بألوان متدرجة</li>
-                            <li><i class="fas fa-check text-success me-2"></i> رأس فاتورة جذاب</li>
-                            <li><i class="fas fa-check text-success me-2"></i> بطاقات معلومات أنيقة</li>
-                            <li><i class="fas fa-check text-success me-2"></i> جدول منتجات احترافي</li>
-                            <li><i class="fas fa-check text-success me-2"></i> مناسب للشركات التقنية</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Modern design with gradient colors') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Attractive invoice header') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Elegant information cards') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Professional product table') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Suitable for tech companies') }}</li>
                         </ul>
-                        <button type="submit" name="template" value="modern" 
+                        <button type="submit" name="template" value="modern"
                                 class="btn btn-primary w-100 {% if not company or company.invoice_template == 'modern' %}disabled{% endif %}">
-                            <i class="fas fa-check"></i> 
+                            <i class="fas fa-check"></i>
                             {% if not company or company.invoice_template == 'modern' %}
-                                مُفعّل حالياً
+                                {{ _('Currently Active') }}
                             {% else %}
-                                اختيار هذا الشكل
+                                {{ _('Select This Template') }}
                             {% endif %}
                         </button>
                     </div>
@@ -99,37 +99,37 @@
                     <div class="card-header bg-success text-white">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="fas fa-file-alt"></i> كلاسيكي (Classic)
+                                <i class="fas fa-file-alt"></i> {{ _('Classic') }}
                             </h5>
                             {% if company and company.invoice_template == 'classic' %}
                                 <span class="badge bg-light text-success">
-                                    <i class="fas fa-check-circle"></i> مُفعّل
+                                    <i class="fas fa-check-circle"></i> {{ _('Active') }}
                                 </span>
                             {% endif %}
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="template-preview mb-3">
-                            <img src="{{ url_for('static', filename='images/templates/classic-preview.png') }}" 
-                                 alt="Classic Template" 
+                            <img src="{{ url_for('static', filename='images/templates/classic-preview.png') }}"
+                                 alt="Classic Template"
                                  class="img-fluid rounded shadow-sm"
                                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%2328a745%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3E%D9%83%D9%84%D8%A7%D8%B3%D9%8A%D9%83%D9%8A%3C/text%3E%3C/svg%3E'">
                         </div>
-                        <h6 class="text-success mb-3">المميزات:</h6>
+                        <h6 class="text-success mb-3">{{ _('Features') }}:</h6>
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i> تصميم تقليدي احترافي</li>
-                            <li><i class="fas fa-check text-success me-2"></i> سهل القراءة والطباعة</li>
-                            <li><i class="fas fa-check text-success me-2"></i> مناسب للشركات التقليدية</li>
-                            <li><i class="fas fa-check text-success me-2"></i> جدول واضح ومنظم</li>
-                            <li><i class="fas fa-check text-success me-2"></i> ألوان هادئة</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Professional traditional design') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Easy to read and print') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Suitable for traditional companies') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Clear and organized table') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Calm colors') }}</li>
                         </ul>
-                        <button type="submit" name="template" value="classic" 
+                        <button type="submit" name="template" value="classic"
                                 class="btn btn-success w-100 {% if company and company.invoice_template == 'classic' %}disabled{% endif %}">
-                            <i class="fas fa-check"></i> 
+                            <i class="fas fa-check"></i>
                             {% if company and company.invoice_template == 'classic' %}
-                                مُفعّل حالياً
+                                {{ _('Currently Active') }}
                             {% else %}
-                                اختيار هذا الشكل
+                                {{ _('Select This Template') }}
                             {% endif %}
                         </button>
                     </div>
@@ -142,11 +142,11 @@
                     <div class="card-header bg-info text-white">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="fas fa-minus-circle"></i> بسيط (Minimal)
+                                <i class="fas fa-minus-circle"></i> {{ _('Minimal') }}
                             </h5>
                             {% if company and company.invoice_template == 'minimal' %}
                                 <span class="badge bg-light text-info">
-                                    <i class="fas fa-check-circle"></i> مُفعّل
+                                    <i class="fas fa-check-circle"></i> {{ _('Active') }}
                                 </span>
                             {% endif %}
                         </div>
@@ -158,21 +158,21 @@
                                  class="img-fluid rounded shadow-sm"
                                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%2317a2b8%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3E%D8%A8%D8%B3%D9%8A%D8%B7%3C/text%3E%3C/svg%3E'">
                         </div>
-                        <h6 class="text-info mb-3">المميزات:</h6>
+                        <h6 class="text-info mb-3">{{ _('Features') }}:</h6>
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i> تصميم بسيط ونظيف</li>
-                            <li><i class="fas fa-check text-success me-2"></i> يركز على المحتوى</li>
-                            <li><i class="fas fa-check text-success me-2"></i> سريع الطباعة</li>
-                            <li><i class="fas fa-check text-success me-2"></i> يوفر الحبر</li>
-                            <li><i class="fas fa-check text-success me-2"></i> مناسب للاستخدام اليومي</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Simple and clean design') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Focuses on content') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Fast printing') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Saves ink') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Suitable for daily use') }}</li>
                         </ul>
                         <button type="submit" name="template" value="minimal"
                                 class="btn btn-info w-100 {% if company and company.invoice_template == 'minimal' %}disabled{% endif %}">
                             <i class="fas fa-check"></i>
                             {% if company and company.invoice_template == 'minimal' %}
-                                مُفعّل حالياً
+                                {{ _('Currently Active') }}
                             {% else %}
-                                اختيار هذا الشكل
+                                {{ _('Select This Template') }}
                             {% endif %}
                         </button>
                     </div>
@@ -185,11 +185,11 @@
                     <div class="card-header text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
-                                <i class="fas fa-gem"></i> أنيق (Elegant)
+                                <i class="fas fa-gem"></i> {{ _('Elegant') }}
                             </h5>
                             {% if company and company.invoice_template == 'elegant' %}
                                 <span class="badge bg-light text-dark">
-                                    <i class="fas fa-check-circle"></i> مُفعّل
+                                    <i class="fas fa-check-circle"></i> {{ _('Active') }}
                                 </span>
                             {% endif %}
                         </div>
@@ -201,22 +201,22 @@
                                  class="img-fluid rounded shadow-sm"
                                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Cdefs%3E%3ClinearGradient id=%22grad%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22%3E%3Cstop offset=%220%25%22 style=%22stop-color:%23f093fb%22/%3E%3Cstop offset=%22100%25%22 style=%22stop-color:%23f5576c%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill=%22url(%23grad)%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3E%D8%A3%D9%86%D9%8A%D9%82%3C/text%3E%3C/svg%3E'">
                         </div>
-                        <h6 class="mb-3" style="color: #f5576c;">المميزات:</h6>
+                        <h6 class="mb-3" style="color: #f5576c;">{{ _('Features') }}:</h6>
                         <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i> تصميم فاخر وراقي</li>
-                            <li><i class="fas fa-check text-success me-2"></i> ألوان متدرجة جذابة</li>
-                            <li><i class="fas fa-check text-success me-2"></i> مناسب للشركات الفاخرة</li>
-                            <li><i class="fas fa-check text-success me-2"></i> يترك انطباع قوي</li>
-                            <li><i class="fas fa-check text-success me-2"></i> تفاصيل دقيقة</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Luxurious and elegant design') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Attractive gradient colors') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Suitable for luxury companies') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Leaves a strong impression') }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i> {{ _('Fine details') }}</li>
                         </ul>
                         <button type="submit" name="template" value="elegant"
                                 class="btn w-100 {% if company and company.invoice_template == 'elegant' %}disabled{% endif %}"
                                 style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
                             <i class="fas fa-check"></i>
                             {% if company and company.invoice_template == 'elegant' %}
-                                مُفعّل حالياً
+                                {{ _('Currently Active') }}
                             {% else %}
-                                اختيار هذا الشكل
+                                {{ _('Select This Template') }}
                             {% endif %}
                         </button>
                     </div>
@@ -228,19 +228,19 @@
     <!-- Preview Section -->
     <div class="card mt-4">
         <div class="card-header bg-dark text-white">
-            <h5 class="mb-0"><i class="fas fa-eye"></i> معاينة الفاتورة</h5>
+            <h5 class="mb-0"><i class="fas fa-eye"></i> {{ _('Invoice Preview') }}</h5>
         </div>
         <div class="card-body">
             <div class="alert alert-info">
                 <i class="fas fa-info-circle"></i>
-                <strong>نصيحة:</strong> لمعاينة الشكل الكامل للفاتورة، اذهب إلى نقطة البيع وقم بإنشاء فاتورة تجريبية.
+                <strong>{{ _('Tip') }}:</strong> {{ _('To preview the full invoice template, go to POS and create a test invoice') }}.
             </div>
             <div class="text-center">
                 <a href="{{ url_for('pos.index') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-cash-register"></i> الذهاب إلى نقطة البيع
+                    <i class="fas fa-cash-register"></i> {{ _('Go to POS') }}
                 </a>
                 <a href="{{ url_for('settings.company') }}" class="btn btn-outline-secondary btn-lg">
-                    <i class="fas fa-building"></i> بيانات الشركة
+                    <i class="fas fa-building"></i> {{ _('Company Data') }}
                 </a>
             </div>
         </div>

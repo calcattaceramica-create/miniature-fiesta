@@ -64,9 +64,9 @@
                                         <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
                                         <td>{{ invoice.supplier.name }}</td>
                                         <td>{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
-                                        <td><strong>{{ "%.2f"|format(invoice.total_amount) }} {{ _('SAR') }}</strong></td>
-                                        <td>{{ "%.2f"|format(invoice.paid_amount) }} {{ _('SAR') }}</td>
-                                        <td>{{ "%.2f"|format(invoice.remaining_amount) }} {{ _('SAR') }}</td>
+                                        <td><strong>{{ invoice.total_amount|currency }}</strong></td>
+                                        <td>{{ invoice.paid_amount|currency }}</td>
+                                        <td>{{ invoice.remaining_amount|currency }}</td>
                                         <td>
                                             {% if invoice.status == 'draft' %}
                                                 <span class="badge bg-secondary">{{ _('Draft') }}</span>
@@ -97,6 +97,15 @@
                                                class="btn btn-sm btn-success" title="{{ _('Confirm') }}">
                                                 <i class="fas fa-check"></i>
                                             </a>
+                                            <button type="button" class="btn btn-sm btn-danger" title="{{ _('Delete') }}"
+                                                    onclick="confirmDeletePurchaseInvoice({{ invoice.id }}, '{{ invoice.invoice_number }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            {% elif invoice.status == 'confirmed' %}
+                                            <button type="button" class="btn btn-sm btn-warning" title="{{ _('Cancel Invoice') }}"
+                                                    onclick="confirmCancelPurchaseInvoice({{ invoice.id }}, '{{ invoice.invoice_number }}')">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
                                             <button type="button" class="btn btn-sm btn-danger" title="{{ _('Delete') }}"
                                                     onclick="confirmDeletePurchaseInvoice({{ invoice.id }}, '{{ invoice.invoice_number }}')">
                                                 <i class="fas fa-trash"></i>
@@ -169,42 +178,74 @@
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deletePurchaseInvoiceModal" tabindex="-1" aria-labelledby="deletePurchaseInvoiceModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deletePurchaseInvoiceModalLabel">
-                    <i class="fas fa-exclamation-triangle"></i> {{ _('Confirm Delete') }}
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-3">{{ _('Are you sure you want to delete this invoice?') }}</p>
-                <div class="alert alert-warning">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>{{ _('Warning') }}:</strong> {{ _('This action cannot be undone.') }}
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deletePurchaseInvoiceModal" tabindex="-1" aria-labelledby="deletePurchaseInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deletePurchaseInvoiceModalLabel">
+                        <i class="fas fa-exclamation-triangle"></i> {{ _('Confirm Delete') }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <p class="mb-0"><strong>{{ _('Invoice Number') }}:</strong> <span id="purchaseInvoiceNumber"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> {{ _('Cancel') }}
-                </button>
-                <form id="deletePurchaseInvoiceForm" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> {{ _('Delete') }}
+                <div class="modal-body">
+                    <p class="mb-3">{{ _('Are you sure you want to delete this invoice?') }}</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>{{ _('Warning') }}:</strong> {{ _('This action cannot be undone.') }}
+                    </div>
+                    <p class="mb-0"><strong>{{ _('Invoice Number') }}:</strong> <span id="purchaseInvoiceNumber"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> {{ _('Cancel') }}
                     </button>
-                </form>
+                    <form id="deletePurchaseInvoiceForm" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> {{ _('Delete') }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal fade" id="cancelPurchaseInvoiceModal" tabindex="-1" aria-labelledby="cancelPurchaseInvoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="cancelPurchaseInvoiceModalLabel">
+                        <i class="fas fa-exclamation-triangle"></i> {{ _('Confirm Cancel') }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">{{ _('Are you sure you want to cancel this invoice?') }}</p>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>{{ _('Note') }}:</strong> {{ _('Stock will be removed and supplier balance will be updated.') }}
+                    </div>
+                    <p class="mb-0"><strong>{{ _('Invoice Number') }}:</strong> <span id="cancelPurchaseInvoiceNumber"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> {{ _('Close') }}
+                    </button>
+                    <form id="cancelPurchaseInvoiceForm" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-ban"></i> {{ _('Cancel Invoice') }}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
 function confirmDeletePurchaseInvoice(invoiceId, invoiceNumber) {
     // Set invoice number in modal
@@ -216,6 +257,19 @@ function confirmDeletePurchaseInvoice(invoiceId, invoiceNumber) {
 
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('deletePurchaseInvoiceModal'));
+    modal.show();
+}
+
+function confirmCancelPurchaseInvoice(invoiceId, invoiceNumber) {
+    // Set invoice number in modal
+    document.getElementById('cancelPurchaseInvoiceNumber').textContent = invoiceNumber;
+
+    // Set form action
+    const form = document.getElementById('cancelPurchaseInvoiceForm');
+    form.action = `/purchases/invoices/${invoiceId}/cancel`;
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('cancelPurchaseInvoiceModal'));
     modal.show();
 }
 </script>

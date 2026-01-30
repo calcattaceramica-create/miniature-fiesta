@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Employees') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div class="mb-2 mb-md-0">
+                <h2><i class="fas fa-users"></i> {{ _('Employees') }}</h2>
+            </div>
+            <div class="action-buttons">
+                <a href="{{ url_for('hr.add_employee') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> <span class="d-none d-sm-inline">{{ _('Add New Employee') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('hr.employees') }}">
+                <div class="row g-2">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">{{ _('Search') }}</label>
+                        <input type="text" class="form-control" name="search" value="{{ search or '' }}" placeholder="{{ _('Employee Name') }} {{ _('or') }} {{ _('Employee Code') }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label">{{ _('Department') }}</label>
+                        <select class="form-select" name="department_id">
+                            <option value="">{{ _('All') }}</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-search"></i> <span class="d-none d-sm-inline">{{ _('Search') }}</span>
+                        </button>
+                        <a href="{{ url_for('hr.employees') }}" class="btn btn-secondary flex-grow-1">
+                            <i class="fas fa-redo"></i> <span class="d-none d-sm-inline">{{ _('Reset') }}</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employees Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Employees') }} ({{ employees.total }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="hide-on-mobile">#</th>
+                            <th>{{ _('Employee Code') }}</th>
+                            <th>{{ _('Name') }}</th>
+                            <th class="hide-on-mobile">{{ _('Department') }}</th>
+                            <th class="hide-on-mobile">{{ _('Position') }}</th>
+                            <th class="hide-on-mobile">{{ _('Phone') }}</th>
+                            <th class="hide-on-mobile">{{ _('Email') }}</th>
+                            <th>{{ _('Status') }}</th>
+                            <th>{{ _('Actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in employees.items %}
+                        <tr>
+                            <td class="hide-on-mobile">{{ loop.index + (employees.page - 1) * employees.per_page }}</td>
+                            <td><strong>{{ employee.employee_number }}</strong></td>
+                            <td>
+                                <a href="{{ url_for('hr.employee_details', id=employee.id) }}" class="text-decoration-none">
+                                    {{ employee.first_name }} {{ employee.last_name }}
+                                </a>
+                                <small class="text-muted show-on-mobile d-block">
+                                    {{ employee.department.name if employee.department else '-' }} |
+                                    {{ employee.position.name if employee.position else '-' }}
+                                </small>
+                            </td>
+                            <td class="hide-on-mobile">{{ employee.department.name if employee.department else '-' }}</td>
+                            <td class="hide-on-mobile">{{ employee.position.name if employee.position else '-' }}</td>
+                            <td class="hide-on-mobile">{{ employee.mobile or '-' }}</td>
+                            <td class="hide-on-mobile">{{ employee.email or '-' }}</td>
+                            <td>
+                                {% if employee.employment_status == 'active' %}
+                                <span class="badge bg-success">{{ _('Active') }}</span>
+                                {% elif employee.employment_status == 'resigned' %}
+                                <span class="badge bg-warning">{{ _('Resigned') }}</span>
+                                {% else %}
+                                <span class="badge bg-danger">{{ _('Terminated') }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ url_for('hr.employee_details', id=employee.id) }}" class="btn btn-info" title="{{ _('View Details') }}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('hr.edit_employee', id=employee.id) }}" class="btn btn-warning" title="{{ _('Edit') }}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-danger" onclick="deleteEmployee({{ employee.id }}, '{{ employee.first_name }} {{ employee.last_name }}')" title="{{ _('Delete') }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                <p class="mb-0">{{ _('No data available') }}</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if employees.pages > 1 %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item {% if not employees.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('hr.employees', page=employees.prev_num, search=search, department_id=department_id) }}">السابق</a>
+                    </li>
+                    {% for page_num in employees.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == employees.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('hr.employees', page=page_num, search=search, department_id=department_id) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not employees.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('hr.employees', page=employees.next_num, search=search, department_id=department_id) }}">التالي</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deleteEmployee(id, name) {
+    if (confirm('هل أنت متأكد من حذف الموظف: ' + name + '؟')) {
+        fetch('{{ url_for("hr.delete_employee", id=0) }}'.replace('0', id), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}
+

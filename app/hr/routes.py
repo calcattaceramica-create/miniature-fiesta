@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from flask_babel import gettext as _
+from app.auth.decorators import permission_required
 from app.hr import bp
 from app import db
 from app.models import Employee, Department, Position, Attendance, Leave, LeaveType, Payroll, Branch
@@ -11,6 +12,7 @@ from sqlalchemy import func, extract
 @bp.route('/')
 @bp.route('/dashboard')
 @login_required
+@permission_required('hr.view')
 def dashboard():
     """HR Dashboard"""
     # Statistics
@@ -41,6 +43,7 @@ def dashboard():
 # ==================== Employees ====================
 @bp.route('/employees')
 @login_required
+@permission_required('hr.employees.view')
 def employees():
     """List all employees"""
     page = request.args.get('page', 1, type=int)
@@ -73,6 +76,7 @@ def employees():
 
 @bp.route('/employees/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def add_employee():
     """Add new employee"""
     if request.method == 'POST':
@@ -131,6 +135,7 @@ def add_employee():
 
 @bp.route('/employees/<int:id>')
 @login_required
+@permission_required('hr.employees.view')
 def employee_details(id):
     """Employee details"""
     employee = Employee.query.get_or_404(id)
@@ -159,6 +164,7 @@ def employee_details(id):
 
 @bp.route('/employees/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def edit_employee(id):
     """Edit employee"""
     employee = Employee.query.get_or_404(id)
@@ -208,6 +214,7 @@ def edit_employee(id):
 
 @bp.route('/employees/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def delete_employee(id):
     """Delete employee (soft delete)"""
     try:
@@ -226,6 +233,7 @@ def delete_employee(id):
 # ==================== Departments ====================
 @bp.route('/departments')
 @login_required
+@permission_required('hr.view')
 def departments():
     """List all departments"""
     departments = Department.query.filter_by(is_active=True).all()
@@ -233,6 +241,7 @@ def departments():
 
 @bp.route('/departments/add', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def add_department():
     """Add new department"""
     try:
@@ -265,6 +274,7 @@ def add_department():
 
 @bp.route('/departments/<int:id>/edit', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def edit_department(id):
     """Edit department"""
     try:
@@ -285,6 +295,7 @@ def edit_department(id):
 
 @bp.route('/departments/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def delete_department(id):
     """Delete department"""
     try:
@@ -301,6 +312,7 @@ def delete_department(id):
 # ==================== Positions ====================
 @bp.route('/positions')
 @login_required
+@permission_required('hr.view')
 def positions():
     """List all positions"""
     positions = Position.query.filter_by(is_active=True).all()
@@ -309,6 +321,7 @@ def positions():
 
 @bp.route('/positions/add', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def add_position():
     """Add new position"""
     try:
@@ -340,6 +353,7 @@ def add_position():
 
 @bp.route('/positions/<int:id>/edit', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def edit_position(id):
     """Edit position"""
     try:
@@ -359,6 +373,7 @@ def edit_position(id):
 
 @bp.route('/positions/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def delete_position(id):
     """Delete position"""
     try:
@@ -375,6 +390,7 @@ def delete_position(id):
 # ==================== Attendance ====================
 @bp.route('/attendance')
 @login_required
+@permission_required('hr.attendance.view')
 def attendance():
     """Attendance records"""
     page = request.args.get('page', 1, type=int)
@@ -408,6 +424,7 @@ def attendance():
 
 @bp.route('/attendance/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('hr.attendance.manage')
 def add_attendance():
     """Add attendance record"""
     if request.method == 'POST':
@@ -446,6 +463,7 @@ def add_attendance():
 # ==================== Leaves ====================
 @bp.route('/leaves')
 @login_required
+@permission_required('hr.view')
 def leaves():
     """Leave requests"""
     page = request.args.get('page', 1, type=int)
@@ -474,6 +492,7 @@ def leaves():
 
 @bp.route('/leaves/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def add_leave():
     """Add leave request"""
     if request.method == 'POST':
@@ -506,6 +525,7 @@ def add_leave():
 
 @bp.route('/leaves/<int:id>/approve', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def approve_leave(id):
     """Approve leave request"""
     try:
@@ -523,6 +543,7 @@ def approve_leave(id):
 
 @bp.route('/leaves/<int:id>/reject', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def reject_leave(id):
     """Reject leave request"""
     try:
@@ -541,6 +562,7 @@ def reject_leave(id):
 # ==================== Leave Types ====================
 @bp.route('/leave-types')
 @login_required
+@permission_required('hr.view')
 def leave_types():
     """Leave types"""
     leave_types = LeaveType.query.filter_by(is_active=True).all()
@@ -548,6 +570,7 @@ def leave_types():
 
 @bp.route('/leave-types/add', methods=['POST'])
 @login_required
+@permission_required('hr.employees.manage')
 def add_leave_type():
     """Add leave type"""
     try:
@@ -571,6 +594,7 @@ def add_leave_type():
 # ==================== Payroll ====================
 @bp.route('/payroll')
 @login_required
+@permission_required('hr.payroll.view')
 def payroll():
     """Payroll management"""
     page = request.args.get('page', 1, type=int)
@@ -604,6 +628,7 @@ def payroll():
 
 @bp.route('/payroll/generate', methods=['GET', 'POST'])
 @login_required
+@permission_required('hr.payroll.manage')
 def generate_payroll():
     """Generate payroll for a month"""
     if request.method == 'POST':
@@ -661,6 +686,7 @@ def generate_payroll():
 
 @bp.route('/payroll/<int:id>/approve', methods=['POST'])
 @login_required
+@permission_required('hr.payroll.manage')
 def approve_payroll(id):
     """Approve payroll"""
     try:
@@ -676,6 +702,7 @@ def approve_payroll(id):
 
 @bp.route('/payroll/<int:id>/pay', methods=['POST'])
 @login_required
+@permission_required('hr.payroll.manage')
 def pay_payroll(id):
     """Mark payroll as paid"""
     try:
@@ -692,6 +719,7 @@ def pay_payroll(id):
 
 @bp.route('/payroll/<int:id>/details')
 @login_required
+@permission_required('hr.payroll.view')
 def payroll_details(id):
     """Payroll details"""
     payroll = Payroll.query.get_or_404(id)
@@ -700,12 +728,14 @@ def payroll_details(id):
 # ==================== Reports ====================
 @bp.route('/reports')
 @login_required
+@permission_required('hr.view')
 def reports():
     """HR Reports"""
     return render_template('hr/reports.html')
 
 @bp.route('/reports/attendance-summary')
 @login_required
+@permission_required('hr.view')
 def attendance_summary_report():
     """Attendance summary report"""
     month = request.args.get('month', type=int)

@@ -95,12 +95,21 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="#" class="btn btn-info" title="{{ _('View Details') }}">
+                                        <a href="{{ url_for('purchases.supplier_details', id=supplier.id) }}"
+                                           class="btn btn-info" title="{{ _('View Details') }}">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="#" class="btn btn-warning" title="{{ _('Edit') }}">
+                                        <a href="{{ url_for('purchases.edit_supplier', id=supplier.id) }}"
+                                           class="btn btn-warning" title="{{ _('Edit') }}">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <form method="POST" action="{{ url_for('purchases.delete_supplier', id=supplier.id) }}"
+                                              style="display: inline;"
+                                              onsubmit="return confirm('{{ _('Are you sure you want to delete supplier') }}: {{ supplier.name }}?\n\n{{ _('This will delete all data related to this supplier!') }}');">
+                                            <button type="submit" class="btn btn-danger" title="{{ _('Delete') }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

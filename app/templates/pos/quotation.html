@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ session.get('language', 'ar') }}" dir="{{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عرض سعر - {{ quotation.quotation_number }}</title>
+    <title>{{ _('Quotation') }} - {{ quotation.quotation_number }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -17,6 +17,7 @@
             font-family: 'Segoe UI', 'Cairo', Tahoma, Geneva, Verdana, sans-serif;
             padding: 15px;
             min-height: 100vh;
+            direction: {{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }};
         }
 
         .quotation-container {
@@ -603,7 +604,7 @@
                              alt="{{ company.name }}" class="company-logo">
                         {% endif %}
                         <div class="company-name">
-                            {{ company.name if company else 'اسم الشركة' }}
+                            {{ company.name if company else _('Company Name') }}
                         </div>
                         <div class="company-details">
                             {% if company %}
@@ -611,7 +612,7 @@
                             <div><i class="fas fa-phone"></i> {{ company.phone }}</div>
                             <div><i class="fas fa-envelope"></i> {{ company.email }}</div>
                             {% if company.tax_number %}
-                            <div><i class="fas fa-file-invoice"></i> الرقم الضريبي: {{ company.tax_number }}</div>
+                            <div><i class="fas fa-file-invoice"></i> {{ _('Tax Number') }}: {{ company.tax_number }}</div>
                             {% endif %}
                             {% endif %}
                         </div>
@@ -620,7 +621,7 @@
                         <div class="quotation-badge">
                             <div class="quotation-title">
                                 <i class="fas fa-file-invoice-dollar"></i>
-                                <span>عرض سعر</span>
+                                <span>{{ _('Quotation') }}</span>
                             </div>
                             <div class="quotation-number">
                                 {{ quotation.quotation_number }}
@@ -640,20 +641,26 @@
             <div class="customer-card">
                 <div class="customer-title">
                     <i class="fas fa-user-circle"></i>
-                    <span>معلومات العميل</span>
+                    <span>{{ _('Customer Information') }}</span>
                 </div>
                 <div class="customer-details">
                     <div class="detail-item">
                         <i class="fas fa-user detail-icon"></i>
                         <div>
-                            <div class="detail-label">اسم العميل</div>
-                            <div class="detail-value">{{ quotation.customer.name }}</div>
+                            <div class="detail-label">{{ _('Customer Name') }}</div>
+                            <div class="detail-value">
+                                {% if session.get('language', 'ar') == 'en' and quotation.customer.name_en %}
+                                    {{ quotation.customer.name_en }}
+                                {% else %}
+                                    {{ quotation.customer.name }}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     <div class="detail-item">
                         <i class="fas fa-phone detail-icon"></i>
                         <div>
-                            <div class="detail-label">رقم الهاتف</div>
+                            <div class="detail-label">{{ _('Phone Number') }}</div>
                             <div class="detail-value">{{ quotation.customer.phone }}</div>
                         </div>
                     </div>
@@ -661,7 +668,7 @@
                     <div class="detail-item">
                         <i class="fas fa-envelope detail-icon"></i>
                         <div>
-                            <div class="detail-label">البريد الإلكتروني</div>
+                            <div class="detail-label">{{ _('Email') }}</div>
                             <div class="detail-value">{{ quotation.customer.email }}</div>
                         </div>
                     </div>
@@ -670,7 +677,7 @@
                     <div class="detail-item">
                         <i class="fas fa-map-marker-alt detail-icon"></i>
                         <div>
-                            <div class="detail-label">العنوان</div>
+                            <div class="detail-label">{{ _('Address') }}</div>
                             <div class="detail-value">{{ quotation.customer.address }}</div>
                         </div>
                     </div>
@@ -685,11 +692,11 @@
                 <thead>
                     <tr>
                         <th style="width: 50px;">#</th>
-                        <th style="text-align: right;">المنتج</th>
-                        <th style="width: 100px;">الكمية</th>
-                        <th style="width: 120px;">السعر</th>
-                        <th style="width: 120px;">الضريبة</th>
-                        <th style="width: 150px;">الإجمالي</th>
+                        <th style="text-align: {{ 'right' if session.get('language', 'ar') == 'ar' else 'left' }};">{{ _('Product') }}</th>
+                        <th style="width: 100px;">{{ _('Quantity') }}</th>
+                        <th style="width: 120px;">{{ _('Price') }}</th>
+                        <th style="width: 120px;">{{ _('Tax') }}</th>
+                        <th style="width: 150px;">{{ _('Total') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -718,7 +725,7 @@
                 <div class="total-row">
                     <div class="total-label">
                         <i class="fas fa-calculator"></i>
-                        <span>المجموع الفرعي</span>
+                        <span>{{ _('Subtotal') }}</span>
                     </div>
                     <div class="total-value">{{ "%.2f"|format(quotation.subtotal) }} {{ currency_symbol }}</div>
                 </div>
@@ -727,7 +734,7 @@
                 <div class="total-row discount-row">
                     <div class="total-label">
                         <i class="fas fa-percent"></i>
-                        <span>الخصم</span>
+                        <span>{{ _('Discount') }}</span>
                     </div>
                     <div class="total-value">- {{ "%.2f"|format(quotation.discount_amount) }} {{ currency_symbol }}</div>
                 </div>
@@ -736,7 +743,7 @@
                 <div class="total-row">
                     <div class="total-label">
                         <i class="fas fa-receipt"></i>
-                        <span>الضريبة ({{ company.tax_rate if company else 15 }}%)</span>
+                        <span>{{ _('Tax') }} ({{ company.tax_rate if company else 15 }}%)</span>
                     </div>
                     <div class="total-value">{{ "%.2f"|format(quotation.tax_amount) }} {{ currency_symbol }}</div>
                 </div>
@@ -745,7 +752,7 @@
                     <div class="total-row">
                         <div class="total-label">
                             <i class="fas fa-money-bill-wave"></i>
-                            <span>الإجمالي النهائي</span>
+                            <span>{{ _('Grand Total') }}</span>
                         </div>
                         <div class="total-value">{{ "%.2f"|format(quotation.total_amount) }} {{ currency_symbol }}</div>
                     </div>
@@ -758,7 +765,7 @@
         <div class="notes-section">
             <div class="notes-title">
                 <i class="fas fa-sticky-note"></i>
-                <span>ملاحظات</span>
+                <span>{{ _('Notes') }}</span>
             </div>
             <div class="notes-content">
                 {{ quotation.notes }}
@@ -770,7 +777,7 @@
         <div class="validity-section">
             <div class="validity-text">
                 <i class="fas fa-clock"></i>
-                <span>هذا العرض صالح لمدة 30 يوماً من تاريخ الإصدار</span>
+                <span>{{ _('This quotation is valid for 30 days from the date of issue') }}</span>
             </div>
         </div>
 
@@ -779,16 +786,16 @@
             <div class="footer-content">
                 <div class="footer-title">
                     <i class="fas fa-info-circle"></i>
-                    معلومات هامة
+                    {{ _('Important Information') }}
                 </div>
                 <div class="footer-details">
-                    <p>• هذا عرض سعر وليس فاتورة ضريبية</p>
-                    <p>• الأسعار المذكورة شاملة ضريبة القيمة المضافة</p>
-                    <p>• يرجى مراجعة الكميات والأسعار قبل الموافقة</p>
+                    <p>• {{ _('This is a quotation and not a tax invoice') }}</p>
+                    <p>• {{ _('Prices include VAT') }}</p>
+                    <p>• {{ _('Please review quantities and prices before approval') }}</p>
                 </div>
                 <div class="footer-divider"></div>
                 <div class="footer-note">
-                    تم إنشاء هذا العرض بواسطة نظام DED ERP
+                    {{ _('This quotation was created by DED ERP system') }}
                 </div>
             </div>
         </div>

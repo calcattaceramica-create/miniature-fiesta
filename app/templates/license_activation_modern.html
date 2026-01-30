@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفعيل الترخيص - DED ERP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Particles Background */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .activation-card {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+            padding: 60px;
+            max-width: 650px;
+            width: 100%;
+            margin: 20px;
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(100px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .logo-circle {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .logo-circle::before {
+            content: '';
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            animation: ripple 2s ease-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+        
+        .logo-circle i {
+            font-size: 70px;
+            color: white;
+            animation: rotate 4s ease-in-out infinite;
+        }
+        
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        .logo-section h1 {
+            color: #333;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .logo-section p {
+            color: #666;
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .license-input-wrapper {
+            position: relative;
+        }
+
+        .license-input {
+            font-family: 'Courier New', monospace;
+            font-size: 22px;
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .license-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.15);
+            background: white;
+            transform: scale(1.02);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .btn-activate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            width: 100%;
+            margin-top: 30px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-activate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-activate:hover::before {
+            left: 100%;
+        }
+
+        .btn-activate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-activate:active {
+            transform: translateY(-1px);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 40px;
+            border-left: 5px solid #667eea;
+        }
+
+        .info-box h5 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-box li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box li i {
+            color: #38ef7d;
+            font-size: 16px;
+        }
+
+        .help-text {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .help-text a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Success Animation */
+        .success-checkmark {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .activation-card {
+                padding: 40px 30px;
+            }
+
+            .logo-section h1 {
+                font-size: 28px;
+            }
+
+            .license-input {
+                font-size: 18px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="activation-card">
+        <div class="logo-section">
+            <div class="logo-circle">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>تفعيل الترخيص</h1>
+            <p>License Activation</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.activate_license') }}" id="activationForm">
+            <div class="form-group">
+                <label for="license_key" class="form-label">
+                    <i class="fas fa-key"></i>
+                    مفتاح الترخيص
+                </label>
+                <div class="license-input-wrapper">
+                    <input type="text"
+                           class="form-control license-input"
+                           id="license_key"
+                           name="license_key"
+                           value="9813-26D0-F98D-741C"
+                           placeholder="XXXX-XXXX-XXXX-XXXX"
+                           pattern="[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}"
+                           required
+                           maxlength="19"
+                           autocomplete="off">
+                </div>
+                <small class="text-muted d-block mt-2 text-center">
+                    أدخل مفتاح الترخيص المكون من 16 حرف
+                </small>
+            </div>
+
+            <button type="submit" class="btn btn-activate">
+                <i class="fas fa-check-circle me-2"></i>
+                تفعيل الترخيص الآن
+            </button>
+        </form>
+
+        <div class="info-box">
+            <h5>
+                <i class="fas fa-info-circle"></i>
+                ما الذي ستحصل عليه؟
+            </h5>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> وصول كامل لجميع ميزات النظام</li>
+                <li><i class="fas fa-check-circle"></i> دعم فني متواصل</li>
+                <li><i class="fas fa-check-circle"></i> تحديثات مجانية</li>
+                <li><i class="fas fa-check-circle"></i> نسخ احتياطي تلقائي</li>
+            </ul>
+        </div>
+
+        <div class="help-text">
+            لا تملك ترخيص؟
+            <a href="mailto:support@ded-erp.com">تواصل معنا</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Create animated particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Auto-format license key input
+        document.getElementById('license_key').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^A-Fa-f0-9]/g, '').toUpperCase();
+            let formatted = '';
+
+            for (let i = 0; i < value.length && i < 16; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formatted += '-';
+                }
+                formatted += value[i];
+            }
+
+            e.target.value = formatted;
+        });
+
+        // Form submission animation
+        document.getElementById('activationForm').addEventListener('submit', function(e) {
+            const btn = this.querySelector('.btn-activate');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> جاري التفعيل...';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+</html>
+

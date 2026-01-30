@@ -21,7 +21,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form method="POST" action="{{ url_for('inventory.edit_product', id=product.id) }}">
+            <form method="POST" action="{{ url_for('inventory.edit_product', id=product.id) }}" enctype="multipart/form-data">
                 <div class="row g-3">
                     <!-- Basic Information -->
                     <div class="col-12 col-lg-6">
@@ -80,6 +80,30 @@
                         <label class="form-label">{{ _('Description') }}</label>
                         <textarea class="form-control" name="description" rows="3">{{ product.description or '' }}</textarea>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('Product Image') }}</label>
+                        {% if product.image %}
+                        <div class="mb-2">
+                            <img src="{{ url_for('inventory.uploaded_file', filename=product.image) }}"
+                                 alt="{{ product.name }}"
+                                 style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 5px; padding: 5px;">
+                            <div class="mt-1">
+                                <small class="text-muted">{{ _('Current image') }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <input type="file" class="form-control" name="image" accept="image/*" id="productImage">
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i> {{ _('Allowed formats: PNG, JPG, JPEG, GIF (Max: 16MB)') }}
+                            {% if product.image %}
+                            <br><i class="fas fa-info-circle"></i> {{ _('Leave empty to keep current image') }}
+                            {% endif %}
+                        </small>
+                        <div class="mt-2" id="imagePreview" style="display: none;">
+                            <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 5px; padding: 5px;">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Pricing and Stock -->
@@ -87,18 +111,42 @@
                     <h5 class="mb-3"><i class="fas fa-dollar-sign"></i> {{ _('Pricing and Stock') }}</h5>
 
                     <div class="mb-3">
-                        <label class="form-label">{{ _('Cost Price') }}</label>
-                        <input type="number" step="0.01" class="form-control" name="cost_price" value="{{ product.cost_price }}">
+                        <label class="form-label">{{ _('Cost Price') }} ({{ currency_symbol }})</label>
+                        <div class="input-group">
+                            {% if session.get('language') == 'en' %}
+                            <span class="input-group-text">{{ currency_symbol }}</span>
+                            <input type="number" step="0.01" class="form-control" name="cost_price" value="{{ product.cost_price }}">
+                            {% else %}
+                            <input type="number" step="0.01" class="form-control" name="cost_price" value="{{ product.cost_price }}">
+                            <span class="input-group-text">{{ currency_symbol }}</span>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">{{ _('Selling Price') }}</label>
-                        <input type="number" step="0.01" class="form-control" name="selling_price" value="{{ product.selling_price }}">
+                        <label class="form-label">{{ _('Selling Price') }} ({{ currency_symbol }})</label>
+                        <div class="input-group">
+                            {% if session.get('language') == 'en' %}
+                            <span class="input-group-text">{{ currency_symbol }}</span>
+                            <input type="number" step="0.01" class="form-control" name="selling_price" value="{{ product.selling_price }}">
+                            {% else %}
+                            <input type="number" step="0.01" class="form-control" name="selling_price" value="{{ product.selling_price }}">
+                            <span class="input-group-text">{{ currency_symbol }}</span>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">{{ _('Minimum Price') }}</label>
-                        <input type="number" step="0.01" class="form-control" name="min_price" value="{{ product.min_price }}">
+                        <label class="form-label">{{ _('Minimum Price') }} ({{ currency_symbol }})</label>
+                        <div class="input-group">
+                            {% if session.get('language') == 'en' %}
+                            <span class="input-group-text">{{ currency_symbol }}</span>
+                            <input type="number" step="0.01" class="form-control" name="min_price" value="{{ product.min_price }}">
+                            {% else %}
+                            <input type="number" step="0.01" class="form-control" name="min_price" value="{{ product.min_price }}">
+                            <span class="input-group-text">{{ currency_symbol }}</span>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -209,11 +257,26 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
 <script>
 function confirmDelete() {
     const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
     modal.show();
 }
+
+// Image preview
+document.getElementById('productImage').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('imagePreview').style.display = 'none';
+    }
+});
 </script>
 {% endblock %}

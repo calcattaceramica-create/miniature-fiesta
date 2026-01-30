@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}بيانات الشركة - نظام إدارة المخزون{% endblock %}
-{% block page_title %}بيانات الشركة{% endblock %}
+{% block title %}{{ _('Company Data') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Company Data') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="page-header mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h2><i class="fas fa-building"></i> بيانات الشركة وإعدادات الفواتير</h2>
-                <p class="text-muted mb-0">إدارة معلومات الشركة، الشعار، وبيانات الفواتير وعروض الأسعار</p>
+                <h2><i class="fas fa-building"></i> {{ _('Company Data and Invoice Settings') }}</h2>
+                <p class="text-muted mb-0">{{ _('Manage company information, logo, and invoice and quotation data') }}</p>
             </div>
             <div>
                 <a href="{{ url_for('settings.invoice_templates') }}" class="btn btn-primary me-2">
-                    <i class="fas fa-palette"></i> أشكال الفواتير
+                    <i class="fas fa-palette"></i> {{ _('Invoice Templates') }}
                 </a>
                 <a href="{{ url_for('settings.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-right"></i> العودة للإعدادات
+                    <i class="fas fa-arrow-right"></i> {{ _('Back to Settings') }}
                 </a>
             </div>
         </div>
@@ -25,7 +25,7 @@
     <!-- Info Alert -->
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         <i class="fas fa-info-circle"></i>
-        <strong>ملاحظة هامة:</strong> البيانات التي تدخلها هنا ستظهر في جميع الفواتير وعروض الأسعار المطبوعة من نقطة البيع والنظام.
+        <strong>{{ _('Important Note') }}:</strong> {{ _('The data you enter here will appear on all invoices and quotations printed from the POS and system') }}.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
@@ -35,23 +35,23 @@
         <div class="col-lg-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> المعلومات الأساسية</h5>
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> {{ _('Basic Information') }}</h5>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('settings.update_company') }}" enctype="multipart/form-data">
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="name" class="form-label">
-                                    <i class="fas fa-building text-primary"></i> اسم الشركة (عربي)
+                                    <i class="fas fa-building text-primary"></i> {{ _('Company Name (Arabic)') }}
                                     <span class="text-danger">*</span>
-                                    <span class="badge bg-primary">يظهر في الفواتير</span>
+                                    <span class="badge bg-primary">{{ _('Appears on invoices') }}</span>
                                 </label>
                                 <input type="text" class="form-control" id="name" name="name"
-                                       value="{{ company.name }}" required placeholder="مثال: شركة التجارة المتقدمة">
+                                       value="{{ company.name }}" required placeholder="{{ _('Example: Advanced Trading Company') }}">
                             </div>
                             <div class="col-md-6">
                                 <label for="name_en" class="form-label">
-                                    <i class="fas fa-building text-primary"></i> اسم الشركة (إنجليزي)
+                                    <i class="fas fa-building text-primary"></i> {{ _('Company Name (English)') }}
                                 </label>
                                 <input type="text" class="form-control" id="name_en" name="name_en"
                                        value="{{ company.name_en or '' }}" placeholder="Example: Advanced Trading Co.">
@@ -61,19 +61,19 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="tax_number" class="form-label">
-                                    <i class="fas fa-file-invoice text-success"></i> الرقم الضريبي
-                                    <span class="badge bg-success">يظهر في الفواتير</span>
+                                    <i class="fas fa-file-invoice text-success"></i> {{ _('Tax Number') }}
+                                    <span class="badge bg-success">{{ _('Appears on invoices') }}</span>
                                 </label>
                                 <input type="text" class="form-control" id="tax_number" name="tax_number"
                                        value="{{ company.tax_number or '' }}" placeholder="300000000000003">
                                 <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle"></i> الرقم الضريبي المسجل في هيئة الزكاة والضريبة
+                                    <i class="fas fa-info-circle"></i> {{ _('Tax number registered with the Zakat and Tax Authority') }}
                                 </small>
                             </div>
                             <div class="col-md-6">
                                 <label for="commercial_register" class="form-label">
-                                    <i class="fas fa-certificate text-warning"></i> السجل التجاري
-                                    <span class="badge bg-warning">يظهر في الفواتير</span>
+                                    <i class="fas fa-certificate text-warning"></i> {{ _('Commercial Register') }}
+                                    <span class="badge bg-warning">{{ _('Appears on invoices') }}</span>
                                 </label>
                                 <input type="text" class="form-control" id="commercial_register" name="commercial_register"
                                        value="{{ company.commercial_register or '' }}" placeholder="1010123456">
@@ -83,16 +83,16 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="phone" class="form-label">
-                                    <i class="fas fa-phone text-info"></i> الهاتف
-                                    <span class="badge bg-info">يظهر في الفواتير</span>
+                                    <i class="fas fa-phone text-info"></i> {{ _('Phone') }}
+                                    <span class="badge bg-info">{{ _('Appears on invoices') }}</span>
                                 </label>
                                 <input type="tel" class="form-control" id="phone" name="phone"
                                        value="{{ company.phone or '' }}" placeholder="+966 12 345 6789">
                             </div>
                             <div class="col-md-6">
                                 <label for="email" class="form-label">
-                                    <i class="fas fa-envelope text-danger"></i> البريد الإلكتروني
-                                    <span class="badge bg-danger">يظهر في الفواتير</span>
+                                    <i class="fas fa-envelope text-danger"></i> {{ _('Email') }}
+                                    <span class="badge bg-danger">{{ _('Appears on invoices') }}</span>
                                 </label>
                                 <input type="email" class="form-control" id="email" name="email"
                                        value="{{ company.email or '' }}" placeholder="info@company.com">
@@ -100,68 +100,68 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="website" class="form-label">الموقع الإلكتروني</label>
-                            <input type="url" class="form-control" id="website" name="website" 
+                            <label for="website" class="form-label">{{ _('Website') }}</label>
+                            <input type="url" class="form-control" id="website" name="website"
                                    value="{{ company.website or '' }}" placeholder="https://www.company.com">
                         </div>
 
                         <div class="mb-3">
                             <label for="address" class="form-label">
-                                <i class="fas fa-map-marker-alt text-primary"></i> العنوان
-                                <span class="badge bg-primary">يظهر في الفواتير</span>
+                                <i class="fas fa-map-marker-alt text-primary"></i> {{ _('Address') }}
+                                <span class="badge bg-primary">{{ _('Appears on invoices') }}</span>
                             </label>
-                            <textarea class="form-control" id="address" name="address" rows="2" placeholder="مثال: شارع الملك فهد، حي العليا، الرياض">{{ company.address or '' }}</textarea>
+                            <textarea class="form-control" id="address" name="address" rows="2" placeholder="{{ _('Example: King Fahd Street, Al Olaya District, Riyadh') }}">{{ company.address or '' }}</textarea>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="city" class="form-label">المدينة</label>
-                                <input type="text" class="form-control" id="city" name="city" 
+                                <label for="city" class="form-label">{{ _('City') }}</label>
+                                <input type="text" class="form-control" id="city" name="city"
                                        value="{{ company.city or '' }}">
                             </div>
                             <div class="col-md-6">
-                                <label for="country" class="form-label">الدولة</label>
-                                <input type="text" class="form-control" id="country" name="country" 
-                                       value="{{ company.country or 'المملكة العربية السعودية' }}">
+                                <label for="country" class="form-label">{{ _('Country') }}</label>
+                                <input type="text" class="form-control" id="country" name="country"
+                                       value="{{ company.country or _('Saudi Arabia') }}">
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="currency" class="form-label">العملة</label>
+                                <label for="currency" class="form-label">{{ _('Currency') }}</label>
                                 <select class="form-select" id="currency" name="currency">
-                                    <option value="SAR" {% if company.currency == 'SAR' %}selected{% endif %}>ريال سعودي (SAR)</option>
-                                    <option value="USD" {% if company.currency == 'USD' %}selected{% endif %}>دولار أمريكي (USD)</option>
-                                    <option value="EUR" {% if company.currency == 'EUR' %}selected{% endif %}>يورو (EUR)</option>
-                                    <option value="AED" {% if company.currency == 'AED' %}selected{% endif %}>درهم إماراتي (AED)</option>
-                                    <option value="KWD" {% if company.currency == 'KWD' %}selected{% endif %}>دينار كويتي (KWD)</option>
-                                    <option value="BHD" {% if company.currency == 'BHD' %}selected{% endif %}>دينار بحريني (BHD)</option>
-                                    <option value="OMR" {% if company.currency == 'OMR' %}selected{% endif %}>ريال عماني (OMR)</option>
-                                    <option value="QAR" {% if company.currency == 'QAR' %}selected{% endif %}>ريال قطري (QAR)</option>
-                                    <option value="EGP" {% if company.currency == 'EGP' %}selected{% endif %}>جنيه مصري (EGP)</option>
+                                    <option value="SAR" {% if company.currency == 'SAR' %}selected{% endif %}>{{ _('Saudi Riyal') }} (ر.س)</option>
+                                    <option value="USD" {% if company.currency == 'USD' %}selected{% endif %}>{{ _('US Dollar') }} ($)</option>
+                                    <option value="EUR" {% if company.currency == 'EUR' %}selected{% endif %}>{{ _('Euro') }} (€)</option>
+                                    <option value="AED" {% if company.currency == 'AED' %}selected{% endif %}>{{ _('UAE Dirham') }} (د.إ)</option>
+                                    <option value="KWD" {% if company.currency == 'KWD' %}selected{% endif %}>{{ _('Kuwaiti Dinar') }} (د.ك)</option>
+                                    <option value="BHD" {% if company.currency == 'BHD' %}selected{% endif %}>{{ _('Bahraini Dinar') }} (د.ب)</option>
+                                    <option value="OMR" {% if company.currency == 'OMR' %}selected{% endif %}>{{ _('Omani Rial') }} (ر.ع)</option>
+                                    <option value="QAR" {% if company.currency == 'QAR' %}selected{% endif %}>{{ _('Qatari Riyal') }} (ر.ق)</option>
+                                    <option value="EGP" {% if company.currency == 'EGP' %}selected{% endif %}>{{ _('Egyptian Pound') }} (ج.م)</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="tax_rate" class="form-label">نسبة الضريبة (%)</label>
-                                <input type="number" class="form-control" id="tax_rate" name="tax_rate" 
+                                <label for="tax_rate" class="form-label">{{ _('Tax Rate') }} (%)</label>
+                                <input type="number" class="form-control" id="tax_rate" name="tax_rate"
                                        value="{{ company.tax_rate or 15 }}" step="0.01" min="0" max="100">
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label for="logo" class="form-label">
-                                <i class="fas fa-image"></i> شعار الشركة
-                                <span class="badge bg-info">يظهر في الفواتير</span>
+                                <i class="fas fa-image"></i> {{ _('Company Logo') }}
+                                <span class="badge bg-info">{{ _('Appears on invoices') }}</span>
                             </label>
                             <input type="file" class="form-control" id="logo" name="logo" accept="image/png,image/jpeg,image/jpg,image/gif">
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle"></i>
-                                يُفضل استخدام صورة بخلفية شفافة (PNG) بحجم 300x100 بكسل للحصول على أفضل نتيجة
+                                {{ _('Preferably use a transparent background image (PNG) with a size of 300x100 pixels for best results') }}
                             </small>
                             {% if company.logo %}
                             <div class="mt-2">
                                 <small class="text-success">
-                                    <i class="fas fa-check-circle"></i> الشعار الحالي: {{ company.logo }}
+                                    <i class="fas fa-check-circle"></i> {{ _('Current Logo') }}: {{ company.logo }}
                                 </small>
                             </div>
                             {% endif %}
@@ -169,7 +169,7 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save"></i> حفظ التغييرات
+                                <i class="fas fa-save"></i> {{ _('Save Changes') }}
                             </button>
                         </div>
                     </form>
@@ -179,12 +179,12 @@
             <!-- Preview Card -->
             <div class="card shadow mt-4">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-eye"></i> معاينة الفاتورة</h5>
+                    <h5 class="mb-0"><i class="fas fa-eye"></i> {{ _('Invoice Preview') }}</h5>
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3">
                         <i class="fas fa-info-circle"></i>
-                        هذه معاينة لكيفية ظهور بيانات شركتك في الفواتير وعروض الأسعار
+                        {{ _('This is a preview of how your company data will appear on invoices and quotations') }}
                     </p>
                     <div class="border rounded p-4 bg-light">
                         <div class="text-center mb-3">
@@ -194,11 +194,11 @@
                             {% else %}
                             <div class="bg-secondary text-white p-3 rounded d-inline-block mb-2">
                                 <i class="fas fa-image fa-2x"></i>
-                                <div><small>لا يوجد شعار</small></div>
+                                <div><small>{{ _('No Logo') }}</small></div>
                             </div>
                             {% endif %}
                         </div>
-                        <h5 class="text-center mb-3">{{ company.name or 'اسم الشركة' }}</h5>
+                        <h5 class="text-center mb-3">{{ company.name or _('Company Name') }}</h5>
                         <div class="text-center small">
                             {% if company.address %}
                             <div><i class="fas fa-map-marker-alt text-primary"></i> {{ company.address }}</div>
@@ -210,14 +210,14 @@
                             <div><i class="fas fa-envelope text-danger"></i> {{ company.email }}</div>
                             {% endif %}
                             {% if company.tax_number %}
-                            <div><i class="fas fa-file-invoice text-success"></i> الرقم الضريبي: {{ company.tax_number }}</div>
+                            <div><i class="fas fa-file-invoice text-success"></i> {{ _('Tax Number') }}: {{ company.tax_number }}</div>
                             {% endif %}
                         </div>
                     </div>
                     <div class="mt-3 text-center">
                         <small class="text-muted">
                             <i class="fas fa-lightbulb"></i>
-                            احفظ التغييرات لتحديث المعاينة
+                            {{ _('Save changes to update preview') }}
                         </small>
                     </div>
                 </div>
@@ -228,7 +228,7 @@
         <div class="col-lg-4">
             <div class="card shadow mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-building"></i> معلومات الشركة</h5>
+                    <h5 class="mb-0"><i class="fas fa-building"></i> {{ _('Company Information') }}</h5>
                 </div>
                 <div class="card-body">
                     {% if company.logo %}
@@ -244,7 +244,7 @@
                         {% if company.tax_number %}
                         <li class="mb-2">
                             <i class="fas fa-file-invoice text-primary"></i>
-                            <strong>الرقم الضريبي:</strong><br>
+                            <strong>{{ _('Tax Number') }}:</strong><br>
                             <small>{{ company.tax_number }}</small>
                         </li>
                         {% endif %}
@@ -252,7 +252,7 @@
                         {% if company.commercial_register %}
                         <li class="mb-2">
                             <i class="fas fa-certificate text-success"></i>
-                            <strong>السجل التجاري:</strong><br>
+                            <strong>{{ _('Commercial Register') }}:</strong><br>
                             <small>{{ company.commercial_register }}</small>
                         </li>
                         {% endif %}
@@ -260,7 +260,7 @@
                         {% if company.phone %}
                         <li class="mb-2">
                             <i class="fas fa-phone text-info"></i>
-                            <strong>الهاتف:</strong><br>
+                            <strong>{{ _('Phone') }}:</strong><br>
                             <small>{{ company.phone }}</small>
                         </li>
                         {% endif %}
@@ -268,7 +268,7 @@
                         {% if company.email %}
                         <li class="mb-2">
                             <i class="fas fa-envelope text-warning"></i>
-                            <strong>البريد:</strong><br>
+                            <strong>{{ _('Email') }}:</strong><br>
                             <small>{{ company.email }}</small>
                         </li>
                         {% endif %}
@@ -276,33 +276,33 @@
                         {% if company.city %}
                         <li class="mb-2">
                             <i class="fas fa-map-marker-alt text-danger"></i>
-                            <strong>المدينة:</strong><br>
+                            <strong>{{ _('City') }}:</strong><br>
                             <small>{{ company.city }}{% if company.country %}, {{ company.country }}{% endif %}</small>
                         </li>
                         {% endif %}
                     </ul>
                 </div>
                 <div class="card-footer text-muted text-center">
-                    <small>تاريخ الإنشاء: {{ company.created_at.strftime('%Y-%m-%d') }}</small>
+                    <small>{{ _('Created Date') }}: {{ company.created_at.strftime('%Y-%m-%d') }}</small>
                 </div>
             </div>
 
             <!-- Quick Stats -->
             <div class="card shadow">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> إحصائيات سريعة</h5>
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> {{ _('Quick Stats') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3">
-                        <span><i class="fas fa-code-branch text-primary"></i> الفروع</span>
+                        <span><i class="fas fa-code-branch text-primary"></i> {{ _('Branches') }}</span>
                         <strong>{{ company.branches|length }}</strong>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
-                        <span><i class="fas fa-percentage text-success"></i> نسبة الضريبة</span>
+                        <span><i class="fas fa-percentage text-success"></i> {{ _('Tax Rate') }}</span>
                         <strong>{{ company.tax_rate }}%</strong>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <span><i class="fas fa-money-bill text-warning"></i> العملة</span>
+                        <span><i class="fas fa-money-bill text-warning"></i> {{ _('Currency') }}</span>
                         <strong>{{ company.currency }}</strong>
                     </div>
                 </div>
@@ -314,10 +314,10 @@
     <!-- No Company Found -->
     <div class="alert alert-warning text-center">
         <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
-        <h4>لم يتم العثور على بيانات الشركة</h4>
-        <p>يرجى إنشاء بيانات الشركة أولاً</p>
+        <h4>{{ _('Company data not found') }}</h4>
+        <p>{{ _('Please create company data first') }}</p>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
-            <i class="fas fa-plus"></i> إنشاء بيانات الشركة
+            <i class="fas fa-plus"></i> {{ _('Create Company Data') }}
         </button>
     </div>
 
@@ -326,34 +326,34 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="fas fa-building"></i> إنشاء بيانات الشركة</h5>
+                    <h5 class="modal-title"><i class="fas fa-building"></i> {{ _('Create Company Data') }}</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form method="POST" action="{{ url_for('settings.create_company') }}">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="create_name" class="form-label">اسم الشركة (عربي) <span class="text-danger">*</span></label>
+                            <label for="create_name" class="form-label">{{ _('Company Name (Arabic)') }} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="create_name" name="name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="create_name_en" class="form-label">اسم الشركة (إنجليزي)</label>
+                            <label for="create_name_en" class="form-label">{{ _('Company Name (English)') }}</label>
                             <input type="text" class="form-control" id="create_name_en" name="name_en">
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="create_tax_number" class="form-label">الرقم الضريبي</label>
+                                <label for="create_tax_number" class="form-label">{{ _('Tax Number') }}</label>
                                 <input type="text" class="form-control" id="create_tax_number" name="tax_number">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="create_phone" class="form-label">الهاتف</label>
+                                <label for="create_phone" class="form-label">{{ _('Phone') }}</label>
                                 <input type="tel" class="form-control" id="create_phone" name="phone">
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> حفظ
+                            <i class="fas fa-save"></i> {{ _('Save') }}
                         </button>
                     </div>
                 </form>

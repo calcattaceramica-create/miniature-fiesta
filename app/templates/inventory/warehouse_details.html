@@ -40,7 +40,7 @@
                         <div>
                             <h6 class="mb-0">قيمة المخزون</h6>
                             <h3 class="mb-0">{{ "%.2f"|format(total_value) }}</h3>
-                            <small>ر.س</small>
+                            <small>{{ currency_symbol }}</small>
                         </div>
                         <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
                     </div>
@@ -181,8 +181,8 @@
                             <td><strong>{{ stock.quantity }}</strong></td>
                             <td>{{ stock.reserved_quantity }}</td>
                             <td>{{ stock.available_quantity }}</td>
-                            <td>{{ "%.2f"|format(stock.product.cost_price) }} ر.س</td>
-                            <td>{{ "%.2f"|format(stock.quantity * stock.product.cost_price) }} ر.س</td>
+                            <td>{{ stock.product.cost_price|currency }}</td>
+                            <td>{{ (stock.quantity * stock.product.cost_price)|currency }}</td>
                             <td>
                                 {% if stock.product.min_stock and stock.quantity <= stock.product.min_stock %}
                                 <span class="badge bg-danger">منخفض</span>

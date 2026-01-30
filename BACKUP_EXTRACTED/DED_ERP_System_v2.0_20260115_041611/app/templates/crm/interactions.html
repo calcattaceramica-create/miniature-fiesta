@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}التفاعلات - CRM{% endblock %}
+{% block page_title %}التفاعلات{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-comments"></i> التفاعلات</h3>
+        <p class="text-muted mb-0">سجل جميع التفاعلات مع العملاء</p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.add_interaction') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> إضافة تفاعل
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('crm.interactions') }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search" 
+                       placeholder="بحث بالموضوع..." 
+                       value="{{ search }}">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="interaction_type">
+                    <option value="">جميع الأنواع</option>
+                    <option value="call" {% if interaction_type == 'call' %}selected{% endif %}>مكالمة</option>
+                    <option value="email" {% if interaction_type == 'email' %}selected{% endif %}>بريد</option>
+                    <option value="meeting" {% if interaction_type == 'meeting' %}selected{% endif %}>اجتماع</option>
+                    <option value="note" {% if interaction_type == 'note' %}selected{% endif %}>ملاحظة</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('crm.interactions') }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-redo"></i> إعادة تعيين
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Interactions Table -->
+<div class="card mt-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>النوع</th>
+                        <th>الموضوع</th>
+                        <th>مرتبط بـ</th>
+                        <th>التاريخ</th>
+                        <th>المدة</th>
+                        <th>النتيجة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interaction in interactions.items %}
+                    <tr>
+                        <td>
+                            <i class="fas fa-{{ 'phone' if interaction.interaction_type == 'call' else 'envelope' if interaction.interaction_type == 'email' else 'handshake' if interaction.interaction_type == 'meeting' else 'sticky-note' }} fa-lg"></i>
+                            <br><small>{{ interaction.interaction_type }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ interaction.subject }}</strong>
+                            {% if interaction.description %}
+                            <br><small class="text-muted">{{ interaction.description[:50] }}...</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if interaction.lead %}
+                                <a href="{{ url_for('crm.lead_details', id=interaction.lead_id) }}">
+                                    <i class="fas fa-user-plus"></i> {{ interaction.lead.name }}
+                                </a>
+                            {% elif interaction.customer %}
+                                <a href="{{ url_for('customers.customer_details', id=interaction.customer_id) }}">
+                                    <i class="fas fa-user"></i> {{ interaction.customer.name }}
+                                </a>
+                            {% elif interaction.opportunity %}
+                                <a href="{{ url_for('crm.opportunity_details', id=interaction.opportunity_id) }}">
+                                    <i class="fas fa-bullseye"></i> {{ interaction.opportunity.name }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ interaction.interaction_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ interaction.duration }} دقيقة</td>
+                        <td>
+                            {% if interaction.outcome == 'successful' %}
+                                <span class="badge bg-success">ناجح</span>
+                            {% elif interaction.outcome == 'unsuccessful' %}
+                                <span class="badge bg-danger">غير ناجح</span>
+                            {% elif interaction.outcome == 'follow_up_required' %}
+                                <span class="badge bg-warning">يتطلب متابعة</span>
+                            {% elif interaction.outcome == 'no_answer' %}
+                                <span class="badge bg-secondary">لا يوجد رد</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteInteraction({{ interaction.id }})" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                            لا توجد تفاعلات
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if interactions.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not interactions.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.interactions', page=interactions.prev_num, search=search, interaction_type=interaction_type) }}">
+                السابق
+            </a>
+        </li>
+        
+        {% for page_num in interactions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == interactions.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('crm.interactions', page=page_num, search=search, interaction_type=interaction_type) }}">
+                        {{ page_num }}
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if not interactions.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.interactions', page=interactions.next_num, search=search, interaction_type=interaction_type) }}">
+                التالي
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteInteraction(interactionId) {
+    if (confirm('هل أنت متأكد من حذف هذا التفاعل؟')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/crm/interactions/${interactionId}/delete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
+

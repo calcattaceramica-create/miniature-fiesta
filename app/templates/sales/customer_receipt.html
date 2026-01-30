@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('language', 'ar') }}" dir="{{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Customer Receipt') }} - {{ invoice.invoice_number }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: {{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }};
+            padding: 10px;
+            background: #f5f5f5;
+        }
+
+        .receipt-container {
+            max-width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            font-size: 14px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 3px;
+        }
+
+        .info-box h3 {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #007bff;
+            padding-bottom: 3px;
+        }
+
+        .info-box p {
+            margin: 3px 0;
+            color: #555;
+            font-size: 11px;
+        }
+
+        .info-box strong {
+            color: #333;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 11px;
+        }
+
+        .items-table thead {
+            background: #333;
+            color: white;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 6px;
+            text-align: right;
+            border: 1px solid #ddd;
+        }
+
+        .items-table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .signature-section {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 2px solid #333;
+            margin-top: 40px;
+            padding-top: 8px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .receipt-container {
+                box-shadow: none;
+                max-width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-receipt"></i> {{ _('Customer Receipt') }}</h1>
+            <h2>{{ _('Delivery Acknowledgment') }}</h2>
+        </div>
+
+        <!-- Invoice Information -->
+        <div class="info-section">
+            <div class="info-box">
+                <h3><i class="fas fa-file-invoice"></i> {{ _('Invoice Information') }}</h3>
+                <p><strong>{{ _('Invoice Number') }}:</strong> {{ invoice.invoice_number }}</p>
+                <p><strong>{{ _('Date') }}:</strong> {{ invoice.invoice_date.strftime('%Y-%m-%d') }}</p>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-user"></i> {{ _('Customer Information') }}</h3>
+                <p><strong>{{ _('Customer Name') }}:</strong> {{ invoice.customer.name }}</p>
+                <p><strong>{{ _('Customer Code') }}:</strong> {{ invoice.customer.code }}</p>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>{{ _('Product') }}</th>
+                    <th style="width: 100px;">{{ _('Quantity') }}</th>
+                    <th style="width: 150px;">{{ _('Unit') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <strong>{{ item.product.name }}</strong>
+                        {% if item.description %}
+                        <br><small style="color: #666;">{{ item.description }}</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.unit if item.product.unit else _('Piece') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Notes -->
+        {% if invoice.notes %}
+        <div class="info-box" style="margin-bottom: 10px;">
+            <h3><i class="fas fa-sticky-note"></i> {{ _('Notes') }}</h3>
+            <p style="font-size: 10px;">{{ invoice.notes }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="signature-line">
+                    {{ _('Receiver Signature') }}
+                </div>
+                <p style="margin-top: 5px; color: #666; font-size: 9px;">
+                    {{ _('Date') }}: _______________
+                </p>
+            </div>
+
+            <div class="signature-box">
+                <div class="signature-line">
+                    {{ _('Authorized Signature') }}
+                </div>
+                <p style="margin-top: 5px; color: #666; font-size: 9px;">
+                    {{ _('Date') }}: _______________
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>{{ _('Acknowledgment') }}:</strong> {{ _('I acknowledge that I have received the above goods in good and complete condition') }}</p>
+            <p style="margin-top: 5px;">{{ _('Printed on') }}: <span id="print-date"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Set print date
+        const dateString = new Date().toLocaleString('ar-SA', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        document.getElementById('print-date').textContent = dateString;
+
+        // Auto print on load
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>
+

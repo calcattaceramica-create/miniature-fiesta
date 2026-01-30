@@ -1,0 +1,1484 @@
+# Arabic translations for DED ERP System.
+# Copyright (C) 2026 DED
+# This file is distributed under the same license as the DED project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DED 1.0\n"
+"Report-Msgid-Bugs-To: support@ded.com\n"
+"POT-Creation-Date: 2026-01-14 21:00+0300\n"
+"PO-Revision-Date: 2026-01-14 21:00+0300\n"
+"Last-Translator: DED Team <support@ded.com>\n"
+"Language: ar\n"
+"Language-Team: Arabic\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+# Main Navigation
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Home"
+msgstr "الرئيسية"
+
+msgid "Inventory"
+msgstr "المخزون"
+
+msgid "Products"
+msgstr "المنتجات"
+
+msgid "Categories"
+msgstr "التصنيفات"
+
+msgid "Units"
+msgstr "الوحدات"
+
+msgid "Warehouses"
+msgstr "المستودعات"
+
+msgid "Stock"
+msgstr "المخزون"
+
+msgid "Stock Transfer"
+msgstr "نقل المخزون"
+
+msgid "Sales"
+msgstr "المبيعات"
+
+msgid "Sales Invoices"
+msgstr "فواتير المبيعات"
+
+msgid "New Invoice"
+msgstr "فاتورة جديدة"
+
+msgid "Customers"
+msgstr "العملاء"
+
+msgid "New Customer"
+msgstr "عميل جديد"
+
+msgid "Purchases"
+msgstr "المشتريات"
+
+msgid "Purchase Invoices"
+msgstr "فواتير المشتريات"
+
+msgid "Suppliers"
+msgstr "الموردين"
+
+msgid "New Supplier"
+msgstr "مورد جديد"
+
+msgid "Point of Sale"
+msgstr "نقاط البيع"
+
+msgid "POS"
+msgstr "نقاط البيع"
+
+msgid "POS Screen"
+msgstr "شاشة نقاط البيع"
+
+msgid "Sessions"
+msgstr "الجلسات"
+
+msgid "Open New Session"
+msgstr "فتح جلسة جديدة"
+
+msgid "Accounting"
+msgstr "المحاسبة"
+
+msgid "Chart of Accounts"
+msgstr "دليل الحسابات"
+
+msgid "Journal Entries"
+msgstr "القيود اليومية"
+
+msgid "CRM"
+msgstr "إدارة العملاء"
+
+msgid "HR"
+msgstr "الموارد البشرية"
+
+msgid "Human Resources"
+msgstr "الموارد البشرية"
+
+msgid "Employees"
+msgstr "الموظفين"
+
+msgid "Departments"
+msgstr "الأقسام"
+
+msgid "Attendance"
+msgstr "الحضور"
+
+msgid "Payroll"
+msgstr "الرواتب"
+
+msgid "Reports"
+msgstr "التقارير"
+
+msgid "Settings"
+msgstr "الإعدادات"
+
+msgid "License Info"
+msgstr "معلومات الترخيص"
+
+msgid "Security"
+msgstr "الأمان"
+
+msgid "Users"
+msgstr "المستخدمين"
+
+msgid "Roles"
+msgstr "الصلاحيات"
+
+msgid "Permissions"
+msgstr "الأذونات"
+
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+# Common Actions
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Add"
+msgstr "إضافة"
+
+msgid "Search"
+msgstr "بحث"
+
+msgid "Filter"
+msgstr "تصفية"
+
+msgid "Export"
+msgstr "تصدير"
+
+msgid "Import"
+msgstr "استيراد"
+
+msgid "Print"
+msgstr "طباعة"
+
+msgid "View"
+msgstr "عرض"
+
+msgid "Close"
+msgstr "إغلاق"
+
+msgid "Submit"
+msgstr "إرسال"
+
+msgid "Update"
+msgstr "تحديث"
+
+msgid "Create"
+msgstr "إنشاء"
+
+msgid "Refresh"
+msgstr "تحديث"
+
+msgid "Back"
+msgstr "رجوع"
+
+msgid "Next"
+msgstr "التالي"
+
+msgid "Previous"
+msgstr "السابق"
+
+msgid "Confirm"
+msgstr "تأكيد"
+
+msgid "Yes"
+msgstr "نعم"
+
+msgid "No"
+msgstr "لا"
+
+# Form Fields
+msgid "Name"
+msgstr "الاسم"
+
+msgid "Name (Arabic)"
+msgstr "الاسم (عربي)"
+
+msgid "Name (English)"
+msgstr "الاسم (إنجليزي)"
+
+msgid "Code"
+msgstr "الرمز"
+
+msgid "Description"
+msgstr "الوصف"
+
+msgid "Price"
+msgstr "السعر"
+
+msgid "Cost"
+msgstr "التكلفة"
+
+msgid "Quantity"
+msgstr "الكمية"
+
+msgid "Total"
+msgstr "الإجمالي"
+
+msgid "Subtotal"
+msgstr "المجموع الفرعي"
+
+msgid "Tax"
+msgstr "الضريبة"
+
+msgid "Discount"
+msgstr "الخصم"
+
+msgid "Grand Total"
+msgstr "الإجمالي النهائي"
+
+msgid "Date"
+msgstr "التاريخ"
+
+msgid "Time"
+msgstr "الوقت"
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "Active"
+msgstr "نشط"
+
+msgid "Inactive"
+msgstr "غير نشط"
+
+msgid "Notes"
+msgstr "ملاحظات"
+
+msgid "Phone"
+msgstr "الهاتف"
+
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+msgid "Address"
+msgstr "العنوان"
+
+msgid "City"
+msgstr "المدينة"
+
+msgid "Country"
+msgstr "الدولة"
+
+msgid "Barcode"
+msgstr "الباركود"
+
+msgid "Category"
+msgstr "التصنيف"
+
+msgid "Unit"
+msgstr "الوحدة"
+
+msgid "Warehouse"
+msgstr "المستودع"
+
+msgid "Branch"
+msgstr "الفرع"
+
+msgid "Company"
+msgstr "الشركة"
+
+msgid "Customer"
+msgstr "العميل"
+
+msgid "Supplier"
+msgstr "المورد"
+
+msgid "Product"
+msgstr "المنتج"
+
+msgid "Invoice"
+msgstr "الفاتورة"
+
+msgid "Invoice Number"
+msgstr "رقم الفاتورة"
+
+msgid "Invoice Date"
+msgstr "تاريخ الفاتورة"
+
+msgid "Due Date"
+msgstr "تاريخ الاستحقاق"
+
+msgid "Payment Method"
+msgstr "طريقة الدفع"
+
+msgid "Payment Status"
+msgstr "حالة الدفع"
+
+msgid "Paid"
+msgstr "مدفوع"
+
+msgid "Unpaid"
+msgstr "غير مدفوع"
+
+msgid "Partially Paid"
+msgstr "مدفوع جزئياً"
+
+msgid "Cash"
+msgstr "نقدي"
+
+msgid "Credit Card"
+msgstr "بطاقة ائتمان"
+
+msgid "Bank Transfer"
+msgstr "تحويل بنكي"
+
+msgid "Cheque"
+msgstr "شيك"
+
+# Messages
+msgid "Success"
+msgstr "نجح"
+
+msgid "Error"
+msgstr "خطأ"
+
+msgid "Warning"
+msgstr "تحذير"
+
+msgid "Info"
+msgstr "معلومات"
+
+msgid "Are you sure?"
+msgstr "هل أنت متأكد؟"
+
+msgid "This action cannot be undone"
+msgstr "لا يمكن التراجع عن هذا الإجراء"
+
+msgid "Please confirm"
+msgstr "يرجى التأكيد"
+
+msgid "Operation successful"
+msgstr "تمت العملية بنجاح"
+
+msgid "Operation failed"
+msgstr "فشلت العملية"
+
+msgid "No data available"
+msgstr "لا توجد بيانات"
+
+msgid "Loading..."
+msgstr "جاري التحميل..."
+
+msgid "Please wait"
+msgstr "يرجى الانتظار"
+
+msgid "Required field"
+msgstr "حقل مطلوب"
+
+msgid "Invalid input"
+msgstr "إدخال غير صحيح"
+
+msgid "Please login to continue"
+msgstr "يرجى تسجيل الدخول للمتابعة"
+
+# Sales Invoice Page
+msgid "Add Sales Invoice"
+msgstr "إضافة فاتورة مبيعات"
+
+msgid "Add New Sales Invoice"
+msgstr "إضافة فاتورة مبيعات جديدة"
+
+msgid "Enter invoice and product details"
+msgstr "أدخل تفاصيل الفاتورة والمنتجات"
+
+msgid "Invoice Information"
+msgstr "معلومات الفاتورة"
+
+msgid "Select Customer"
+msgstr "اختر العميل"
+
+msgid "Select Warehouse"
+msgstr "اختر المستودع"
+
+msgid "Add Product"
+msgstr "إضافة منتج"
+
+msgid "Select Product"
+msgstr "اختر المنتج"
+
+msgid "Available Stock"
+msgstr "المخزون المتاح"
+
+msgid "Unit Price"
+msgstr "سعر الوحدة"
+
+msgid "Tax Rate"
+msgstr "نسبة الضريبة"
+
+msgid "Tax Amount"
+msgstr "مبلغ الضريبة"
+
+msgid "Discount Amount"
+msgstr "مبلغ الخصم"
+
+msgid "Line Total"
+msgstr "إجمالي السطر"
+
+msgid "Remove"
+msgstr "إزالة"
+
+msgid "Invoice Summary"
+msgstr "ملخص الفاتورة"
+
+msgid "Items Count"
+msgstr "عدد الأصناف"
+
+msgid "Total Before Tax"
+msgstr "الإجمالي قبل الضريبة"
+
+msgid "Total Tax"
+msgstr "إجمالي الضريبة"
+
+msgid "Total Discount"
+msgstr "إجمالي الخصم"
+
+msgid "Net Total"
+msgstr "الصافي"
+
+msgid "Save Invoice"
+msgstr "حفظ الفاتورة"
+
+msgid "Save and Print"
+msgstr "حفظ وطباعة"
+
+msgid "Add Customer"
+msgstr "إضافة عميل"
+
+msgid "Customer Name"
+msgstr "اسم العميل"
+
+msgid "Customer Code"
+msgstr "رمز العميل"
+
+msgid "Customer Phone"
+msgstr "هاتف العميل"
+
+msgid "Customer Email"
+msgstr "بريد العميل"
+
+msgid "Customer Address"
+msgstr "عنوان العميل"
+
+msgid "Tax Number"
+msgstr "الرقم الضريبي"
+
+msgid "Credit Limit"
+msgstr "حد الائتمان"
+
+msgid "Payment Terms"
+msgstr "شروط الدفع"
+
+# Employees Page
+msgid "Employee Management"
+msgstr "إدارة الموظفين"
+
+msgid "Manage your employees"
+msgstr "إدارة الموظفين لديك"
+
+msgid "Add New Employee"
+msgstr "إضافة موظف جديد"
+
+msgid "Employee Name"
+msgstr "اسم الموظف"
+
+msgid "Employee Code"
+msgstr "رمز الموظف"
+
+msgid "Position"
+msgstr "المنصب"
+
+msgid "Department"
+msgstr "القسم"
+
+msgid "Salary"
+msgstr "الراتب"
+
+msgid "Hire Date"
+msgstr "تاريخ التوظيف"
+
+msgid "Actions"
+msgstr "الإجراءات"
+
+msgid "No employees found"
+msgstr "لم يتم العثور على موظفين"
+
+# Customers Page
+msgid "Customer Management"
+msgstr "إدارة العملاء"
+
+msgid "Manage your customers"
+msgstr "إدارة العملاء لديك"
+
+msgid "Add New Customer"
+msgstr "إضافة عميل جديد"
+
+msgid "No customers found"
+msgstr "لم يتم العثور على عملاء"
+
+# Suppliers Page
+msgid "Supplier Management"
+msgstr "إدارة الموردين"
+
+msgid "Manage your suppliers"
+msgstr "إدارة الموردين لديك"
+
+msgid "Add New Supplier"
+msgstr "إضافة مورد جديد"
+
+msgid "Supplier Name"
+msgstr "اسم المورد"
+
+msgid "Supplier Code"
+msgstr "رمز المورد"
+
+msgid "Supplier Phone"
+msgstr "هاتف المورد"
+
+msgid "Supplier Email"
+msgstr "بريد المورد"
+
+msgid "Supplier Address"
+msgstr "عنوان المورد"
+
+msgid "No suppliers found"
+msgstr "لم يتم العثور على موردين"
+
+# Dashboard
+msgid "Main Dashboard"
+msgstr "لوحة التحكم الرئيسية"
+
+msgid "Welcome"
+msgstr "مرحباً"
+
+msgid "System Overview"
+msgstr "نظرة عامة على النظام"
+
+msgid "Total Products"
+msgstr "إجمالي المنتجات"
+
+msgid "Total Customers"
+msgstr "إجمالي العملاء"
+
+msgid "Total Suppliers"
+msgstr "إجمالي الموردين"
+
+msgid "Total Employees"
+msgstr "إجمالي الموظفين"
+
+msgid "Today's Sales"
+msgstr "مبيعات اليوم"
+
+msgid "This Month Sales"
+msgstr "مبيعات هذا الشهر"
+
+msgid "Low Stock Products"
+msgstr "منتجات منخفضة المخزون"
+
+msgid "Recent Invoices"
+msgstr "الفواتير الأخيرة"
+
+msgid "Top Selling Products"
+msgstr "المنتجات الأكثر مبيعاً"
+
+msgid "Sales Chart"
+msgstr "رسم بياني للمبيعات"
+
+msgid "Monthly Sales"
+msgstr "المبيعات الشهرية"
+
+msgid "View All"
+msgstr "عرض الكل"
+
+msgid "View Details"
+msgstr "عرض التفاصيل"
+
+# Products Page
+msgid "Product Management"
+msgstr "إدارة المنتجات"
+
+msgid "Manage your products"
+msgstr "إدارة المنتجات لديك"
+
+msgid "Add New Product"
+msgstr "إضافة منتج جديد"
+
+msgid "Product Name"
+msgstr "اسم المنتج"
+
+msgid "Product Code"
+msgstr "رمز المنتج"
+
+msgid "Product Category"
+msgstr "تصنيف المنتج"
+
+msgid "Product Unit"
+msgstr "وحدة المنتج"
+
+msgid "Product Price"
+msgstr "سعر المنتج"
+
+msgid "Product Cost"
+msgstr "تكلفة المنتج"
+
+msgid "Product Stock"
+msgstr "مخزون المنتج"
+
+msgid "No products found"
+msgstr "لم يتم العثور على منتجات"
+
+# Categories Page
+msgid "Category Management"
+msgstr "إدارة التصنيفات"
+
+msgid "Manage your categories"
+msgstr "إدارة التصنيفات لديك"
+
+msgid "Add New Category"
+msgstr "إضافة تصنيف جديد"
+
+msgid "Category Name"
+msgstr "اسم التصنيف"
+
+msgid "Category Code"
+msgstr "رمز التصنيف"
+
+msgid "Parent Category"
+msgstr "التصنيف الأب"
+
+msgid "No categories found"
+msgstr "لم يتم العثور على تصنيفات"
+
+# Warehouses Page
+msgid "Warehouse Management"
+msgstr "إدارة المستودعات"
+
+msgid "Manage your warehouses"
+msgstr "إدارة المستودعات لديك"
+
+msgid "Add New Warehouse"
+msgstr "إضافة مستودع جديد"
+
+msgid "Warehouse Name"
+msgstr "اسم المستودع"
+
+msgid "Warehouse Code"
+msgstr "رمز المستودع"
+
+msgid "Warehouse Location"
+msgstr "موقع المستودع"
+
+msgid "No warehouses found"
+msgstr "لم يتم العثور على مستودعات"
+
+# Stock Page
+msgid "Stock Management"
+msgstr "إدارة المخزون"
+
+msgid "Manage your stock"
+msgstr "إدارة المخزون لديك"
+
+msgid "Stock Level"
+msgstr "مستوى المخزون"
+
+msgid "Minimum Stock"
+msgstr "الحد الأدنى للمخزون"
+
+msgid "Maximum Stock"
+msgstr "الحد الأقصى للمخزون"
+
+msgid "Reorder Level"
+msgstr "مستوى إعادة الطلب"
+
+msgid "Stock Value"
+msgstr "قيمة المخزون"
+
+msgid "Stock Movement"
+msgstr "حركة المخزون"
+
+msgid "Stock In"
+msgstr "إدخال مخزون"
+
+msgid "Stock Out"
+msgstr "إخراج مخزون"
+
+msgid "Stock Adjustment"
+msgstr "تعديل المخزون"
+
+msgid "No stock found"
+msgstr "لم يتم العثور على مخزون"
+
+# Invoices Page
+msgid "Invoice Management"
+msgstr "إدارة الفواتير"
+
+msgid "Manage your invoices"
+msgstr "إدارة الفواتير لديك"
+
+msgid "Invoice Type"
+msgstr "نوع الفاتورة"
+
+msgid "Invoice Total"
+msgstr "إجمالي الفاتورة"
+
+msgid "Invoice Items"
+msgstr "أصناف الفاتورة"
+
+msgid "No invoices found"
+msgstr "لم يتم العثور على فواتير"
+
+# Reports Page
+msgid "Reports Management"
+msgstr "إدارة التقارير"
+
+msgid "Generate Reports"
+msgstr "إنشاء التقارير"
+
+msgid "Sales Report"
+msgstr "تقرير المبيعات"
+
+msgid "Purchase Report"
+msgstr "تقرير المشتريات"
+
+msgid "Stock Report"
+msgstr "تقرير المخزون"
+
+msgid "Financial Report"
+msgstr "تقرير مالي"
+
+msgid "Customer Report"
+msgstr "تقرير العملاء"
+
+msgid "Supplier Report"
+msgstr "تقرير الموردين"
+
+msgid "Employee Report"
+msgstr "تقرير الموظفين"
+
+msgid "From Date"
+msgstr "من تاريخ"
+
+msgid "To Date"
+msgstr "إلى تاريخ"
+
+msgid "Generate"
+msgstr "إنشاء"
+
+msgid "Download PDF"
+msgstr "تحميل PDF"
+
+msgid "Download Excel"
+msgstr "تحميل Excel"
+
+# Settings Page
+msgid "System Settings"
+msgstr "إعدادات النظام"
+
+msgid "General Settings"
+msgstr "الإعدادات العامة"
+
+msgid "Company Settings"
+msgstr "إعدادات الشركة"
+
+msgid "Company Name"
+msgstr "اسم الشركة"
+
+msgid "Company Logo"
+msgstr "شعار الشركة"
+
+msgid "Company Address"
+msgstr "عنوان الشركة"
+
+msgid "Company Phone"
+msgstr "هاتف الشركة"
+
+msgid "Company Email"
+msgstr "بريد الشركة"
+
+msgid "Currency"
+msgstr "العملة"
+
+msgid "Language"
+msgstr "اللغة"
+
+msgid "Timezone"
+msgstr "المنطقة الزمنية"
+
+msgid "Date Format"
+msgstr "تنسيق التاريخ"
+
+msgid "Time Format"
+msgstr "تنسيق الوقت"
+
+msgid "Decimal Places"
+msgstr "الأرقام العشرية"
+
+msgid "Tax Settings"
+msgstr "إعدادات الضريبة"
+
+msgid "Default Tax Rate"
+msgstr "نسبة الضريبة الافتراضية"
+
+msgid "Tax Included"
+msgstr "شامل الضريبة"
+
+msgid "Tax Excluded"
+msgstr "غير شامل الضريبة"
+
+# Login Page
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Password"
+msgstr "كلمة المرور"
+
+msgid "Remember Me"
+msgstr "تذكرني"
+
+msgid "Forgot Password?"
+msgstr "نسيت كلمة المرور؟"
+
+msgid "Sign In"
+msgstr "تسجيل الدخول"
+
+msgid "Sign Out"
+msgstr "تسجيل الخروج"
+
+msgid "Register"
+msgstr "تسجيل"
+
+msgid "Create Account"
+msgstr "إنشاء حساب"
+
+# User Management
+msgid "User Management"
+msgstr "إدارة المستخدمين"
+
+msgid "Add New User"
+msgstr "إضافة مستخدم جديد"
+
+msgid "User Name"
+msgstr "اسم المستخدم"
+
+msgid "User Email"
+msgstr "بريد المستخدم"
+
+msgid "User Role"
+msgstr "دور المستخدم"
+
+msgid "User Status"
+msgstr "حالة المستخدم"
+
+msgid "Change Password"
+msgstr "تغيير كلمة المرور"
+
+msgid "Old Password"
+msgstr "كلمة المرور القديمة"
+
+msgid "New Password"
+msgstr "كلمة المرور الجديدة"
+
+msgid "Confirm Password"
+msgstr "تأكيد كلمة المرور"
+
+msgid "No users found"
+msgstr "لم يتم العثور على مستخدمين"
+
+# Pagination
+msgid "Showing"
+msgstr "عرض"
+
+msgid "to"
+msgstr "إلى"
+
+msgid "of"
+msgstr "من"
+
+msgid "entries"
+msgstr "إدخالات"
+
+msgid "First"
+msgstr "الأول"
+
+msgid "Last"
+msgstr "الأخير"
+
+msgid "Page"
+msgstr "صفحة"
+
+# Validation Messages
+msgid "This field is required"
+msgstr "هذا الحقل مطلوب"
+
+msgid "Please enter a valid email"
+msgstr "يرجى إدخال بريد إلكتروني صحيح"
+
+msgid "Please enter a valid phone number"
+msgstr "يرجى إدخال رقم هاتف صحيح"
+
+msgid "Please enter a valid number"
+msgstr "يرجى إدخال رقم صحيح"
+
+msgid "Please select an option"
+msgstr "يرجى اختيار خيار"
+
+msgid "Password must be at least 6 characters"
+msgstr "يجب أن تكون كلمة المرور 6 أحرف على الأقل"
+
+msgid "Passwords do not match"
+msgstr "كلمات المرور غير متطابقة"
+
+msgid "Invalid username or password"
+msgstr "اسم المستخدم أو كلمة المرور غير صحيحة"
+
+msgid "Username already exists"
+msgstr "اسم المستخدم موجود بالفعل"
+
+msgid "Email already exists"
+msgstr "البريد الإلكتروني موجود بالفعل"
+
+# Success Messages
+msgid "Added successfully"
+msgstr "تمت الإضافة بنجاح"
+
+msgid "Updated successfully"
+msgstr "تم التحديث بنجاح"
+
+msgid "Deleted successfully"
+msgstr "تم الحذف بنجاح"
+
+msgid "Saved successfully"
+msgstr "تم الحفظ بنجاح"
+
+msgid "Imported successfully"
+msgstr "تم الاستيراد بنجاح"
+
+msgid "Exported successfully"
+msgstr "تم التصدير بنجاح"
+
+msgid "Printed successfully"
+msgstr "تمت الطباعة بنجاح"
+
+msgid "Login successful"
+msgstr "تم تسجيل الدخول بنجاح"
+
+msgid "Logout successful"
+msgstr "تم تسجيل الخروج بنجاح"
+
+msgid "Password changed successfully"
+msgstr "تم تغيير كلمة المرور بنجاح"
+
+# Error Messages
+msgid "An error occurred"
+msgstr "حدث خطأ"
+
+msgid "Failed to add"
+msgstr "فشل في الإضافة"
+
+msgid "Failed to update"
+msgstr "فشل في التحديث"
+
+msgid "Failed to delete"
+msgstr "فشل في الحذف"
+
+msgid "Failed to save"
+msgstr "فشل في الحفظ"
+
+msgid "Failed to import"
+msgstr "فشل في الاستيراد"
+
+msgid "Failed to export"
+msgstr "فشل في التصدير"
+
+msgid "Failed to print"
+msgstr "فشل في الطباعة"
+
+msgid "Failed to login"
+msgstr "فشل في تسجيل الدخول"
+
+msgid "Access denied"
+msgstr "تم رفض الوصول"
+
+msgid "Permission denied"
+msgstr "تم رفض الإذن"
+
+msgid "Not found"
+msgstr "غير موجود"
+
+msgid "Already exists"
+msgstr "موجود بالفعل"
+
+msgid "Invalid data"
+msgstr "بيانات غير صحيحة"
+
+msgid "Insufficient stock"
+msgstr "مخزون غير كافٍ"
+
+msgid "Inventory Management System"
+msgstr "نظام إدارة المخزون"
+
+msgid "or"
+msgstr "أو"
+
+msgid "All"
+msgstr "الكل"
+
+msgid "Reset"
+msgstr "إعادة تعيين"
+
+msgid "Select"
+msgstr "اختر"
+
+msgid "None"
+msgstr "لا شيء"
+
+msgid "Other"
+msgstr "أخرى"
+
+msgid "Male"
+msgstr "ذكر"
+
+msgid "Female"
+msgstr "أنثى"
+
+msgid "Gender"
+msgstr "الجنس"
+
+msgid "Birth Date"
+msgstr "تاريخ الميلاد"
+
+msgid "National ID"
+msgstr "رقم الهوية"
+
+msgid "Passport Number"
+msgstr "رقم جواز السفر"
+
+msgid "Marital Status"
+msgstr "الحالة الاجتماعية"
+
+msgid "Single"
+msgstr "أعزب"
+
+msgid "Married"
+msgstr "متزوج"
+
+msgid "Divorced"
+msgstr "مطلق"
+
+msgid "Widowed"
+msgstr "أرمل"
+
+msgid "Contract Type"
+msgstr "نوع العقد"
+
+msgid "Full Time"
+msgstr "دوام كامل"
+
+msgid "Part Time"
+msgstr "دوام جزئي"
+
+msgid "Contract"
+msgstr "عقد"
+
+msgid "Temporary"
+msgstr "مؤقت"
+
+msgid "Bank Account"
+msgstr "الحساب البنكي"
+
+msgid "Bank Name"
+msgstr "اسم البنك"
+
+msgid "Account Number"
+msgstr "رقم الحساب"
+
+msgid "IBAN"
+msgstr "رقم الآيبان"
+
+msgid "Emergency Contact"
+msgstr "جهة الاتصال في حالات الطوارئ"
+
+msgid "Emergency Phone"
+msgstr "هاتف الطوارئ"
+
+msgid "Relationship"
+msgstr "صلة القرابة"
+
+msgid "Father"
+msgstr "الأب"
+
+msgid "Mother"
+msgstr "الأم"
+
+msgid "Brother"
+msgstr "الأخ"
+
+msgid "Sister"
+msgstr "الأخت"
+
+msgid "Spouse"
+msgstr "الزوج/الزوجة"
+
+msgid "Son"
+msgstr "الابن"
+
+msgid "Daughter"
+msgstr "الابنة"
+
+msgid "Friend"
+msgstr "صديق"
+
+msgid "Relative"
+msgstr "قريب"
+
+msgid "Resigned"
+msgstr "مستقيل"
+
+msgid "Terminated"
+msgstr "منتهي"
+
+msgid "On Leave"
+msgstr "في إجازة"
+
+msgid "Suspended"
+msgstr "موقوف"
+
+msgid "Probation"
+msgstr "تحت الاختبار"
+
+msgid "Employment Status"
+msgstr "حالة التوظيف"
+
+msgid "Join Date"
+msgstr "تاريخ الانضمام"
+
+msgid "End Date"
+msgstr "تاريخ الانتهاء"
+
+msgid "Resignation Date"
+msgstr "تاريخ الاستقالة"
+
+msgid "Termination Date"
+msgstr "تاريخ الإنهاء"
+
+msgid "Reason"
+msgstr "السبب"
+
+msgid "Resignation Reason"
+msgstr "سبب الاستقالة"
+
+msgid "Termination Reason"
+msgstr "سبب الإنهاء"
+
+msgid "Notice Period"
+msgstr "فترة الإشعار"
+
+msgid "Days"
+msgstr "أيام"
+
+msgid "Weeks"
+msgstr "أسابيع"
+
+msgid "Months"
+msgstr "أشهر"
+
+msgid "Years"
+msgstr "سنوات"
+
+msgid "Basic Salary"
+msgstr "الراتب الأساسي"
+
+msgid "Allowances"
+msgstr "البدلات"
+
+msgid "Housing Allowance"
+msgstr "بدل السكن"
+
+msgid "Transportation Allowance"
+msgstr "بدل المواصلات"
+
+msgid "Food Allowance"
+msgstr "بدل الطعام"
+
+msgid "Other Allowances"
+msgstr "بدلات أخرى"
+
+msgid "Deductions"
+msgstr "الخصومات"
+
+msgid "Insurance"
+msgstr "التأمين"
+
+msgid "Social Insurance"
+msgstr "التأمينات الاجتماعية"
+
+msgid "Medical Insurance"
+msgstr "التأمين الطبي"
+
+msgid "Gross Salary"
+msgstr "الراتب الإجمالي"
+
+msgid "Net Salary"
+msgstr "صافي الراتب"
+
+msgid "Payment Frequency"
+msgstr "تكرار الدفع"
+
+msgid "Monthly"
+msgstr "شهري"
+
+msgid "Weekly"
+msgstr "أسبوعي"
+
+msgid "Daily"
+msgstr "يومي"
+
+msgid "Hourly"
+msgstr "ساعي"
+
+msgid "Annual Leave"
+msgstr "الإجازة السنوية"
+
+msgid "Sick Leave"
+msgstr "الإجازة المرضية"
+
+msgid "Leave Balance"
+msgstr "رصيد الإجازات"
+
+msgid "Leave Type"
+msgstr "نوع الإجازة"
+
+msgid "Leave From"
+msgstr "الإجازة من"
+
+msgid "Leave To"
+msgstr "الإجازة إلى"
+
+msgid "Leave Days"
+msgstr "أيام الإجازة"
+
+msgid "Leave Reason"
+msgstr "سبب الإجازة"
+
+msgid "Leave Status"
+msgstr "حالة الإجازة"
+
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+msgid "Approved"
+msgstr "موافق عليه"
+
+msgid "Rejected"
+msgstr "مرفوض"
+
+msgid "Cancelled"
+msgstr "ملغي"
+
+msgid "View and manage all customers"
+msgstr "عرض وإدارة جميع العملاء"
+
+msgid "Search by name, code, or phone..."
+msgstr "البحث بالاسم أو الرمز أو الهاتف..."
+
+msgid "Current Balance"
+msgstr "الرصيد الحالي"
+
+msgid "SAR"
+msgstr "ر.س"
+
+msgid "USD"
+msgstr "دولار"
+
+msgid "EUR"
+msgstr "يورو"
+
+msgid "EGP"
+msgstr "جنيه"
+
+msgid "VIP"
+msgstr "مميز"
+
+msgid "Regular"
+msgstr "عادي"
+
+msgid "Wholesale"
+msgstr "جملة"
+
+msgid "Retail"
+msgstr "تجزئة"
+
+msgid "View and manage all suppliers"
+msgstr "عرض وإدارة جميع الموردين"
+
+msgid "Search by name, code, or phone..."
+msgstr "البحث بالاسم أو الرمز أو الهاتف..."
+
+msgid "Contact Person"
+msgstr "جهة الاتصال"
+
+msgid "Website"
+msgstr "الموقع الإلكتروني"
+
+msgid "Fax"
+msgstr "الفاكس"
+
+msgid "Postal Code"
+msgstr "الرمز البريدي"
+
+msgid "State"
+msgstr "الولاية"
+
+msgid "Region"
+msgstr "المنطقة"
+
+msgid "Street"
+msgstr "الشارع"
+
+msgid "Building"
+msgstr "المبنى"
+
+msgid "Floor"
+msgstr "الطابق"
+
+msgid "Apartment"
+msgstr "الشقة"
+
+msgid "Landmark"
+msgstr "معلم بارز"
+
+msgid "Delivery Address"
+msgstr "عنوان التسليم"
+
+msgid "Billing Address"
+msgstr "عنوان الفواتير"
+
+msgid "Same as Delivery Address"
+msgstr "نفس عنوان التسليم"
+
+msgid "Credit Days"
+msgstr "أيام الائتمان"
+
+msgid "Opening Balance"
+msgstr "الرصيد الافتتاحي"
+
+msgid "Closing Balance"
+msgstr "الرصيد الختامي"
+
+msgid "Debit"
+msgstr "مدين"
+
+msgid "Credit"
+msgstr "دائن"
+
+msgid "Balance"
+msgstr "الرصيد"
+
+msgid "Transaction Date"
+msgstr "تاريخ المعاملة"
+
+msgid "Transaction Type"
+msgstr "نوع المعاملة"
+
+msgid "Reference"
+msgstr "المرجع"
+
+msgid "Reference Number"
+msgstr "رقم المرجع"
+
+msgid "Remarks"
+msgstr "ملاحظات"
+
+msgid "Attachment"
+msgstr "مرفق"
+
+msgid "Attachments"
+msgstr "المرفقات"
+
+msgid "Upload"
+msgstr "رفع"
+
+msgid "Download"
+msgstr "تحميل"
+
+msgid "File"
+msgstr "ملف"
+
+msgid "Files"
+msgstr "ملفات"
+
+msgid "Image"
+msgstr "صورة"
+
+msgid "Images"
+msgstr "صور"
+
+msgid "Document"
+msgstr "مستند"
+
+msgid "Documents"
+msgstr "مستندات"
+
+msgid "Size"
+msgstr "الحجم"
+
+msgid "Type"
+msgstr "النوع"
+
+msgid "Format"
+msgstr "التنسيق"
+
+msgid "Quality"
+msgstr "الجودة"
+
+msgid "Resolution"
+msgstr "الدقة"
+
+msgid "Dimensions"
+msgstr "الأبعاد"
+
+msgid "Width"
+msgstr "العرض"
+
+msgid "Height"
+msgstr "الارتفاع"
+
+msgid "Depth"
+msgstr "العمق"
+
+msgid "Weight"
+msgstr "الوزن"
+
+msgid "Volume"
+msgstr "الحجم"
+
+msgid "Length"
+msgstr "الطول"
+
+msgid "Area"
+msgstr "المساحة"
+

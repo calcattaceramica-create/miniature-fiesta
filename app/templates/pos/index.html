@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}نقطة البيع - POS{% endblock %}
+{% block title %}{{ _('Point of Sale') }} - POS{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -456,7 +456,7 @@
                         <i class="fas fa-search text-primary"></i>
                     </span>
                     <input type="text" class="form-control border-start-0" id="product-search"
-                           placeholder="🔍 ابحث عن منتج (الاسم، الباركود، الكود)..."
+                           placeholder="🔍 {{ _('Search for product (name, barcode, code)...') }}"
                            autocomplete="off">
                     <button class="btn btn-outline-secondary" type="button" id="clear-search">
                         <i class="fas fa-times"></i>
@@ -479,15 +479,21 @@
                             <i class="fas fa-box"></i> {{ product.get_stock() }}
                         </span>
                         <div class="product-image">
-                            {% if product.image_url %}
-                            <img src="{{ product.image_url }}" class="w-100 h-100" alt="{{ product.name }}" style="object-fit: cover;">
+                            {% if product.image %}
+                            <img src="{{ url_for('inventory.uploaded_file', filename=product.image) }}" class="w-100 h-100" alt="{{ product.name }}" style="object-fit: cover;">
                             {% else %}
                             <i class="fas fa-cube"></i>
                             {% endif %}
                         </div>
                         <div class="card-body">
                             <h6 class="card-title">{{ product.name }}</h6>
-                            <div class="product-price">{{ product.selling_price }} {{ currency_symbol }}</div>
+                            <div class="product-price">
+                                {% if session.get('language', 'ar') == 'ar' %}
+                                    {{ product.selling_price }} {{ currency_symbol }}
+                                {% else %}
+                                    {{ currency_symbol }} {{ product.selling_price }}
+                                {% endif %}
+                            </div>
                             <div class="product-stock">
                                 <i class="fas fa-barcode"></i> {{ product.code }}
                             </div>
@@ -504,26 +510,26 @@
             <div class="cart-header">
                 <h4>
                     <i class="fas fa-shopping-cart"></i>
-                    سلة المشتريات
+                    {{ _('Shopping Cart') }}
                     <span class="badge bg-white text-primary ms-2" id="cart-count">0</span>
                 </h4>
 
                 <!-- معلومات الوردية -->
                 <div class="session-info">
                     <div class="session-info-item">
-                        <span><i class="fas fa-cash-register"></i> الوردية:</span>
-                        <strong>{{ session.session_number }}</strong>
+                        <span><i class="fas fa-cash-register"></i> {{ _('Session') }}:</span>
+                        <strong>{{ pos_session.session_number }}</strong>
                     </div>
                     <div class="session-info-item">
-                        <span><i class="fas fa-user"></i> الكاشير:</span>
+                        <span><i class="fas fa-user"></i> {{ _('Cashier') }}:</span>
                         <strong>{{ current_user.full_name or current_user.username }}</strong>
                     </div>
                     <div class="session-info-item">
-                        <span><i class="fas fa-warehouse"></i> المستودع:</span>
-                        <strong>{{ session.warehouse.name }}</strong>
+                        <span><i class="fas fa-warehouse"></i> {{ _('Warehouse') }}:</span>
+                        <strong>{{ pos_session.warehouse.name }}</strong>
                     </div>
                     <div class="session-info-item">
-                        <span><i class="fas fa-clock"></i> الوقت:</span>
+                        <span><i class="fas fa-clock"></i> {{ _('Time') }}:</span>
                         <strong id="session-time"></strong>
                     </div>
                 </div>
@@ -533,8 +539,8 @@
             <div class="cart-items" id="cart-items">
                 <div class="cart-empty">
                     <i class="fas fa-shopping-cart"></i>
-                    <h5>السلة فارغة</h5>
-                    <p>اضغط على المنتجات لإضافتها</p>
+                    <h5>{{ _('Cart is empty') }}</h5>
+                    <p>{{ _('Click on products to add them') }}</p>
                 </div>
             </div>
 
@@ -543,10 +549,10 @@
                 <!-- العميل -->
                 <div class="customer-section">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-user"></i> العميل (اختياري)
+                        <i class="fas fa-user"></i> {{ _('Customer') }} ({{ _('Optional') }})
                     </label>
                     <select class="form-select" id="customer-select">
-                        <option value="">عميل عادي - Walk-in Customer</option>
+                        <option value="">{{ _('Walk-in Customer') }}</option>
                         {% for customer in customers %}
                         <option value="{{ customer.id }}">{{ customer.name }} - {{ customer.phone }}</option>
                         {% endfor %}
@@ -556,12 +562,12 @@
                 <!-- الإجماليات -->
                 <div class="totals-section">
                     <div class="total-row">
-                        <span><i class="fas fa-calculator"></i> المجموع الفرعي:</span>
-                        <strong><span id="subtotal">0.00</span> {{ currency_symbol }}</strong>
+                        <span><i class="fas fa-calculator"></i> {{ _('Subtotal') }}:</span>
+                        <strong id="subtotal-display">0.00</strong>
                     </div>
 
                     <div class="total-row">
-                        <span><i class="fas fa-percent"></i> الخصم:</span>
+                        <span><i class="fas fa-percent"></i> {{ _('Discount') }}:</span>
                         <div class="d-flex align-items-center gap-2">
                             <input type="number" class="form-control form-control-sm" id="discount-percent"
                                    value="0" min="0" max="100" step="0.1" onchange="updateTotals()"
@@ -571,40 +577,40 @@
                     </div>
 
                     <div class="total-row">
-                        <span>مبلغ الخصم:</span>
-                        <strong class="text-danger">-<span id="discount-amount">0.00</span> {{ currency_symbol }}</strong>
+                        <span>{{ _('Discount Amount') }}:</span>
+                        <strong class="text-danger" id="discount-amount-display">-0.00</strong>
                     </div>
 
                     <div class="total-row">
-                        <span><i class="fas fa-receipt"></i> الضريبة ({{ company.tax_rate if company and company.tax_rate else 15 }}%):</span>
-                        <strong><span id="tax-amount">0.00</span> {{ currency_symbol }}</strong>
+                        <span><i class="fas fa-receipt"></i> {{ _('Tax') }} ({{ company.tax_rate if company and company.tax_rate else 15 }}%):</span>
+                        <strong id="tax-amount-display">0.00</strong>
                     </div>
 
                     <div class="total-row">
-                        <span><i class="fas fa-money-bill-wave"></i> الإجمالي النهائي:</span>
-                        <strong><span id="total">0.00</span> {{ currency_symbol }}</strong>
+                        <span><i class="fas fa-money-bill-wave"></i> {{ _('Grand Total') }}:</span>
+                        <strong id="total-display">0.00</strong>
                     </div>
                 </div>
 
                 <!-- طريقة الدفع -->
                 <div class="mb-3">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-credit-card"></i> طريقة الدفع
+                        <i class="fas fa-credit-card"></i> {{ _('Payment Method') }}
                     </label>
                     <div class="btn-group w-100" role="group">
                         <input type="radio" class="btn-check" name="payment-method" id="payment-cash" value="cash" checked>
                         <label class="btn btn-outline-success" for="payment-cash">
-                            <i class="fas fa-money-bill-wave"></i> نقدي
+                            <i class="fas fa-money-bill-wave"></i> {{ _('Cash') }}
                         </label>
 
                         <input type="radio" class="btn-check" name="payment-method" id="payment-card" value="card">
                         <label class="btn btn-outline-primary" for="payment-card">
-                            <i class="fas fa-credit-card"></i> بطاقة
+                            <i class="fas fa-credit-card"></i> {{ _('Card') }}
                         </label>
 
                         <input type="radio" class="btn-check" name="payment-method" id="payment-mixed" value="mixed">
                         <label class="btn btn-outline-info" for="payment-mixed">
-                            <i class="fas fa-exchange-alt"></i> مختلط
+                            <i class="fas fa-exchange-alt"></i> {{ _('Mixed') }}
                         </label>
                     </div>
                 </div>
@@ -613,12 +619,12 @@
                 <div id="mixed-payment-details" style="display: none;">
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label small">نقدي:</label>
+                            <label class="form-label small">{{ _('Cash') }}:</label>
                             <input type="number" class="form-control" id="cash-amount"
                                    value="0" min="0" step="0.01">
                         </div>
                         <div class="col-6">
-                            <label class="form-label small">بطاقة:</label>
+                            <label class="form-label small">{{ _('Card') }}:</label>
                             <input type="number" class="form-control" id="card-amount"
                                    value="0" min="0" step="0.01">
                         </div>
@@ -629,27 +635,27 @@
                 <div class="action-buttons">
                     <button class="btn-pos btn-pay" onclick="processPayment()" id="pay-button" disabled>
                         <i class="fas fa-check-circle"></i>
-                        <span>إتمام البيع</span>
+                        <span>{{ _('Complete Sale') }}</span>
                     </button>
 
                     <button class="btn-pos btn-quotation" onclick="createQuotation()" id="quotation-button" disabled>
                         <i class="fas fa-file-invoice"></i>
-                        <span>إنشاء عرض سعر</span>
+                        <span>{{ _('Create Quotation') }}</span>
                     </button>
 
                     <button class="btn-pos btn-hold" onclick="holdOrder()">
                         <i class="fas fa-pause-circle"></i>
-                        <span>تعليق الطلب</span>
+                        <span>{{ _('Hold Order') }}</span>
                     </button>
 
                     <button class="btn-pos btn-clear" onclick="clearCart()">
                         <i class="fas fa-trash-alt"></i>
-                        <span>مسح السلة</span>
+                        <span>{{ _('Clear Cart') }}</span>
                     </button>
 
                     <button class="btn-pos btn-close-session" onclick="closeSession()">
                         <i class="fas fa-power-off"></i>
-                        <span>إغلاق الوردية</span>
+                        <span>{{ _('Close Session') }}</span>
                     </button>
                 </div>
             </div>
@@ -658,14 +664,33 @@
 </div>
 
 <script>
-// Version: 2026-01-15-v5 - Fixed totals undefined error
-console.log('🚀 POS Script loaded - Version 2026-01-15-v5');
+// Version: 2026-01-23-v6 - Fixed currency symbol position based on language
+console.log('🚀 POS Script loaded - Version 2026-01-23-v6');
+console.log('📍 Current Language:', document.documentElement.lang);
+console.log('💰 Currency Symbol:', '{{ currency_symbol }}');
 
 // متغيرات عامة
 let cart = [];
 const TAX_RATE = {{ (company.tax_rate / 100) if company and company.tax_rate else 0.15 }};
-const SESSION_ID = {{ session.id }};
+const SESSION_ID = {{ pos_session.id }};
 const CURRENCY_SYMBOL = '{{ currency_symbol }}';
+
+// دالة لتنسيق السعر مع رمز العملة حسب اللغة
+function formatPrice(price) {
+    const formattedPrice = parseFloat(price).toFixed(2);
+    // قراءة اللغة الحالية في كل مرة
+    const currentLang = document.documentElement.lang || 'ar';
+
+    console.log('formatPrice called:', {price, currentLang, currency: CURRENCY_SYMBOL});
+
+    if (currentLang === 'ar') {
+        // العربية: السعر ثم العملة (على اليمين)
+        return `${formattedPrice} ${CURRENCY_SYMBOL}`;
+    } else {
+        // الإنجليزية: العملة ثم السعر (على اليسار)
+        return `${CURRENCY_SYMBOL} ${formattedPrice}`;
+    }
+}
 
 // إضافة منتج للسلة من العنصر
 window.addToCartFromElement = function(element, event) {
@@ -715,7 +740,7 @@ function addToCart(productId, productName, price) {
     const existingItem = cart.find(item => item.productId === productId);
 
     if (existingItem) {
-        existingItem.quantity++;
+        existingItem.quantity = parseFloat((existingItem.quantity + 1).toFixed(2));
     } else {
         cart.push({
             productId: productId,
@@ -763,7 +788,7 @@ function renderCart() {
                     <div class="flex-grow-1">
                         <h6>${item.productName}</h6>
                         <div class="text-muted small">
-                            <i class="fas fa-tag"></i> ${item.price.toFixed(2)} ${CURRENCY_SYMBOL}
+                            <i class="fas fa-tag"></i> ${formatPrice(item.price)}
                         </div>
                     </div>
                     <button class="btn btn-sm btn-danger rounded-circle" onclick="removeFromCart(${index})"
@@ -777,17 +802,17 @@ function renderCart() {
                             <i class="fas fa-minus"></i>
                         </button>
                         <input type="number" value="${item.quantity}"
-                               min="1" onchange="updateQty(${index}, this.value)">
+                               min="0.01" step="0.01" onchange="updateQty(${index}, this.value)">
                         <button onclick="increaseQty(${index})">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
                     <div class="text-end">
                         <div class="fw-bold" style="font-size: 18px; color: var(--primary-color);">
-                            ${itemTotal.toFixed(2)} ${CURRENCY_SYMBOL}
+                            ${formatPrice(itemTotal)}
                         </div>
                         <div class="text-muted small">
-                            ${item.quantity} × ${item.price.toFixed(2)}
+                            ${parseFloat(item.quantity).toFixed(2)} × ${item.price.toFixed(2)}
                         </div>
                     </div>
                 </div>
@@ -807,15 +832,15 @@ function removeFromCart(index) {
 
 // زيادة الكمية
 function increaseQty(index) {
-    cart[index].quantity++;
+    cart[index].quantity = parseFloat((cart[index].quantity + 0.25).toFixed(2));
     renderCart();
     updateTotals();
 }
 
 // تقليل الكمية
 function decreaseQty(index) {
-    if (cart[index].quantity > 1) {
-        cart[index].quantity--;
+    if (cart[index].quantity > 0.25) {
+        cart[index].quantity = parseFloat((cart[index].quantity - 0.25).toFixed(2));
         renderCart();
         updateTotals();
     }
@@ -823,9 +848,9 @@ function decreaseQty(index) {
 
 // تحديث الكمية
 function updateQty(index, newQty) {
-    const qty = parseInt(newQty);
+    const qty = parseFloat(newQty);
     if (qty > 0) {
-        cart[index].quantity = qty;
+        cart[index].quantity = parseFloat(qty.toFixed(2));
         renderCart();
         updateTotals();
     }
@@ -840,10 +865,10 @@ function updateTotals() {
     const taxAmount = afterDiscount * TAX_RATE;
     const total = afterDiscount + taxAmount;
 
-    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
-    document.getElementById('discount-amount').textContent = discountAmount.toFixed(2);
-    document.getElementById('tax-amount').textContent = taxAmount.toFixed(2);
-    document.getElementById('total').textContent = total.toFixed(2);
+    document.getElementById('subtotal-display').textContent = formatPrice(subtotal);
+    document.getElementById('discount-amount-display').textContent = '-' + formatPrice(discountAmount);
+    document.getElementById('tax-amount-display').textContent = formatPrice(taxAmount);
+    document.getElementById('total-display').textContent = formatPrice(total);
 
     // إرجاع القيم للاستخدام في الدوال الأخرى
     return {
@@ -1119,7 +1144,10 @@ document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
 function updateSessionTime() {
     const now = new Date();
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    document.getElementById('session-time').textContent = now.toLocaleTimeString('ar-SA', options);
+    // استخدام اللغة الحالية من HTML lang attribute
+    const currentLang = document.documentElement.lang || 'ar';
+    const locale = currentLang === 'ar' ? 'ar-SA' : 'en-US';
+    document.getElementById('session-time').textContent = now.toLocaleTimeString(locale, options);
 }
 
 updateSessionTime();
@@ -1150,6 +1178,12 @@ document.addEventListener('keydown', function(e) {
         document.getElementById('clear-search').click();
     }
 });
+
+// اختبار دالة formatPrice عند تحميل الصفحة
+console.log('🧪 Testing formatPrice function:');
+console.log('formatPrice(100):', formatPrice(100));
+console.log('Expected for EN: € 100.00');
+console.log('Expected for AR: 100.00 €');
 </script>
 {% endblock %}
 

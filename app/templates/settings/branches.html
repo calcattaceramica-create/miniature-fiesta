@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}إدارة الفروع - نظام إدارة المخزون{% endblock %}
-{% block page_title %}إدارة الفروع{% endblock %}
+{% block title %}{{ _('Branch Management') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Branch Management') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="page-header mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h2><i class="fas fa-code-branch"></i> إدارة الفروع</h2>
-                <p class="text-muted mb-0">عرض وإدارة فروع الشركة</p>
+                <h2><i class="fas fa-code-branch"></i> {{ _('Branch Management') }}</h2>
+                <p class="text-muted mb-0">{{ _('View and manage company branches') }}</p>
             </div>
             <div>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBranchModal">
-                    <i class="fas fa-plus"></i> إضافة فرع جديد
+                    <i class="fas fa-plus"></i> {{ _('Add New Branch') }}
                 </button>
                 <a href="{{ url_for('settings.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-right"></i> العودة
+                    <i class="fas fa-arrow-right"></i> {{ _('Back') }}
                 </a>
             </div>
         </div>
@@ -44,47 +44,47 @@
                     {% if branch.name_en %}
                     <p class="text-muted mb-2"><small>{{ branch.name_en }}</small></p>
                     {% endif %}
-                    
+
                     <div class="mb-2">
-                        <strong>الكود:</strong> <code>{{ branch.code }}</code>
+                        <strong>{{ _('Code') }}:</strong> <code>{{ branch.code }}</code>
                     </div>
-                    
+
                     {% if branch.address %}
                     <div class="mb-2">
-                        <strong>العنوان:</strong><br>
+                        <strong>{{ _('Address') }}:</strong><br>
                         <small>{{ branch.address }}</small>
                     </div>
                     {% endif %}
-                    
+
                     {% if branch.city %}
                     <div class="mb-2">
-                        <strong>المدينة:</strong> {{ branch.city }}
+                        <strong>{{ _('City') }}:</strong> {{ branch.city }}
                     </div>
                     {% endif %}
-                    
+
                     {% if branch.phone %}
                     <div class="mb-2">
-                        <strong>الهاتف:</strong> {{ branch.phone }}
+                        <strong>{{ _('Phone') }}:</strong> {{ branch.phone }}
                     </div>
                     {% endif %}
-                    
+
                     {% if branch.manager %}
                     <div class="mb-2">
-                        <strong>المدير:</strong> {{ branch.manager.full_name }}
+                        <strong>{{ _('Manager') }}:</strong> {{ branch.manager.full_name }}
                     </div>
                     {% endif %}
-                    
+
                     <div class="mb-2">
-                        <strong>الحالة:</strong>
+                        <strong>{{ _('Status') }}:</strong>
                         {% if branch.is_active %}
-                        <span class="badge bg-success">نشط</span>
+                        <span class="badge bg-success">{{ _('Active') }}</span>
                         {% else %}
-                        <span class="badge bg-danger">غير نشط</span>
+                        <span class="badge bg-danger">{{ _('Inactive') }}</span>
                         {% endif %}
                     </div>
                 </div>
                 <div class="card-footer text-muted">
-                    <small>تاريخ الإنشاء: {{ branch.created_at.strftime('%Y-%m-%d') }}</small>
+                    <small>{{ _('Created Date') }}: {{ branch.created_at.strftime('%Y-%m-%d') }}</small>
                 </div>
             </div>
         </div>
@@ -92,10 +92,10 @@
         <div class="col-12">
             <div class="alert alert-info text-center">
                 <i class="fas fa-info-circle fa-3x mb-3"></i>
-                <h4>لا توجد فروع</h4>
-                <p>لم يتم إضافة أي فروع بعد</p>
+                <h4>{{ _('No Branches') }}</h4>
+                <p>{{ _('No branches have been added yet') }}</p>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBranchModal">
-                    <i class="fas fa-plus"></i> إضافة فرع جديد
+                    <i class="fas fa-plus"></i> {{ _('Add New Branch') }}
                 </button>
             </div>
         </div>
@@ -108,47 +108,47 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title"><i class="fas fa-plus"></i> إضافة فرع جديد</h5>
+                <h5 class="modal-title"><i class="fas fa-plus"></i> {{ _('Add New Branch') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('settings.add_branch') }}">
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="name" class="form-label">اسم الفرع (عربي) <span class="text-danger">*</span></label>
+                            <label for="name" class="form-label">{{ _('Branch Name (Arabic)') }} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="name_en" class="form-label">اسم الفرع (إنجليزي)</label>
+                            <label for="name_en" class="form-label">{{ _('Branch Name (English)') }}</label>
                             <input type="text" class="form-control" id="name_en" name="name_en">
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label for="code" class="form-label">الكود <span class="text-danger">*</span></label>
+                        <label for="code" class="form-label">{{ _('Code') }} <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="code" name="code" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="address" class="form-label">العنوان</label>
+                        <label for="address" class="form-label">{{ _('Address') }}</label>
                         <textarea class="form-control" id="address" name="address" rows="2"></textarea>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="city" class="form-label">المدينة</label>
+                            <label for="city" class="form-label">{{ _('City') }}</label>
                             <input type="text" class="form-control" id="city" name="city">
                         </div>
                         <div class="col-md-6">
-                            <label for="phone" class="form-label">الهاتف</label>
+                            <label for="phone" class="form-label">{{ _('Phone') }}</label>
                             <input type="tel" class="form-control" id="phone" name="phone">
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="manager_id" class="form-label">المدير</label>
+                        <label for="manager_id" class="form-label">{{ _('Manager') }}</label>
                         <select class="form-select" id="manager_id" name="manager_id">
-                            <option value="">-- اختر المدير --</option>
+                            <option value="">-- {{ _('Select Manager') }} --</option>
                             <!-- Users will be populated here -->
                         </select>
                     </div>
@@ -156,14 +156,14 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
                         <label class="form-check-label" for="is_active">
-                            فرع نشط
+                            {{ _('Active Branch') }}
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> حفظ
+                        <i class="fas fa-save"></i> {{ _('Save') }}
                     </button>
                 </div>
             </form>
@@ -176,47 +176,47 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title"><i class="fas fa-edit"></i> تعديل الفرع</h5>
+                <h5 class="modal-title"><i class="fas fa-edit"></i> {{ _('Edit Branch') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="editBranchForm">
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="edit_name" class="form-label">اسم الفرع (عربي) <span class="text-danger">*</span></label>
+                            <label for="edit_name" class="form-label">{{ _('Branch Name (Arabic)') }} <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="edit_name_en" class="form-label">اسم الفرع (إنجليزي)</label>
+                            <label for="edit_name_en" class="form-label">{{ _('Branch Name (English)') }}</label>
                             <input type="text" class="form-control" id="edit_name_en" name="name_en">
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit_code" class="form-label">الكود <span class="text-danger">*</span></label>
+                        <label for="edit_code" class="form-label">{{ _('Code') }} <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_code" name="code" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit_address" class="form-label">العنوان</label>
+                        <label for="edit_address" class="form-label">{{ _('Address') }}</label>
                         <textarea class="form-control" id="edit_address" name="address" rows="2"></textarea>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="edit_city" class="form-label">المدينة</label>
+                            <label for="edit_city" class="form-label">{{ _('City') }}</label>
                             <input type="text" class="form-control" id="edit_city" name="city">
                         </div>
                         <div class="col-md-6">
-                            <label for="edit_phone" class="form-label">الهاتف</label>
+                            <label for="edit_phone" class="form-label">{{ _('Phone') }}</label>
                             <input type="tel" class="form-control" id="edit_phone" name="phone">
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="edit_manager_id" class="form-label">المدير</label>
+                        <label for="edit_manager_id" class="form-label">{{ _('Manager') }}</label>
                         <select class="form-select" id="edit_manager_id" name="manager_id">
-                            <option value="">-- اختر المدير --</option>
+                            <option value="">-- {{ _('Select Manager') }} --</option>
                             <!-- Users will be populated here -->
                         </select>
                     </div>
@@ -224,14 +224,14 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="edit_is_active" name="is_active">
                         <label class="form-check-label" for="edit_is_active">
-                            فرع نشط
+                            {{ _('Active Branch') }}
                         </label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                     <button type="submit" class="btn btn-warning">
-                        <i class="fas fa-save"></i> تحديث
+                        <i class="fas fa-save"></i> {{ _('Update') }}
                     </button>
                 </div>
             </form>
@@ -244,21 +244,21 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="fas fa-trash"></i> حذف الفرع</h5>
+                <h5 class="modal-title"><i class="fas fa-trash"></i> {{ _('Delete Branch') }}</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" id="deleteBranchForm">
                 <div class="modal-body">
-                    <p>هل أنت متأكد من حذف الفرع <strong id="delete_branch_name"></strong>؟</p>
+                    <p>{{ _('Are you sure you want to delete the branch') }} <strong id="delete_branch_name"></strong>?</p>
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle"></i>
-                        تحذير: سيتم حذف جميع البيانات المرتبطة بهذا الفرع
+                        {{ _('Warning: All data associated with this branch will be deleted') }}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> حذف
+                        <i class="fas fa-trash"></i> {{ _('Delete') }}
                     </button>
                 </div>
             </form>

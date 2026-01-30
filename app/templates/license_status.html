@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}حالة الترخيص - License Status{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-key"></i> حالة الترخيص
+                        <span class="float-end">License Status</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- License Status Badge -->
+                    <div class="text-center mb-4">
+                        {% if license.is_valid %}
+                            <span class="badge bg-success" style="font-size: 24px; padding: 15px 30px;">
+                                <i class="fas fa-check-circle"></i> الترخيص صالح
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger" style="font-size: 24px; padding: 15px 30px;">
+                                <i class="fas fa-times-circle"></i> الترخيص غير صالح
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- License Information -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> معلومات الترخيص</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th width="40%">مفتاح الترخيص:</th>
+                                            <td><code>{{ license.license_key }}</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th>العميل:</th>
+                                            <td>{{ license.client_name }}</td>
+                                        </tr>
+                                        {% if license.client_company %}
+                                        <tr>
+                                            <th>الشركة:</th>
+                                            <td>{{ license.client_company }}</td>
+                                        </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <th>نوع الترخيص:</th>
+                                            <td>
+                                                <span class="badge bg-info">{{ license.license_type }}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>الحالة:</th>
+                                            <td>
+                                                {% if license.is_active %}
+                                                    <span class="badge bg-success">مفعّل</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">غير مفعّل</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-calendar"></i> التواريخ</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th width="40%">تاريخ الإنشاء:</th>
+                                            <td>{{ license.created_at.strftime('%Y-%m-%d %H:%M') if license.created_at else 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>تاريخ التفعيل:</th>
+                                            <td>{{ license.activated_at.strftime('%Y-%m-%d %H:%M') if license.activated_at else 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>تاريخ الانتهاء:</th>
+                                            <td>
+                                                {% if license.expires_at %}
+                                                    {{ license.expires_at.strftime('%Y-%m-%d %H:%M') }}
+                                                {% else %}
+                                                    <span class="badge bg-success">مدى الحياة</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% if license.days_remaining is not none %}
+                                        <tr>
+                                            <th>الأيام المتبقية:</th>
+                                            <td>
+                                                {% if license.days_remaining > 30 %}
+                                                    <span class="badge bg-success">{{ license.days_remaining }} يوم</span>
+                                                {% elif license.days_remaining > 7 %}
+                                                    <span class="badge bg-warning">{{ license.days_remaining }} يوم</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">{{ license.days_remaining }} يوم</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Limits -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-users"></i> الحدود</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th width="40%">عدد المستخدمين:</th>
+                                            <td><span class="badge bg-primary">{{ license.max_users }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>عدد الفروع:</th>
+                                            <td><span class="badge bg-primary">{{ license.max_branches }}</span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-desktop"></i> معلومات الجهاز</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <th width="40%">معرف الجهاز:</th>
+                                            <td><small><code>{{ license.machine_id or 'N/A' }}</code></small></td>
+                                        </tr>
+                                        <tr>
+                                            <th>عنوان IP:</th>
+                                            <td><code>{{ license.ip_address or 'N/A' }}</code></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Back Button -->
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right"></i> العودة للرئيسية
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

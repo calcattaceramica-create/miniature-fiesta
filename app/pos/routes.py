@@ -68,7 +68,7 @@ def index():
     tax_rate = company.tax_rate if company else 15.0
 
     return render_template('pos/index.html',
-                         session=open_session,
+                         pos_session=open_session,
                          products=products,
                          customers=customers,
                          company=company,
@@ -140,20 +140,64 @@ def close_session(id):
 
 @bp.route('/sessions')
 @login_required
+@permission_required('pos.access')
 def sessions():
     """List POS sessions"""
     page = request.args.get('page', 1, type=int)
     sessions = POSSession.query.order_by(POSSession.created_at.desc()).paginate(
         page=page, per_page=20, error_out=False
     )
-    return render_template('pos/sessions.html', sessions=sessions)
+
+    # Get company settings for currency
+    company = Company.query.first()
+    currency_code = company.currency if company else current_app.config.get('DEFAULT_CURRENCY', 'SAR')
+    currency_symbol = current_app.config['CURRENCIES'].get(currency_code, {}).get('symbol', 'ر.س')
+
+    return render_template('pos/sessions.html', sessions=sessions, currency_symbol=currency_symbol)
 
 @bp.route('/session/<int:id>')
 @login_required
+@permission_required('pos.access')
 def session_details(id):
     """View session details"""
+    pos_session = POSSession.query.get_or_404(id)
+
+    # Get company settings for currency
+    company = Company.query.first()
+    currency_code = company.currency if company else current_app.config.get('DEFAULT_CURRENCY', 'SAR')
+    currency_symbol = current_app.config['CURRENCIES'].get(currency_code, {}).get('symbol', 'ر.س')
+
+    return render_template('pos/session_details.html',
+                         pos_session=pos_session,
+                         currency_symbol=currency_symbol)
+
+@bp.route('/delete-session/<int:id>', methods=['POST'])
+@login_required
+@permission_required('pos.session.manage')
+def delete_session(id):
+    """Delete POS session"""
     session = POSSession.query.get_or_404(id)
-    return render_template('pos/session_details.html', session=session)
+
+    # Check if session has orders
+    if session.orders:
+        flash(_('Cannot delete session with orders. Please delete orders first.'), 'danger')
+        return redirect(url_for('pos.sessions'))
+
+    # Check if session is open
+    if session.status == 'open':
+        flash(_('Cannot delete an open session. Please close it first.'), 'danger')
+        return redirect(url_for('pos.sessions'))
+
+    try:
+        session_number = session.session_number
+        db.session.delete(session)
+        db.session.commit()
+        flash(_('Session %(number)s deleted successfully', number=session_number), 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(_('Error deleting session: %(error)s', error=str(e)), 'danger')
+
+    return redirect(url_for('pos.sessions'))
 
 @bp.route('/create-order', methods=['POST'])
 @login_required
@@ -299,6 +343,7 @@ def create_order():
 
 @bp.route('/print-receipt/<int:order_id>')
 @login_required
+@permission_required('pos.access')
 def print_receipt(order_id):
     """Print order receipt"""
     order = POSOrder.query.get_or_404(order_id)
@@ -306,10 +351,19 @@ def print_receipt(order_id):
     # Get company settings
     company = Company.query.first()
 
-    return render_template('pos/receipt.html', order=order, company=company)
+    # Get currency settings
+    currency_code = company.currency if company else current_app.config.get('DEFAULT_CURRENCY', 'SAR')
+    currency_symbol = current_app.config['CURRENCIES'].get(currency_code, {}).get('symbol', 'ر.س')
+
+    return render_template('pos/receipt.html',
+                         order=order,
+                         company=company,
+                         currency_symbol=currency_symbol,
+                         currency_code=currency_code)
 
 @bp.route('/print-session-report/<int:id>')
 @login_required
+@permission_required('pos.access')
 def print_session_report(id):
     """Print session report"""
     session = POSSession.query.get_or_404(id)
@@ -399,6 +453,7 @@ def create_quotation():
 
 @bp.route('/print-quotation/<int:quotation_id>')
 @login_required
+@permission_required('pos.access')
 def print_quotation(quotation_id):
     """Print quotation"""
     from app.models import Quotation

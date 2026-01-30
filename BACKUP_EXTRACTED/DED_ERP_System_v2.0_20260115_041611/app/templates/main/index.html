@@ -1,0 +1,401 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة التحكم - نظام إدارة المخزون{% endblock %}
+{% block page_title %}لوحة التحكم{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <h3><i class="fas fa-tachometer-alt"></i> لوحة التحكم الرئيسية</h3>
+        <p class="text-muted mb-0">مرحباً {{ current_user.full_name }}، نظرة عامة على النظام</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">إجمالي المنتجات</h6>
+                            <h2 class="mb-0">{{ stats.total_products }}</h2>
+                        </div>
+                        <div class="text-info">
+                            <i class="fas fa-boxes fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">العملاء</h6>
+                            <h2 class="mb-0">{{ stats.total_customers }}</h2>
+                        </div>
+                        <div class="text-success">
+                            <i class="fas fa-users fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">الموردين</h6>
+                            <h2 class="mb-0">{{ stats.total_suppliers }}</h2>
+                        </div>
+                        <div class="text-warning">
+                            <i class="fas fa-truck fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">منتجات منخفضة المخزون</h6>
+                            <h2 class="mb-0">{{ stats.low_stock_products }}</h2>
+                        </div>
+                        <div class="text-danger">
+                            <i class="fas fa-exclamation-triangle fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales, Purchases and Profit This Month -->
+    <div class="row g-3 mt-2">
+        <div class="col-12 col-md-4">
+            <div class="card bg-gradient-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">مبيعات هذا الشهر</h6>
+                            <h3 class="mb-0">{{ "{:,.2f}".format(stats.sales_this_month) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card bg-gradient-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">مشتريات هذا الشهر</h6>
+                            <h3 class="mb-0">{{ "{:,.2f}".format(stats.purchases_this_month) }}</h3>
+                            <small>ريال سعودي</small>
+                        </div>
+                        <div>
+                            <i class="fas fa-shopping-cart fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+        <div class="card {% if stats.profit_this_month >= 0 %}bg-gradient-info{% else %}bg-gradient-danger{% endif %} text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-white-50 mb-1">صافي الربح (الشهر)</h6>
+                        <h3 class="mb-0">{{ "{:,.2f}".format(stats.profit_this_month) }}</h3>
+                        <small>ريال سعودي</small>
+                    </div>
+                    <div>
+                        <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Charts Row -->
+    <div class="row g-3 mt-2">
+        <div class="col-12 col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar"></i> المبيعات والمشتريات (آخر 6 أشهر)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="salesPurchasesChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-star"></i> أفضل المنتجات مبيعاً</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for product_name, qty in top_products %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span>{{ product_name }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ qty }}</span>
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center mb-0">لا توجد مبيعات هذا الشهر</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats -->
+    <div class="row g-3 mt-2">
+        <div class="col-12 col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-warehouse text-info"></i> قيمة المخزون</h5>
+                <h2 class="text-info">{{ "{:,.2f}".format(stats.inventory_value) }} ر.س</h2>
+                <p class="text-muted mb-0">إجمالي قيمة المخزون الحالي</p>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-building text-warning"></i> المستودعات النشطة</h5>
+                    <h2 class="text-warning">{{ stats.total_warehouses }}</h2>
+                    <p class="text-muted mb-0">عدد المستودعات النشطة</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Sales and Purchases -->
+    <div class="row g-3 mt-2">
+        <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> آخر المبيعات</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>العميل</th>
+                                <th>المبلغ</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in recent_sales %}
+                            <tr>
+                                <td>{{ invoice.invoice_number }}</td>
+                                <td>{{ invoice.customer.name if invoice.customer else '-' }}</td>
+                                <td>{{ "%.2f"|format(invoice.total_amount) }} ر.س</td>
+                                <td>
+                                    {% if invoice.status == 'confirmed' %}
+                                        <span class="badge bg-success">مؤكد</span>
+                                    {% elif invoice.status == 'draft' %}
+                                        <span class="badge bg-secondary">مسودة</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">ملغي</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">لا توجد مبيعات</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> آخر المشتريات</h5>
+                </div>
+                <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>المورد</th>
+                                <th>المبلغ</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in recent_purchases %}
+                            <tr>
+                                <td>{{ invoice.invoice_number }}</td>
+                                <td>{{ invoice.supplier.name if invoice.supplier else '-' }}</td>
+                                <td>{{ "%.2f"|format(invoice.total_amount) }} ر.س</td>
+                                <td>
+                                    {% if invoice.status == 'confirmed' %}
+                                        <span class="badge bg-success">مؤكد</span>
+                                    {% elif invoice.status == 'draft' %}
+                                        <span class="badge bg-secondary">مسودة</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">ملغي</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">لا توجد مشتريات</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bolt"></i> إجراءات سريعة</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 text-center">
+                        <div class="col-6 col-md-3">
+                            <a href="{{ url_for('inventory.add_product') }}" class="btn btn-outline-primary btn-lg w-100">
+                                <i class="fas fa-plus-circle fa-2x d-block mb-2"></i>
+                                <span class="d-none d-sm-inline">إضافة منتج جديد</span>
+                                <span class="d-sm-none">منتج</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a href="{{ url_for('sales.add_invoice') }}" class="btn btn-outline-success btn-lg w-100">
+                                <i class="fas fa-file-invoice fa-2x d-block mb-2"></i>
+                                <span class="d-none d-sm-inline">فاتورة بيع جديدة</span>
+                                <span class="d-sm-none">بيع</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a href="{{ url_for('purchases.add_invoice') }}" class="btn btn-outline-info btn-lg w-100">
+                                <i class="fas fa-shopping-cart fa-2x d-block mb-2"></i>
+                                <span class="d-none d-sm-inline">فاتورة شراء جديدة</span>
+                                <span class="d-sm-none">شراء</span>
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <a href="{{ url_for('reports.index') }}" class="btn btn-outline-warning btn-lg w-100">
+                                <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
+                                <span class="d-none d-sm-inline">عرض التقارير</span>
+                                <span class="d-sm-none">تقارير</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+.opacity-50 {
+    opacity: 0.5;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Sales & Purchases Chart
+const ctx = document.getElementById('salesPurchasesChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ chart_labels|tojson }},
+        datasets: [{
+            label: 'المبيعات',
+            data: {{ sales_chart_data|tojson }},
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }, {
+            label: 'المشتريات',
+            data: {{ purchases_chart_data|tojson }},
+            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return value.toLocaleString('ar-SA') + ' ر.س';
+                    }
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += context.parsed.y.toLocaleString('ar-SA') + ' ر.س';
+                        return label;
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+

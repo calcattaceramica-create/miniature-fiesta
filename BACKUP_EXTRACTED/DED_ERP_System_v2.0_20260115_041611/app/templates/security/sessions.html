@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}الجلسات النشطة - Active Sessions{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-users text-primary"></i>
+                الجلسات النشطة
+                <small class="text-muted">Active Sessions</small>
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Sessions Table -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-list"></i>
+                الجلسات الحالية - Current Sessions
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>المستخدم</th>
+                            <th>عنوان IP</th>
+                            <th>المتصفح</th>
+                            <th>تسجيل الدخول</th>
+                            <th>آخر نشاط</th>
+                            <th>المدة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td>
+                                <strong>{{ session.user.username }}</strong>
+                                <br>
+                                <small class="text-muted">{{ session.user.full_name }}</small>
+                            </td>
+                            <td><code>{{ session.ip_address }}</code></td>
+                            <td>
+                                <small>
+                                    {% if 'Chrome' in session.user_agent %}
+                                        <i class="fab fa-chrome text-warning"></i> Chrome
+                                    {% elif 'Firefox' in session.user_agent %}
+                                        <i class="fab fa-firefox text-danger"></i> Firefox
+                                    {% elif 'Safari' in session.user_agent %}
+                                        <i class="fab fa-safari text-info"></i> Safari
+                                    {% elif 'Edge' in session.user_agent %}
+                                        <i class="fab fa-edge text-primary"></i> Edge
+                                    {% else %}
+                                        <i class="fas fa-browser"></i> Other
+                                    {% endif %}
+                                </small>
+                            </td>
+                            <td>{{ session.login_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ session.last_activity.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% set duration = (now() - session.login_at).total_seconds() %}
+                                {% if duration < 3600 %}
+                                    {{ (duration / 60)|int }} دقيقة
+                                {% else %}
+                                    {{ (duration / 3600)|int }} ساعة
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if session.user_id != current_user.id %}
+                                <a href="{{ url_for('security.terminate_session', id=session.id) }}" 
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('هل أنت متأكد من إنهاء هذه الجلسة؟')">
+                                    <i class="fas fa-times"></i>
+                                    إنهاء
+                                </a>
+                                {% else %}
+                                <span class="badge bg-success">جلستك الحالية</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا توجد جلسات نشطة
+                                <br>
+                                No active sessions
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Alert -->
+    <div class="alert alert-info mt-4">
+        <h6><i class="fas fa-info-circle"></i> معلومات - Information:</h6>
+        <ul class="mb-0">
+            <li>يتم تسجيل جميع الجلسات النشطة في النظام</li>
+            <li>All active sessions in the system are logged</li>
+            <li>يمكن للمسؤول إنهاء أي جلسة نشطة</li>
+            <li>Admin can terminate any active session</li>
+            <li>تنتهي الجلسات تلقائياً بعد ساعتين من عدم النشاط</li>
+            <li>Sessions expire automatically after 2 hours of inactivity</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+

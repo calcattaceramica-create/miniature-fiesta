@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Three Cards</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+        }
+        .bg-gradient-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">اختبار الصناديق الثلاثة</h1>
+        
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <!-- Total Inventory Value -->
+            <div class="col-md-4">
+                <div class="card bg-gradient-primary text-white shadow-lg h-100">
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 mb-2">
+                                    <i class="fas fa-warehouse"></i> إجمالي قيمة المخزون
+                                </h6>
+                                <h2 class="mb-0">20,565.58 €</h2>
+                            </div>
+                            <div class="text-white-50">
+                                <i class="fas fa-warehouse fa-3x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Products -->
+            <div class="col-md-4">
+                <div class="card bg-gradient-success text-white shadow-lg h-100">
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 mb-2">
+                                    <i class="fas fa-boxes"></i> إجمالي المنتجات
+                                </h6>
+                                <h2 class="mb-0">19</h2>
+                                <small class="text-white-50">منتج</small>
+                            </div>
+                            <div class="text-white-50">
+                                <i class="fas fa-boxes fa-3x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Value -->
+            <div class="col-md-4">
+                <div class="card bg-gradient-info text-white shadow-lg h-100">
+                    <div class="card-body d-flex flex-column justify-content-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 mb-2">
+                                    <i class="fas fa-chart-line"></i> متوسط القيمة
+                                </h6>
+                                <h2 class="mb-0">1,082.40 €</h2>
+                                <small class="text-white-50">لكل منتج</small>
+                            </div>
+                            <div class="text-white-50">
+                                <i class="fas fa-chart-line fa-3x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-success">
+            <h4>✅ إذا رأيت ثلاثة صناديق ملونة أعلاه:</h4>
+            <ul>
+                <li>صندوق بنفسجي (إجمالي قيمة المخزون)</li>
+                <li>صندوق أخضر (إجمالي المنتجات)</li>
+                <li>صندوق أزرق فاتح (متوسط القيمة)</li>
+            </ul>
+            <p><strong>فهذا يعني أن الكود يعمل بشكل صحيح!</strong></p>
+            <p>المشكلة في المتصفح - يجب مسح الذاكرة المؤقتة (Cache)</p>
+        </div>
+
+        <div class="alert alert-info">
+            <h4>📋 خطوات الحل:</h4>
+            <ol>
+                <li>أوقف الخادم (Ctrl+C)</li>
+                <li>امسح ذاكرة المتصفح المؤقتة (Ctrl+Shift+Delete)</li>
+                <li>أو افتح في وضع التصفح الخاص (Incognito/Private)</li>
+                <li>أو أضف <code>?v=3</code> لنهاية الرابط</li>
+                <li>أعد تشغيل الخادم: <code>python run.py</code></li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
+

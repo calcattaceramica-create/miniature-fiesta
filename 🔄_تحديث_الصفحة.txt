@@ -1,0 +1,148 @@
+================================================================================
+                    REFRESH THE PAGE TO SEE LICENSE KEY FIELD
+                    حدّث الصفحة لرؤية حقل مفتاح الترخيص
+================================================================================
+
+Date: 2026-01-19
+Time: 11:30 PM
+
+================================================================================
+THE PROBLEM:
+================================================================================
+
+Your browser is showing an OLD CACHED VERSION of the login page.
+
+The license key field HAS BEEN ADDED to the login page,
+but your browser is showing the old version from memory (cache).
+
+================================================================================
+SOLUTION - REFRESH THE PAGE:
+================================================================================
+
+METHOD 1: Hard Refresh (Best!)
+-------------------------------
+
+Press these keys together:
+
+CTRL + SHIFT + R
+
+or
+
+CTRL + F5
+
+This will force the browser to reload the page from the server
+and ignore the cached version.
+
+
+METHOD 2: Clear Cache and Refresh
+----------------------------------
+
+1. Press F12 to open Developer Tools
+2. Right-click on the Refresh button (next to address bar)
+3. Select "Empty Cache and Hard Reload"
+4. Close Developer Tools
+
+
+METHOD 3: Close and Reopen
+---------------------------
+
+1. Close the browser tab completely
+2. Close the browser window
+3. Open a new browser window
+4. Go to: http://localhost:5000
+
+
+METHOD 4: Use Incognito/Private Mode
+-------------------------------------
+
+1. Press CTRL + SHIFT + N (Chrome) or CTRL + SHIFT + P (Firefox)
+2. In the private window, go to: http://localhost:5000
+3. You will see the new login page with license key field
+
+================================================================================
+WHAT YOU SHOULD SEE AFTER REFRESH:
+================================================================================
+
+The login page should now have 3 fields:
+
+┌─────────────────────────────────────────┐
+│                                         │
+│  اسم المستخدم                          │
+│  ┌───────────────────────────────────┐  │
+│  │                                   │  │
+│  └───────────────────────────────────┘  │
+│                                         │
+│  كلمة المرور                            │
+│  ┌───────────────────────────────────┐  │
+│  │                                   │  │
+│  └───────────────────────────────────┘  │
+│                                         │
+│  مفتاح الترخيص (License Key)           │  ← NEW!
+│  ┌───────────────────────────────────┐  │
+│  │ XXXX-XXXX-XXXX-XXXX               │  │
+│  └───────────────────────────────────┘  │
+│  أدخل مفتاح الترخيص المرسل إليك        │
+│                                         │
+│  ☐ تذكرني                              │
+│                                         │
+│  ┌───────────────────────────────────┐  │
+│  │      تسجيل الدخول                 │  │
+│  └───────────────────────────────────┘  │
+│                                         │
+└─────────────────────────────────────────┘
+
+================================================================================
+QUICK STEPS:
+================================================================================
+
+1. Go to the browser tab with http://localhost:5000
+
+2. Press: CTRL + SHIFT + R
+
+3. The page will refresh
+
+4. You will see the LICENSE KEY field!
+
+5. Enter:
+   - Username: mohammed
+   - Password: 121212
+   - License Key: 9813-26D0-F98D-741C
+
+6. Click Login
+
+7. Done! 🎉
+
+================================================================================
+IF STILL NOT WORKING:
+================================================================================
+
+Try this:
+
+1. Close ALL browser windows completely
+
+2. Restart the application:
+   - Close the black CMD window
+   - From Desktop, double-click "DED System"
+   - Click the green button "Launch Main Application"
+
+3. When browser opens, you will see the new login page
+
+================================================================================
+VERIFICATION:
+================================================================================
+
+The file has been updated correctly:
+✓ app/templates/auth/login.html - UPDATED
+✓ app/auth/routes.py - UPDATED
+✓ Application restarted - DONE
+
+The only issue is browser cache!
+
+================================================================================
+TRY NOW:
+================================================================================
+
+Press CTRL + SHIFT + R in your browser!
+
+The license key field will appear! 🔑
+

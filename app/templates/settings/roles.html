@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}إدارة الأدوار{% endblock %}
+{% block title %}{{ _('Roles Management') }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-user-tag"></i> إدارة الأدوار والصلاحيات</h2>
+        <h2><i class="fas fa-user-tag"></i> {{ _('Roles and Permissions Management') }}</h2>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoleModal">
-            <i class="fas fa-plus"></i> إضافة دور جديد
+            <i class="fas fa-plus"></i> {{ _('Add New Role') }}
         </button>
     </div>
 
@@ -17,8 +17,8 @@
             <div class="card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-user-tag"></i> {{ role.name_ar }}
-                        <small class="text-white-50">({{ role.name }})</small>
+                        <i class="fas fa-user-tag"></i> {% if session.get('language') == 'en' %}{{ role.name }}{% else %}{{ role.name_ar }}{% endif %}
+                        <small class="text-white-50">{% if session.get('language') == 'en' %}({{ role.name_ar }}){% else %}({{ role.name }}){% endif %}</small>
                     </h5>
                     <div>
                         <button class="btn btn-sm btn-light" onclick="editRole({{ role.id }}, '{{ role.name }}', '{{ role.name_ar }}', '{{ role.description or '' }}')">
@@ -32,9 +32,9 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">{{ role.description }}</p>
-                    
-                    <h6 class="mt-3">الصلاحيات:</h6>
+                    <p class="text-muted">{% if session.get('language') == 'en' %}{{ role.description_en or role.description }}{% else %}{{ role.description }}{% endif %}</p>
+
+                    <h6 class="mt-3">{{ _('Permissions:') }}</h6>
                     <form method="POST" action="{{ url_for('settings.update_role_permissions', id=role.id) }}">
                         <div class="row">
                             {% set modules = {} %}
@@ -44,18 +44,18 @@
                                 {% endif %}
                                 {% set _ = modules[permission.module].append(permission) %}
                             {% endfor %}
-                            
+
                             {% for module, perms in modules.items() %}
                             <div class="col-12 mb-3">
                                 <strong class="text-primary">{{ module }}</strong>
                                 <div class="ms-3">
                                     {% for perm in perms %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="permissions" 
+                                        <input class="form-check-input" type="checkbox" name="permissions"
                                                value="{{ perm.id }}" id="perm_{{ role.id }}_{{ perm.id }}"
                                                {% if perm in role.permissions %}checked{% endif %}>
                                         <label class="form-check-label" for="perm_{{ role.id }}_{{ perm.id }}">
-                                            {{ perm.name_ar }}
+                                            {% if session.get('language') == 'en' %}{{ perm.name }}{% else %}{{ perm.name_ar }}{% endif %}
                                         </label>
                                     </div>
                                     {% endfor %}
@@ -64,12 +64,12 @@
                             {% endfor %}
                         </div>
                         <button type="submit" class="btn btn-success btn-sm mt-2">
-                            <i class="fas fa-save"></i> حفظ الصلاحيات
+                            <i class="fas fa-save"></i> {{ _('Save Permissions') }}
                         </button>
                     </form>
                 </div>
                 <div class="card-footer text-muted">
-                    <small>عدد المستخدمين: {{ role.users|length }}</small>
+                    <small>{{ _('Number of Users:') }} {{ role.users|length }}</small>
                 </div>
             </div>
         </div>
@@ -83,27 +83,27 @@
         <div class="modal-content">
             <form method="POST" action="{{ url_for('settings.add_role') }}">
                 <div class="modal-header">
-                    <h5 class="modal-title">إضافة دور جديد</h5>
+                    <h5 class="modal-title">{{ _('Add New Role') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">اسم الدور (بالإنجليزية) *</label>
+                        <label class="form-label">{{ _('Role Name (English)') }} *</label>
                         <input type="text" class="form-control" name="name" required>
-                        <small class="text-muted">مثال: sales_manager</small>
+                        <small class="text-muted">{{ _('Example: sales_manager') }}</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">اسم الدور (بالعربية) *</label>
+                        <label class="form-label">{{ _('Role Name (Arabic)') }} *</label>
                         <input type="text" class="form-control" name="name_ar" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">الوصف</label>
+                        <label class="form-label">{{ _('Description') }}</label>
                         <textarea class="form-control" name="description" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">حفظ</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ _('Save') }}</button>
                 </div>
             </form>
         </div>
@@ -116,26 +116,26 @@
         <div class="modal-content">
             <form method="POST" id="editRoleForm">
                 <div class="modal-header">
-                    <h5 class="modal-title">تعديل دور</h5>
+                    <h5 class="modal-title">{{ _('Edit Role') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">اسم الدور (بالإنجليزية)</label>
+                        <label class="form-label">{{ _('Role Name (English)') }}</label>
                         <input type="text" class="form-control" id="edit_name" readonly>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">اسم الدور (بالعربية) *</label>
+                        <label class="form-label">{{ _('Role Name (Arabic)') }} *</label>
                         <input type="text" class="form-control" name="name_ar" id="edit_name_ar" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">الوصف</label>
+                        <label class="form-label">{{ _('Description') }}</label>
                         <textarea class="form-control" name="description" id="edit_description" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ _('Save Changes') }}</button>
                 </div>
             </form>
         </div>
@@ -148,16 +148,16 @@
         <div class="modal-content">
             <form method="POST" id="deleteRoleForm">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">تأكيد الحذف</h5>
+                    <h5 class="modal-title">{{ _('Confirm Deletion') }}</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>هل أنت متأكد من حذف الدور <strong id="delete_role_name"></strong>؟</p>
-                    <p class="text-danger">هذا الإجراء لا يمكن التراجع عنه!</p>
+                    <p>{{ _('Are you sure you want to delete the role') }} <strong id="delete_role_name"></strong>{{ _('?') }}</p>
+                    <p class="text-danger">{{ _('This action cannot be undone!') }}</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-danger">حذف</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-danger">{{ _('Delete') }}</button>
                 </div>
             </form>
         </div>

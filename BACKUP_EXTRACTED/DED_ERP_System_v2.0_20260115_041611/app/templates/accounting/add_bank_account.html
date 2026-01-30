@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة حساب بنكي - نظام إدارة المخزون{% endblock %}
+{% block page_title %}إضافة حساب بنكي{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> إضافة حساب بنكي جديد</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('accounting.add_bank_account') }}">
+                        <div class="row">
+                            <!-- Account Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="account_name" class="form-label">اسم الحساب <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="account_name" name="account_name" required 
+                                       placeholder="مثال: الحساب الجاري الرئيسي">
+                            </div>
+
+                            <!-- Account Number -->
+                            <div class="col-md-6 mb-3">
+                                <label for="account_number" class="form-label">رقم الحساب</label>
+                                <input type="text" class="form-control" id="account_number" name="account_number" 
+                                       placeholder="رقم الحساب البنكي">
+                            </div>
+
+                            <!-- Bank Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="bank_name" class="form-label">اسم البنك</label>
+                                <input type="text" class="form-control" id="bank_name" name="bank_name" 
+                                       placeholder="مثال: البنك الأهلي السعودي">
+                            </div>
+
+                            <!-- Branch -->
+                            <div class="col-md-6 mb-3">
+                                <label for="branch" class="form-label">الفرع</label>
+                                <input type="text" class="form-control" id="branch" name="branch" 
+                                       placeholder="مثال: فرع الرياض الرئيسي">
+                            </div>
+
+                            <!-- IBAN -->
+                            <div class="col-md-6 mb-3">
+                                <label for="iban" class="form-label">IBAN</label>
+                                <input type="text" class="form-control" id="iban" name="iban" 
+                                       placeholder="SA0000000000000000000000">
+                                <small class="text-muted">رقم الحساب البنكي الدولي</small>
+                            </div>
+
+                            <!-- SWIFT Code -->
+                            <div class="col-md-6 mb-3">
+                                <label for="swift_code" class="form-label">SWIFT Code</label>
+                                <input type="text" class="form-control" id="swift_code" name="swift_code" 
+                                       placeholder="XXXXXXXX">
+                                <small class="text-muted">رمز البنك الدولي</small>
+                            </div>
+
+                            <!-- Currency -->
+                            <div class="col-md-6 mb-3">
+                                <label for="currency" class="form-label">العملة <span class="text-danger">*</span></label>
+                                <select class="form-select" id="currency" name="currency" required>
+                                    <option value="SAR" selected>ريال سعودي (SAR)</option>
+                                    <option value="USD">دولار أمريكي (USD)</option>
+                                    <option value="EUR">يورو (EUR)</option>
+                                    <option value="EGP">جنيه مصري (EGP)</option>
+                                </select>
+                            </div>
+
+                            <!-- Current Balance -->
+                            <div class="col-md-6 mb-3">
+                                <label for="current_balance" class="form-label">الرصيد الافتتاحي</label>
+                                <input type="number" class="form-control" id="current_balance" name="current_balance" 
+                                       step="0.01" value="0.00" placeholder="0.00">
+                                <small class="text-muted">الرصيد الحالي للحساب</small>
+                            </div>
+
+                            <!-- Link to Chart of Accounts -->
+                            <div class="col-md-12 mb-3">
+                                <label for="account_id" class="form-label">ربط بدليل الحسابات</label>
+                                <select class="form-select" id="account_id" name="account_id">
+                                    <option value="">-- اختر الحساب --</option>
+                                    {% for account in accounts %}
+                                    <option value="{{ account.id }}">{{ account.code }} - {{ account.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">اختر الحساب المقابل في دليل الحسابات (اختياري)</small>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('accounting.bank_accounts') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-save"></i> حفظ الحساب
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> إرشادات</h5>
+                </div>
+                <div class="card-body">
+                    <h6>معلومات مهمة:</h6>
+                    <ul>
+                        <li><strong>IBAN:</strong> رقم الحساب البنكي الدولي (24 رقم للحسابات السعودية)</li>
+                        <li><strong>SWIFT Code:</strong> رمز البنك الدولي (8 أو 11 حرف)</li>
+                        <li><strong>الرصيد الافتتاحي:</strong> الرصيد الحالي للحساب عند إضافته للنظام</li>
+                        <li><strong>ربط بدليل الحسابات:</strong> يساعد في إنشاء القيود المحاسبية تلقائياً</li>
+                    </ul>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>نصيحة:</strong> تأكد من إدخال IBAN بشكل صحيح لتجنب مشاكل التحويلات البنكية.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

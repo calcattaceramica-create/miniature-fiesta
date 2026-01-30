@@ -191,7 +191,7 @@
                                         {{ opp.name }}
                                     </a>
                                 </td>
-                                <td>{{ "%.2f"|format(opp.amount) }} ر.س</td>
+                                <td>{{ opp.amount|currency }}</td>
                                 <td>
                                     {% if opp.stage == 'prospecting' %}
                                         <span class="badge bg-secondary">استكشاف</span>

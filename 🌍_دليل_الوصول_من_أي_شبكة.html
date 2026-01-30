@@ -1,422 +1,0 @@
-<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌍 الوصول من أي شبكة - Access from Any Network</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 50px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 3.5em;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .header p {
-            font-size: 1.5em;
-            opacity: 0.9;
-        }
-        
-        .content {
-            padding: 50px;
-        }
-        
-        .method-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 40px;
-            margin: 30px 0;
-            border-radius: 20px;
-            border-right: 8px solid #667eea;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .method-card:hover {
-            transform: translateX(-15px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-        
-        .method-card h2 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .method-card h3 {
-            color: #764ba2;
-            font-size: 1.8em;
-            margin: 20px 0 15px 0;
-        }
-        
-        .step-box {
-            background: white;
-            padding: 25px;
-            margin: 15px 0;
-            border-radius: 12px;
-            border-right: 4px solid #667eea;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .step-box strong {
-            color: #667eea;
-            font-size: 1.3em;
-            display: block;
-            margin-bottom: 10px;
-        }
-        
-        .code-box {
-            background: #2d3748;
-            color: #68d391;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 1.3em;
-            overflow-x: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .warning-box {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px 0;
-            font-size: 1.2em;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .success-box {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px 0;
-            font-size: 1.2em;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .info-box {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px 0;
-            font-size: 1.2em;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .comparison-table {
-            width: 100%;
-            margin: 30px 0;
-            border-collapse: collapse;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .comparison-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            font-size: 1.3em;
-        }
-        
-        .comparison-table td {
-            background: white;
-            padding: 20px;
-            border: 1px solid #ddd;
-            font-size: 1.1em;
-        }
-        
-        .comparison-table tr:hover td {
-            background: #f5f7fa;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 12px;
-            margin: 15px 10px;
-            font-size: 1.3em;
-            font-weight: bold;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        
-        .icon {
-            font-size: 1.5em;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🌍 الوصول من أي شبكة</h1>
-            <p>Access DED ERP from Any Network and Device</p>
-        </div>
-        
-        <div class="content">
-            <!-- مقارنة الطرق -->
-            <h2 style="color: #667eea; font-size: 2.5em; margin-bottom: 30px; text-align: center;">
-                📊 مقارنة طرق الوصول
-            </h2>
-            
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>الطريقة</th>
-                        <th>السرعة</th>
-                        <th>الأمان</th>
-                        <th>سهولة الاستخدام</th>
-                        <th>التكلفة</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>نفس الشبكة (WiFi)</strong></td>
-                        <td>⚡⚡⚡⚡⚡ سريع جداً</td>
-                        <td>🔒🔒🔒🔒 آمن جداً</td>
-                        <td>😊😊😊😊😊 سهل جداً</td>
-                        <td>💰 مجاني</td>
-                    </tr>
-                    <tr>
-                        <td><strong>الإنترنت (ngrok)</strong></td>
-                        <td>⚡⚡⚡ متوسط</td>
-                        <td>🔒🔒🔒 آمن</td>
-                        <td>😊😊😊😊 سهل</td>
-                        <td>💰 مجاني (محدود)</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- الطريقة الأولى: نفس الشبكة -->
-            <div class="method-card">
-                <h2><span class="icon">📱</span> الطريقة الأولى: الوصول من نفس الشبكة (WiFi)</h2>
-
-                <div class="success-box">
-                    <strong>✅ الأفضل للاستخدام المحلي</strong>
-                    <p>سريع، آمن، ومجاني تماماً!</p>
-                </div>
-
-                <h3>📋 الخطوات:</h3>
-
-                <div class="step-box">
-                    <strong>1️⃣ تأكد من الاتصال بنفس الشبكة</strong>
-                    <p>الكمبيوتر والهاتف يجب أن يكونا على نفس الواي فاي</p>
-                </div>
-
-                <div class="step-box">
-                    <strong>2️⃣ اعرف عنوان IP الخاص بك</strong>
-                    <p>افتح CMD واكتب:</p>
-                    <div class="code-box">ipconfig</div>
-                    <p>ابحث عن: <strong>IPv4 Address</strong></p>
-                    <p>مثال: <code>192.168.1.100</code></p>
-                </div>
-
-                <div class="step-box">
-                    <strong>3️⃣ شغّل السيرفر</strong>
-                    <p>انقر نقرتين على:</p>
-                    <div class="code-box">🌍_الوصول_من_أي_شبكة.bat</div>
-                    <p>واختر: <strong>1</strong> (الوصول من نفس الشبكة)</p>
-                </div>
-
-                <div class="step-box">
-                    <strong>4️⃣ افتح من الهاتف</strong>
-                    <p>افتح المتصفح على الهاتف واكتب:</p>
-                    <div class="code-box">http://عنوان_IP:5000</div>
-                    <p>مثال:</p>
-                    <div class="code-box">http://192.168.1.100:5000</div>
-                </div>
-
-                <div class="warning-box">
-                    <strong>⚠️ مهم:</strong>
-                    <ul style="margin-right: 20px; margin-top: 10px;">
-                        <li>لا تغلق نافذة Terminal!</li>
-                        <li>تأكد من إيقاف Firewall أو السماح للمنفذ 5000</li>
-                        <li>عنوان IP قد يتغير عند إعادة الاتصال بالشبكة</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- الطريقة الثانية: الإنترنت -->
-            <div class="method-card">
-                <h2><span class="icon">🌍</span> الطريقة الثانية: الوصول من الإنترنت (ngrok)</h2>
-
-                <div class="info-box">
-                    <strong>🌐 للوصول من أي مكان في العالم</strong>
-                    <p>استخدم هذه الطريقة للوصول من خارج الشبكة المحلية</p>
-                </div>
-
-                <h3>📋 الخطوات:</h3>
-
-                <div class="step-box">
-                    <strong>1️⃣ حمّل ngrok</strong>
-                    <p>اذهب إلى: <a href="https://ngrok.com/download" target="_blank">https://ngrok.com/download</a></p>
-                    <p>حمّل النسخة المناسبة لنظامك (Windows)</p>
-                </div>
-
-                <div class="step-box">
-                    <strong>2️⃣ ضع ngrok.exe في المجلد</strong>
-                    <p>ضع الملف في نفس مجلد المشروع:</p>
-                    <div class="code-box">C:\Users\DELL\DED\ngrok.exe</div>
-                </div>
-
-                <div class="step-box">
-                    <strong>3️⃣ شغّل السيرفر مع ngrok</strong>
-                    <p>انقر نقرتين على:</p>
-                    <div class="code-box">🌍_الوصول_من_أي_شبكة.bat</div>
-                    <p>واختر: <strong>2</strong> (الوصول من الإنترنت)</p>
-                </div>
-
-                <div class="step-box">
-                    <strong>4️⃣ انسخ الرابط</strong>
-                    <p>ستفتح نافذة ngrok، انسخ الرابط الذي يبدأ بـ:</p>
-                    <div class="code-box">https://abc123.ngrok.io</div>
-                </div>
-
-                <div class="step-box">
-                    <strong>5️⃣ افتح الرابط من أي جهاز</strong>
-                    <p>استخدم الرابط من:</p>
-                    <ul style="margin-right: 20px; margin-top: 10px;">
-                        <li>الهاتف</li>
-                        <li>التابلت</li>
-                        <li>أي كمبيوتر آخر</li>
-                        <li>من أي مكان في العالم!</li>
-                    </ul>
-                </div>
-
-                <div class="warning-box">
-                    <strong>⚠️ ملاحظات مهمة:</strong>
-                    <ul style="margin-right: 20px; margin-top: 10px;">
-                        <li>النسخة المجانية من ngrok محدودة (8 ساعات)</li>
-                        <li>الرابط يتغير كل مرة تشغل فيها ngrok</li>
-                        <li>السرعة قد تكون أبطأ من الشبكة المحلية</li>
-                        <li>لا تشارك الرابط مع أشخاص غير موثوقين</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- حل المشاكل -->
-            <div class="method-card">
-                <h2><span class="icon">🔧</span> حل المشاكل الشائعة</h2>
-
-                <h3>❌ لا أستطيع الوصول من الهاتف</h3>
-                <div class="step-box">
-                    <strong>الحلول:</strong>
-                    <ul style="margin-right: 20px; margin-top: 10px;">
-                        <li>تأكد أن الهاتف والكمبيوتر على نفس الواي فاي</li>
-                        <li>تأكد من عنوان IP صحيح</li>
-                        <li>أوقف Firewall مؤقتاً</li>
-                        <li>جرب المنفذ 5000 بدلاً من 8000</li>
-                    </ul>
-                </div>
-
-                <h3>❌ ngrok لا يعمل</h3>
-                <div class="step-box">
-                    <strong>الحلول:</strong>
-                    <ul style="margin-right: 20px; margin-top: 10px;">
-                        <li>تأكد من تحميل ngrok.exe</li>
-                        <li>تأكد من وضعه في المجلد الصحيح</li>
-                        <li>سجل حساب مجاني على ngrok.com</li>
-                        <li>استخدم authtoken من حسابك</li>
-                    </ul>
-                </div>
-
-                <h3>❌ الصفحة بطيئة</h3>
-                <div class="step-box">
-                    <strong>الحلول:</strong>
-                    <ul style="margin-right: 20px; margin-top: 10px;">
-                        <li>استخدم الشبكة المحلية بدلاً من ngrok</li>
-                        <li>تأكد من سرعة الإنترنت</li>
-                        <li>أغلق التطبيقات الأخرى</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- ملفات التشغيل -->
-            <div class="method-card">
-                <h2><span class="icon">📁</span> ملفات التشغيل السريع</h2>
-
-                <div class="step-box">
-                    <strong>🌍 الوصول من أي شبكة (قائمة تفاعلية)</strong>
-                    <div class="code-box">🌍_الوصول_من_أي_شبكة.bat</div>
-                </div>
-
-                <div class="step-box">
-                    <strong>📱 الوصول من نفس الشبكة</strong>
-                    <div class="code-box">start_web_with_network.bat</div>
-                </div>
-
-                <div class="step-box">
-                    <strong>🌐 الوصول من الإنترنت</strong>
-                    <div class="code-box">start_with_ngrok.bat</div>
-                </div>
-            </div>
-
-            <!-- البدء الآن -->
-            <div style="background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%); color: white; padding: 50px; border-radius: 20px; margin: 40px 0; text-align: center;">
-                <h2 style="font-size: 3em; margin-bottom: 30px;">🎯 ابدأ الآن!</h2>
-
-                <div style="background: white; color: #333; padding: 30px; border-radius: 15px; margin: 20px 0;">
-                    <h3 style="color: #667eea; font-size: 2em; margin-bottom: 20px;">للوصول من نفس الشبكة:</h3>
-                    <ol style="text-align: right; font-size: 1.3em; line-height: 2;">
-                        <li>انقر نقرتين على: <strong>🌍_الوصول_من_أي_شبكة.bat</strong></li>
-                        <li>اختر: <strong>1</strong></li>
-                        <li>افتح الرابط من الهاتف</li>
-                    </ol>
-                </div>
-
-                <div style="background: white; color: #333; padding: 30px; border-radius: 15px; margin: 20px 0;">
-                    <h3 style="color: #764ba2; font-size: 2em; margin-bottom: 20px;">للوصول من الإنترنت:</h3>
-                    <ol style="text-align: right; font-size: 1.3em; line-height: 2;">
-                        <li>حمّل ngrok من: <a href="https://ngrok.com/download">ngrok.com/download</a></li>
-                        <li>ضع ngrok.exe في المجلد</li>
-                        <li>انقر نقرتين على: <strong>🌍_الوصول_من_أي_شبكة.bat</strong></li>
-                        <li>اختر: <strong>2</strong></li>
-                        <li>انسخ الرابط واستخدمه من أي مكان!</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-

@@ -1,341 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دليل حذف المنتجات - DED ERP</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-        
-        .icon {
-            text-align: center;
-            font-size: 4em;
-            margin: 20px 0;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.2em;
-        }
-        
-        .feature-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-        
-        .feature-box h2 {
-            margin-bottom: 15px;
-            font-size: 1.8em;
-        }
-        
-        .feature-box ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .feature-box li {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .feature-box li:last-child {
-            border-bottom: none;
-        }
-        
-        .feature-box li::before {
-            content: "✓ ";
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        .steps {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-        
-        .steps h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-        
-        .step {
-            background: white;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            border-right: 5px solid #667eea;
-        }
-        
-        .step-number {
-            display: inline-block;
-            width: 35px;
-            height: 35px;
-            background: #667eea;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 35px;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        .warning-box {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .warning-box h3 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .scenario {
-            background: white;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            border-right: 5px solid #28a745;
-        }
-        
-        .scenario.warning {
-            border-right-color: #ffc107;
-        }
-        
-        .scenario.danger {
-            border-right-color: #dc3545;
-        }
-        
-        .scenario h4 {
-            margin-bottom: 10px;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1em;
-            transition: transform 0.2s;
-            margin: 10px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-        
-        .btn-group {
-            text-align: center;
-            margin: 30px 0;
-        }
-        
-        .products-list {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        
-        .products-list h3 {
-            color: #1976D2;
-            margin-bottom: 15px;
-        }
-        
-        .product-item {
-            background: white;
-            padding: 10px 15px;
-            margin: 8px 0;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="icon">🗑️</div>
-        <h1>دليل حذف المنتجات</h1>
-        <p class="subtitle">خاصية الحذف الذكي مع الحماية الكاملة</p>
-
-        <div class="products-list">
-            <h3>📦 المنتجات المتاحة (4 منتجات)</h3>
-            <div class="product-item">
-                <span><strong>1.</strong> لابتوب HP ProBook</span>
-                <span style="color: #666;">كود: PROD-001</span>
-            </div>
-            <div class="product-item">
-                <span><strong>2.</strong> ماوس لاسلكي Logitech</span>
-                <span style="color: #666;">كود: PROD-002</span>
-            </div>
-            <div class="product-item">
-                <span><strong>3.</strong> لوحة مفاتيح ميكانيكية</span>
-                <span style="color: #666;">كود: PROD-003</span>
-            </div>
-            <div class="product-item">
-                <span><strong>4.</strong> قميص رجالي قطن</span>
-                <span style="color: #666;">كود: PROD-004</span>
-            </div>
-        </div>
-
-        <div class="feature-box">
-            <h2>✨ مميزات خاصية الحذف</h2>
-            <ul>
-                <li>حذف ذكي يحمي البيانات المرتبطة</li>
-                <li>نافذة تأكيد احترافية قبل الحذف</li>
-                <li>فحص تلقائي للارتباطات (8 أنواع)</li>
-                <li>تعطيل تلقائي بدلاً من الحذف عند وجود ارتباطات</li>
-                <li>خيار الحذف القسري للمسؤولين</li>
-                <li>رسائل واضحة توضح سبب عدم الحذف</li>
-            </ul>
-        </div>
-
-        <div class="steps">
-            <h2>📋 خطوات الحذف</h2>
-
-            <div class="step">
-                <span class="step-number">1</span>
-                <strong>افتح صفحة المنتجات</strong>
-                <p style="margin-top: 10px; color: #666;">
-                    اضغط على الزر أدناه أو اذهب إلى: المخزون → المنتجات
-                </p>
-            </div>
-
-            <div class="step">
-                <span class="step-number">2</span>
-                <strong>ابحث عن المنتج المراد حذفه</strong>
-                <p style="margin-top: 10px; color: #666;">
-                    استخدم البحث أو تصفح القائمة
-                </p>
-            </div>
-
-            <div class="step">
-                <span class="step-number">3</span>
-                <strong>اضغط على زر الحذف 🗑️</strong>
-                <p style="margin-top: 10px; color: #666;">
-                    ستجده في عمود "الإجراءات" بجانب زر التعديل
-                </p>
-            </div>
-
-            <div class="step">
-                <span class="step-number">4</span>
-                <strong>تأكيد الحذف</strong>
-                <p style="margin-top: 10px; color: #666;">
-                    ستظهر نافذة منبثقة تطلب التأكيد - اقرأ التحذيرات جيداً
-                </p>
-            </div>
-
-            <div class="step">
-                <span class="step-number">5</span>
-                <strong>اضغط "حذف" أو "إلغاء"</strong>
-                <p style="margin-top: 10px; color: #666;">
-                    حذف: لتأكيد العملية | إلغاء: للرجوع بدون حذف
-                </p>
-            </div>
-        </div>
-
-        <div class="warning-box">
-            <h3>⚠️ الارتباطات التي يتم فحصها</h3>
-            <ul style="padding-right: 20px; margin-top: 10px;">
-                <li>✓ فواتير المبيعات</li>
-                <li>✓ عروض الأسعار</li>
-                <li>✓ فواتير المشتريات</li>
-                <li>✓ طلبات الشراء</li>
-                <li>✓ مرتجعات المشتريات</li>
-                <li>✓ طلبات نقاط البيع (POS)</li>
-                <li>✓ سجلات المخزون</li>
-                <li>✓ حركات المخزون</li>
-            </ul>
-        </div>
-
-        <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin: 20px 0;">
-            <h2 style="color: #667eea; margin-bottom: 20px;">🎯 سيناريوهات الحذف</h2>
-
-            <div class="scenario">
-                <h4>✅ السيناريو 1: منتج جديد بدون ارتباطات</h4>
-                <p><strong>النتيجة:</strong> حذف نهائي من قاعدة البيانات</p>
-                <p><strong>الرسالة:</strong> "تم حذف المنتج بنجاح"</p>
-            </div>
-
-            <div class="scenario warning">
-                <h4>⚠️ السيناريو 2: منتج مرتبط بفواتير</h4>
-                <p><strong>النتيجة:</strong> تعطيل المنتج (is_active = False)</p>
-                <p><strong>الرسالة:</strong> "لا يمكن حذف المنتج لأنه مرتبط بـ: فواتير مبيعات (5). تم تعطيل المنتج بدلاً من ذلك"</p>
-                <p style="margin-top: 10px; color: #856404;"><strong>ملاحظة:</strong> المنتج سيختفي من القوائم لكن البيانات محفوظة</p>
-            </div>
-
-            <div class="scenario danger">
-                <h4>🗑️ السيناريو 3: حذف قسري (Force Delete)</h4>
-                <p><strong>الطريقة:</strong> إضافة ?force=true في الرابط</p>
-                <p><strong>النتيجة:</strong> حذف المنتج وجميع ارتباطاته نهائياً</p>
-                <p><strong>الرسالة:</strong> "تم حذف المنتج وجميع السجلات المرتبطة نهائياً"</p>
-                <p style="margin-top: 10px; color: #dc3545;"><strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه!</p>
-            </div>
-        </div>
-
-        <div class="btn-group">
-            <a href="http://localhost:5000/inventory/products" class="btn btn-primary" target="_blank">
-                📦 افتح صفحة المنتجات
-            </a>
-            <a href="http://localhost:5000/inventory/add_product" class="btn btn-success" target="_blank">
-                ➕ إضافة منتج جديد
-            </a>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 10px;">
-            <h3 style="color: #2e7d32; margin-bottom: 10px;">✅ خاصية الحذف جاهزة ومفعلة!</h3>
-            <p style="font-size: 1.1em; color: #666;">
-                الصلاحية 85 (inventory.products.delete) مفعلة للمدير
-            </p>
-        </div>
-    </div>
-</body>
-</html>
-

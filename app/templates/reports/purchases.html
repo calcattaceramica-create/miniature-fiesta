@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Purchases Report') }} - {{ _('Inventory Management System') }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+}
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+.fs-1 {
+    font-size: 3rem !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-chart-bar"></i> {{ _('Purchases Report') }}</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Filters -->
+                    <form method="GET" action="{{ url_for('reports.purchases_report') }}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ _('From Date') }}</label>
+                                <input type="date" name="start_date" class="form-control" value="{{ start_date or '' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ _('To Date') }}</label>
+                                <input type="date" name="end_date" class="form-control" value="{{ end_date or '' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> {{ _('Search') }}
+                                    </button>
+                                    <a href="{{ url_for('reports.purchases_report') }}" class="btn btn-secondary">
+                                        <i class="fas fa-redo"></i> {{ _('Reset') }}
+                                    </a>
+                                    <button type="button" onclick="window.print()" class="btn btn-info">
+                                        <i class="fas fa-print"></i> {{ _('Print') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-gradient-primary text-white shadow">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-1">{{ _('Total Invoices') }}</h6>
+                                    <h3 class="mb-0">{{ invoices|length }}</h3>
+                                </div>
+                                <div class="fs-1">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-success text-white shadow">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-1">{{ _('Total Purchases') }}</h6>
+                                    <h3 class="mb-0">{{ "{:,.2f}".format(total_purchases) }} {{ currency_symbol }}</h3>
+                                </div>
+                                <div class="fs-1">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-gradient-info text-white shadow">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-white-50 mb-1">{{ _('Total Tax') }}</h6>
+                                    <h3 class="mb-0">{{ "{:,.2f}".format(total_tax) }} {{ currency_symbol }}</h3>
+                                </div>
+                                <div class="fs-1">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices Table -->
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> {{ _('Purchase Invoices') }} ({{ invoices|length }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if invoices %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ _('Invoice Number') }}</th>
+                                    <th>{{ _('Date') }}</th>
+                                    <th>{{ _('Supplier') }}</th>
+                                    <th>{{ _('Warehouse') }}</th>
+                                    <th>{{ _('Subtotal') }}</th>
+                                    <th>{{ _('Tax') }}</th>
+                                    <th>{{ _('Total') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td><strong>{{ invoice.invoice_number }}</strong></td>
+                                    <td>{{ invoice.invoice_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ invoice.supplier.name }}</td>
+                                    <td>{{ invoice.warehouse.name if invoice.warehouse else '-' }}</td>
+                                    <td>{{ "{:,.2f}".format(invoice.subtotal) }} {{ currency_symbol }}</td>
+                                    <td>{{ "{:,.2f}".format(invoice.tax_amount) }} {{ currency_symbol }}</td>
+                                    <td><strong>{{ "{:,.2f}".format(invoice.total_amount) }} {{ currency_symbol }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="7">{{ _('Total') }}</th>
+                                    <th><strong>{{ "{:,.2f}".format(total_purchases) }} {{ currency_symbol }}</strong></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle fa-3x mb-3"></i>
+                        <p>{{ _('No purchase invoices found in the selected period') }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.bg-gradient-success {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+.bg-gradient-info {
+    background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+}
+@media print {
+    .btn, .card-header { display: none !important; }
+}
+</style>
+{% endblock %}
+

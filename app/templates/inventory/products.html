@@ -81,8 +81,8 @@
                             </td>
                             <td class="hide-on-mobile">{{ product.category.name if product.category else '-' }}</td>
                             <td class="hide-on-mobile">{{ product.unit.name if product.unit else '-' }}</td>
-                            <td class="hide-on-mobile">{{ "%.2f"|format(product.cost_price) }} {{ _('SAR') }}</td>
-                            <td>{{ "%.2f"|format(product.selling_price) }} {{ _('SAR') }}</td>
+                            <td class="hide-on-mobile">{{ "%.2f"|format(product.cost_price) }} {{ currency_symbol }}</td>
+                            <td>{{ "%.2f"|format(product.selling_price) }} {{ currency_symbol }}</td>
                             <td>
                                 {% set stock = product.get_stock() %}
                                 {% if stock <= product.min_stock %}
@@ -207,25 +207,25 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteModalLabel">
-                    <i class="fas fa-exclamation-triangle"></i> تأكيد الحذف
+                    <i class="fas fa-exclamation-triangle"></i> {{ _('Confirm Deletion') }}
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-3">هل أنت متأكد من حذف المنتج؟</p>
+                <p class="mb-3">{{ _('Are you sure you want to delete this product?') }}</p>
                 <div class="alert alert-warning">
                     <i class="fas fa-info-circle"></i>
-                    <strong>تنبيه:</strong> إذا كان المنتج مرتبطاً بفواتير أو طلبات، سيتم تعطيله بدلاً من حذفه نهائياً.
+                    <strong>{{ _('Warning:') }}</strong> {{ _('If the product is linked to invoices or orders, it will be deactivated instead of permanently deleted.') }}
                 </div>
-                <p class="mb-0"><strong>اسم المنتج:</strong> <span id="productName"></span></p>
+                <p class="mb-0"><strong>{{ _('Product Name:') }}</strong> <span id="productName"></span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> إلغاء
+                    <i class="fas fa-times"></i> {{ _('Cancel') }}
                 </button>
                 <form id="deleteForm" method="POST" style="display:inline;">
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> حذف
+                        <i class="fas fa-trash"></i> {{ _('Delete') }}
                     </button>
                 </form>
             </div>

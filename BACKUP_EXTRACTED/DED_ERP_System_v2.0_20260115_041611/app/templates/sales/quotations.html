@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Quotations') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Quotations') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-file-contract"></i> {{ _('Quotations') }}</h2>
+                <p class="text-muted mb-0">{{ _('View and manage all quotations') }}</p>
+            </div>
+            <div>
+                <a href="{{ url_for('sales.add_quotation') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> {{ _('Add New Quotation') }}
+                </a>
+                <a href="{{ url_for('sales.invoices') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-invoice"></i> {{ _('Invoices') }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('sales.quotations') }}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="search" placeholder="{{ _('Search by quotation number...') }}" value="{{ search }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="status">
+                            <option value="">{{ _('All Statuses') }}</option>
+                            <option value="draft" {% if status == 'draft' %}selected{% endif %}>{{ _('Draft') }}</option>
+                            <option value="sent" {% if status == 'sent' %}selected{% endif %}>{{ _('Sent') }}</option>
+                            <option value="accepted" {% if status == 'accepted' %}selected{% endif %}>{{ _('Accepted') }}</option>
+                            <option value="rejected" {% if status == 'rejected' %}selected{% endif %}>{{ _('Rejected') }}</option>
+                            <option value="expired" {% if status == 'expired' %}selected{% endif %}>{{ _('Expired') }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-search"></i> {{ _('Search') }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quotations Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{{ _('Quotation Number') }}</th>
+                            <th>{{ _('Date') }}</th>
+                            <th>{{ _('Valid Until') }}</th>
+                            <th>{{ _('Customer') }}</th>
+                            <th>{{ _('Total Amount') }}</th>
+                            <th>{{ _('Status') }}</th>
+                            <th>{{ _('Actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quotation in quotations.items %}
+                        <tr>
+                            <td><strong>{{ quotation.quotation_number }}</strong></td>
+                            <td>{{ quotation.quotation_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if quotation.valid_until %}
+                                    {{ quotation.valid_until.strftime('%Y-%m-%d') }}
+                                    {% if quotation.valid_until < today and quotation.status not in ['accepted', 'rejected'] %}
+                                        <span class="badge bg-danger ms-1">{{ _('Expired') }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ quotation.customer.name }}</td>
+                            <td><strong>{{ "%.2f"|format(quotation.total_amount) }} {{ _('SAR') }}</strong></td>
+                            <td>
+                                {% if quotation.status == 'draft' %}
+                                    <span class="badge bg-secondary">{{ _('Draft') }}</span>
+                                {% elif quotation.status == 'sent' %}
+                                    <span class="badge bg-info">{{ _('Sent') }}</span>
+                                {% elif quotation.status == 'accepted' %}
+                                    <span class="badge bg-success">{{ _('Accepted') }}</span>
+                                {% elif quotation.status == 'rejected' %}
+                                    <span class="badge bg-danger">{{ _('Rejected') }}</span>
+                                {% elif quotation.status == 'expired' %}
+                                    <span class="badge bg-warning">{{ _('Expired') }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('sales.quotation_details', id=quotation.id) }}" class="btn btn-sm btn-outline-info" title="{{ _('View Details') }}">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if quotation.status in ['draft', 'sent', 'accepted'] %}
+                                <button class="btn btn-sm btn-outline-success" title="{{ _('Convert to Invoice') }}"
+                                        onclick="showConvertModal({{ quotation.id }}, '{{ quotation.quotation_number }}')">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                                {% endif %}
+                                {% if quotation.status != 'accepted' %}
+                                <form method="POST" action="{{ url_for('sales.delete_quotation', id=quotation.id) }}" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ _('Delete') }}"
+                                            onclick="return confirm('{{ _('Are you sure you want to delete this quotation?') }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <a href="#" class="btn btn-sm btn-outline-secondary" title="{{ _('Print') }}">
+                                    <i class="fas fa-print"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                <h5>{{ _('No quotations found') }}</h5>
+                                <p>{{ _('Start by adding a new quotation') }}</p>
+                                <a href="{{ url_for('sales.add_quotation') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> {{ _('Add Quotation') }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if quotations.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-3">
+        <ul class="pagination justify-content-center">
+            {% if quotations.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('sales.quotations', page=quotations.prev_num, search=search, status=status) }}">{{ _('Previous') }}</a>
+            </li>
+            {% endif %}
+
+            {% for page_num in quotations.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if page_num == quotations.page %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('sales.quotations', page=page_num, search=search, status=status) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if quotations.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('sales.quotations', page=quotations.next_num, search=search, status=status) }}">{{ _('Next') }}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Convert to Invoice Modal -->
+<div class="modal fade" id="convertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-exchange-alt"></i> {{ _('Convert to Invoice') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="convertForm">
+                <div class="modal-body">
+                    <p>{{ _('Do you want to convert quotation') }} <strong id="quotation_number_display"></strong> {{ _('to sales invoice?') }}</p>
+
+                    <div class="mb-3">
+                        <label for="warehouse_id" class="form-label">{{ _('Warehouse') }} <span class="text-danger">*</span></label>
+                        <select class="form-select" id="warehouse_id" name="warehouse_id" required>
+                            <option value="">-- {{ _('Select Warehouse') }} --</option>
+                            {% for warehouse in warehouses %}
+                            <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        {{ _('A new sales invoice will be created with the same items and prices') }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> {{ _('Convert') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function showConvertModal(quotationId, quotationNumber) {
+    document.getElementById('convertForm').action = "{{ url_for('sales.convert_quotation_to_invoice', id=0) }}".replace('0', quotationId);
+    document.getElementById('quotation_number_display').textContent = quotationNumber;
+
+    var modal = new bootstrap.Modal(document.getElementById('convertModal'));
+    modal.show();
+}
+
+// Set today's date for comparison
+const today = new Date().toISOString().split('T')[0];
+</script>
+
+<style>
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+

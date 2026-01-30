@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Purchase Report by Product') }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-chart-line"></i> {{ _('Purchase Report by Product') }}</h2>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="start_date" class="form-label">{{ _('Start Date') }}</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date or '' }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="end_date" class="form-label">{{ _('End Date') }}</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date or '' }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="product_id" class="form-label">{{ _('Product') }}</label>
+                    <select class="form-select" id="product_id" name="product_id">
+                        <option value="">{{ _('All Products') }}</option>
+                        {% for product in all_products %}
+                        <option value="{{ product.id }}" {% if selected_product_id == product.id %}selected{% endif %}>
+                            {{ product.name }} ({{ product.code }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> {{ _('Filter') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Products') }}</h6>
+                            <h3 class="mb-0 fw-bold">{{ products_data|length }}</h3>
+                        </div>
+                        <div class="fs-1 opacity-50">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Quantity') }}</h6>
+                            <h3 class="mb-0 fw-bold">{{ "{:,.0f}".format(total_quantity or 0) }}</h3>
+                        </div>
+                        <div class="fs-1 opacity-50">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1">{{ _('Total Amount') }}</h6>
+                            <h3 class="mb-0 fw-bold">{{ currency_symbol }} {{ "{:,.2f}".format(total_amount or 0) }}</h3>
+                        </div>
+                        <div class="fs-1 opacity-50">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ _('Products Details') }}</h5>
+            <button onclick="window.print()" class="btn btn-sm btn-secondary">
+                <i class="fas fa-print"></i> {{ _('Print') }}
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>{{ _('Product Code') }}</th>
+                            <th>{{ _('Product Name') }}</th>
+                            <th class="text-center">{{ _('Invoices Count') }}</th>
+                            <th class="text-end">{{ _('Total Quantity') }}</th>
+                            <th class="text-end">{{ _('Total Amount') }}</th>
+                            <th class="text-end">{{ _('Average Price') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if products_data %}
+                            {% for product in products_data %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><span class="badge bg-secondary">{{ product.code }}</span></td>
+                                <td><strong>{{ product.name }}</strong></td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary">{{ product.invoice_count }}</span>
+                                </td>
+                                <td class="text-end">{{ "{:,.2f}".format(product.total_quantity) }}</td>
+                                <td class="text-end">{{ "{:,.2f}".format(product.total_amount) }} {{ currency_symbol }}</td>
+                                <td class="text-end">
+                                    {{ "{:,.2f}".format(product.total_amount / product.total_quantity) }} {{ currency_symbol }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    {{ _('No data available') }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                    {% if products_data %}
+                    <tfoot class="table-secondary">
+                        <tr>
+                            <th colspan="4" class="text-end">{{ _('Total') }}:</th>
+                            <th class="text-end">{{ "{:,.2f}".format(total_quantity) }}</th>
+                            <th class="text-end">{{ "{:,.2f}".format(total_amount) }} {{ currency_symbol }}</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

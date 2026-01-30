@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}الفرص التجارية - CRM{% endblock %}
+{% block page_title %}الفرص التجارية{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h3><i class="fas fa-bullseye"></i> الفرص التجارية</h3>
+        <p class="text-muted mb-0">إدارة الفرص التجارية وتتبع المبيعات</p>
+    </div>
+    <div>
+        <a href="{{ url_for('crm.add_opportunity') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> إضافة فرصة تجارية
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mt-3">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('crm.opportunities') }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search" 
+                       placeholder="بحث بالاسم..." 
+                       value="{{ search }}">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="stage">
+                    <option value="">جميع المراحل</option>
+                    <option value="prospecting" {% if stage == 'prospecting' %}selected{% endif %}>استكشاف</option>
+                    <option value="qualification" {% if stage == 'qualification' %}selected{% endif %}>تأهيل</option>
+                    <option value="proposal" {% if stage == 'proposal' %}selected{% endif %}>عرض</option>
+                    <option value="negotiation" {% if stage == 'negotiation' %}selected{% endif %}>تفاوض</option>
+                    <option value="closed_won" {% if stage == 'closed_won' %}selected{% endif %}>مغلقة - فوز</option>
+                    <option value="closed_lost" {% if stage == 'closed_lost' %}selected{% endif %}>مغلقة - خسارة</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('crm.opportunities') }}" class="btn btn-secondary w-100">
+                    <i class="fas fa-redo"></i> إعادة تعيين
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h6>إجمالي الفرص</h6>
+                <h3>{{ total_opportunities }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h6>القيمة الإجمالية</h6>
+                <h3>{{ "%.2f"|format(total_value) }} ر.س</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h6>القيمة المتوقعة</h6>
+                <h3>{{ "%.2f"|format(expected_value) }} ر.س</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h6>معدل الفوز</h6>
+                <h3>{{ "%.1f"|format(win_rate) }}%</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Opportunities Table -->
+<div class="card mt-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>الكود</th>
+                        <th>الاسم</th>
+                        <th>العميل</th>
+                        <th>المبلغ</th>
+                        <th>المرحلة</th>
+                        <th>الاحتمالية</th>
+                        <th>القيمة المتوقعة</th>
+                        <th>تاريخ الإغلاق</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for opp in opportunities.items %}
+                    <tr>
+                        <td><strong>{{ opp.code }}</strong></td>
+                        <td>
+                            <a href="{{ url_for('crm.opportunity_details', id=opp.id) }}">
+                                {{ opp.name }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if opp.customer %}
+                                <a href="{{ url_for('customers.customer_details', id=opp.customer_id) }}">
+                                    {{ opp.customer.name }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ "%.2f"|format(opp.amount) }} ر.س</td>
+                        <td>
+                            {% if opp.stage == 'prospecting' %}
+                                <span class="badge bg-secondary">استكشاف</span>
+                            {% elif opp.stage == 'qualification' %}
+                                <span class="badge bg-info">تأهيل</span>
+                            {% elif opp.stage == 'proposal' %}
+                                <span class="badge bg-primary">عرض</span>
+                            {% elif opp.stage == 'negotiation' %}
+                                <span class="badge bg-warning">تفاوض</span>
+                            {% elif opp.stage == 'closed_won' %}
+                                <span class="badge bg-success">مغلقة - فوز</span>
+                            {% elif opp.stage == 'closed_lost' %}
+                                <span class="badge bg-danger">مغلقة - خسارة</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ opp.probability }}%">
+                                    {{ opp.probability }}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ "%.2f"|format(opp.amount * opp.probability / 100) }} ر.س</td>
+                        <td>{{ opp.expected_close_date.strftime('%Y-%m-%d') if opp.expected_close_date else '-' }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('crm.opportunity_details', id=opp.id) }}" 
+                                   class="btn btn-info" title="عرض">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                            لا توجد فرص تجارية
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if opportunities.pages > 1 %}
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not opportunities.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.opportunities', page=opportunities.prev_num, search=search, stage=stage) }}">
+                السابق
+            </a>
+        </li>
+        
+        {% for page_num in opportunities.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == opportunities.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('crm.opportunities', page=page_num, search=search, stage=stage) }}">
+                        {{ page_num }}
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if not opportunities.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('crm.opportunities', page=opportunities.next_num, search=search, stage=stage) }}">
+                التالي
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+

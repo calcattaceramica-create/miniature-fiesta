@@ -6,6 +6,7 @@ from app import db
 from app.models_crm import Lead, Interaction, Opportunity, Task, Campaign, Contact
 from app.models_sales import Customer
 from app.models import User
+from app.auth.decorators import permission_required
 from datetime import datetime, date, timedelta
 from sqlalchemy import func, or_
 
@@ -13,6 +14,7 @@ from sqlalchemy import func, or_
 @bp.route('/')
 @bp.route('/dashboard')
 @login_required
+@permission_required('crm.view')
 def index():
     """CRM Dashboard"""
     # Statistics
@@ -63,6 +65,7 @@ def index():
 # ==================== Leads ====================
 @bp.route('/leads')
 @login_required
+@permission_required('crm.view')
 def leads():
     """List all leads"""
     page = request.args.get('page', 1, type=int)
@@ -96,6 +99,7 @@ def leads():
 
 @bp.route('/leads/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('crm.leads.manage')
 def add_lead():
     """Add new lead"""
     if request.method == 'POST':
@@ -142,6 +146,7 @@ def add_lead():
 
 @bp.route('/leads/<int:id>')
 @login_required
+@permission_required('crm.view')
 def lead_details(id):
     """View lead details"""
     lead = Lead.query.get_or_404(id)
@@ -156,6 +161,7 @@ def lead_details(id):
 
 @bp.route('/leads/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@permission_required('crm.leads.manage')
 def edit_lead(id):
     """Edit lead"""
     lead = Lead.query.get_or_404(id)
@@ -195,6 +201,7 @@ def edit_lead(id):
 
 @bp.route('/leads/<int:id>/convert', methods=['POST'])
 @login_required
+@permission_required('crm.leads.manage')
 def convert_lead(id):
     """Convert lead to customer"""
     lead = Lead.query.get_or_404(id)
@@ -235,6 +242,7 @@ def convert_lead(id):
 # ==================== Opportunities ====================
 @bp.route('/opportunities')
 @login_required
+@permission_required('crm.view')
 def opportunities():
     """List all opportunities"""
     page = request.args.get('page', 1, type=int)
@@ -261,6 +269,7 @@ def opportunities():
 
 @bp.route('/opportunities/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('crm.opportunities.manage')
 def add_opportunity():
     """Add new opportunity"""
     if request.method == 'POST':
@@ -304,6 +313,7 @@ def add_opportunity():
 
 @bp.route('/opportunities/<int:id>')
 @login_required
+@permission_required('crm.view')
 def opportunity_details(id):
     """View opportunity details"""
     opportunity = Opportunity.query.get_or_404(id)
@@ -318,6 +328,7 @@ def opportunity_details(id):
 
 @bp.route('/opportunities/<int:id>/update_stage', methods=['POST'])
 @login_required
+@permission_required('crm.opportunities.manage')
 def update_opportunity_stage(id):
     """Update opportunity stage"""
     opportunity = Opportunity.query.get_or_404(id)
@@ -339,6 +350,7 @@ def update_opportunity_stage(id):
 # ==================== Interactions ====================
 @bp.route('/interactions')
 @login_required
+@permission_required('crm.view')
 def interactions():
     """List all interactions"""
     page = request.args.get('page', 1, type=int)
@@ -365,6 +377,7 @@ def interactions():
 
 @bp.route('/interactions/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('crm.interactions.manage')
 def add_interaction():
     """Add new interaction"""
     if request.method == 'POST':
@@ -404,6 +417,7 @@ def add_interaction():
 # ==================== Tasks ====================
 @bp.route('/tasks')
 @login_required
+@permission_required('crm.view')
 def tasks():
     """List all tasks"""
     page = request.args.get('page', 1, type=int)
@@ -430,6 +444,7 @@ def tasks():
 
 @bp.route('/tasks/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('crm.tasks.manage')
 def add_task():
     """Add new task"""
     if request.method == 'POST':
@@ -471,6 +486,7 @@ def add_task():
 
 @bp.route('/tasks/<int:id>/complete', methods=['POST'])
 @login_required
+@permission_required('crm.tasks.manage')
 def complete_task(id):
     """Mark task as completed"""
     task = Task.query.get_or_404(id)
@@ -487,6 +503,7 @@ def complete_task(id):
 # ==================== Campaigns ====================
 @bp.route('/campaigns')
 @login_required
+@permission_required('crm.view')
 def campaigns():
     """List all campaigns"""
     page = request.args.get('page', 1, type=int)
@@ -519,6 +536,7 @@ def campaigns():
 
 @bp.route('/campaigns/add', methods=['GET', 'POST'])
 @login_required
+@permission_required('crm.campaigns.manage')
 def add_campaign():
     """Add new campaign"""
     if request.method == 'POST':
@@ -560,6 +578,7 @@ def add_campaign():
 
 @bp.route('/campaigns/<int:id>')
 @login_required
+@permission_required('crm.view')
 def campaign_details(id):
     """View campaign details"""
     campaign = Campaign.query.get_or_404(id)
@@ -577,6 +596,7 @@ def campaign_details(id):
 # ==================== Delete Routes ====================
 @bp.route('/leads/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('crm.leads.manage')
 def delete_lead(id):
     """Delete lead"""
     lead = Lead.query.get_or_404(id)
@@ -594,6 +614,7 @@ def delete_lead(id):
 
 @bp.route('/opportunities/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('crm.opportunities.manage')
 def delete_opportunity(id):
     """Delete opportunity"""
     opportunity = Opportunity.query.get_or_404(id)
@@ -611,6 +632,7 @@ def delete_opportunity(id):
 
 @bp.route('/interactions/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('crm.interactions.manage')
 def delete_interaction(id):
     """Delete interaction"""
     interaction = Interaction.query.get_or_404(id)
@@ -624,6 +646,7 @@ def delete_interaction(id):
 
 @bp.route('/tasks/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('crm.tasks.manage')
 def delete_task(id):
     """Delete task"""
     task = Task.query.get_or_404(id)
@@ -637,6 +660,7 @@ def delete_task(id):
 
 @bp.route('/campaigns/<int:id>/delete', methods=['POST'])
 @login_required
+@permission_required('crm.campaigns.manage')
 def delete_campaign(id):
     """Delete campaign"""
     campaign = Campaign.query.get_or_404(id)

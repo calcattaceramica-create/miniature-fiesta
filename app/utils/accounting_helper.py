@@ -56,28 +56,28 @@ def create_sales_invoice_journal_entry(invoice):
     
     # Debit: Accounts Receivable
     debit_item = JournalEntryItem(
-        entry_id=entry.id,
+        journal_entry_id=entry.id,
         account_id=settings.accounts_receivable_account_id,
         description=f'مبيعات للعميل: {invoice.customer.name}',
         debit=invoice.total_amount,
         credit=0
     )
     db.session.add(debit_item)
-    
+
     # Credit: Sales Revenue
     credit_revenue = JournalEntryItem(
-        entry_id=entry.id,
+        journal_entry_id=entry.id,
         account_id=settings.sales_revenue_account_id,
         description=f'إيرادات مبيعات - فاتورة {invoice.invoice_number}',
         debit=0,
         credit=invoice.subtotal
     )
     db.session.add(credit_revenue)
-    
+
     # Credit: Sales Tax (if applicable)
     if invoice.tax_amount > 0 and settings.sales_tax_account_id:
         credit_tax = JournalEntryItem(
-            entry_id=entry.id,
+            journal_entry_id=entry.id,
             account_id=settings.sales_tax_account_id,
             description=f'ضريبة مبيعات - فاتورة {invoice.invoice_number}',
             debit=0,
@@ -139,7 +139,7 @@ def create_purchase_invoice_journal_entry(invoice):
     
     # Debit: Purchase Expense
     debit_expense = JournalEntryItem(
-        entry_id=entry.id,
+        journal_entry_id=entry.id,
         account_id=settings.purchase_expense_account_id,
         description=f'مشتريات من المورد: {invoice.supplier.name}',
         debit=invoice.subtotal,
@@ -150,7 +150,7 @@ def create_purchase_invoice_journal_entry(invoice):
     # Debit: Purchase Tax (if applicable)
     if invoice.tax_amount > 0 and settings.purchase_tax_account_id:
         debit_tax = JournalEntryItem(
-            entry_id=entry.id,
+            journal_entry_id=entry.id,
             account_id=settings.purchase_tax_account_id,
             description=f'ضريبة مشتريات - فاتورة {invoice.invoice_number}',
             debit=invoice.tax_amount,
@@ -160,7 +160,7 @@ def create_purchase_invoice_journal_entry(invoice):
 
     # Credit: Accounts Payable
     credit_payable = JournalEntryItem(
-        entry_id=entry.id,
+        journal_entry_id=entry.id,
         account_id=settings.accounts_payable_account_id,
         description=f'مستحق للمورد: {invoice.supplier.name}',
         debit=0,
@@ -227,7 +227,7 @@ def create_payment_journal_entry(payment):
         # Receipt from customer
         # Debit: Cash/Bank
         debit_cash = JournalEntryItem(
-            entry_id=entry.id,
+            journal_entry_id=entry.id,
             account_id=cash_account_id,
             description=f'تحصيل من العميل',
             debit=payment.amount,
@@ -237,7 +237,7 @@ def create_payment_journal_entry(payment):
 
         # Credit: Accounts Receivable
         credit_receivable = JournalEntryItem(
-            entry_id=entry.id,
+            journal_entry_id=entry.id,
             account_id=settings.accounts_receivable_account_id,
             description=f'تحصيل من العميل',
             debit=0,
@@ -249,7 +249,7 @@ def create_payment_journal_entry(payment):
         # Payment to supplier
         # Debit: Accounts Payable
         debit_payable = JournalEntryItem(
-            entry_id=entry.id,
+            journal_entry_id=entry.id,
             account_id=settings.accounts_payable_account_id,
             description=f'دفع للمورد',
             debit=payment.amount,
@@ -259,7 +259,7 @@ def create_payment_journal_entry(payment):
 
         # Credit: Cash/Bank
         credit_cash = JournalEntryItem(
-            entry_id=entry.id,
+            journal_entry_id=entry.id,
             account_id=cash_account_id,
             description=f'دفع للمورد',
             debit=0,

@@ -12,7 +12,18 @@ migrate = Migrate()
 babel = Babel()
 
 def get_locale():
-    """Get user's preferred language - ALWAYS ARABIC"""
+    """Get user's preferred language from session or default to Arabic"""
+    # Try to get language from session
+    if 'language' in session:
+        return session['language']
+
+    # Try to get from user preferences if logged in
+    from flask_login import current_user
+    if current_user and current_user.is_authenticated:
+        if hasattr(current_user, 'language') and current_user.language:
+            return current_user.language
+
+    # Default to Arabic
     return 'ar'
 
 def create_app(config_name='default'):
@@ -31,6 +42,10 @@ def create_app(config_name='default'):
                 static_folder=static_dir)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
+
+    # Disable template caching for development
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
     # Initialize extensions
     db.init_app(app)
@@ -89,11 +104,11 @@ def create_app(config_name='default'):
     from app.security import bp as security_bp
     app.register_blueprint(security_bp, url_prefix='/security')
 
-    # Initialize license middleware
-    from app.license_middleware import init_license_middleware
-    init_license_middleware(app)
+    # Initialize Multi-Tenancy middleware
+    from app.tenant_middleware import init_tenant_middleware
+    init_tenant_middleware(app)
 
-    # Add context processor for translations
+    # Add context processor for translations and currency
     @app.context_processor
     def inject_locale():
         from flask_babel import get_locale, gettext
@@ -102,6 +117,71 @@ def create_app(config_name='default'):
             'current_locale': str(get_locale()),
             '_': gettext
         }
+
+    # Add context processor for currency
+    @app.context_processor
+    def inject_currency():
+        """Inject currency information into all templates"""
+        from app.models import Company
+        from flask_babel import gettext
+
+        try:
+            company = Company.query.first()
+            if company and company.currency:
+                currency_code = company.currency
+            else:
+                currency_code = app.config.get('DEFAULT_CURRENCY', 'SAR')
+        except:
+            # Fallback if database is not available
+            currency_code = 'SAR'
+
+        # Get currency info from config
+        currency_info = app.config['CURRENCIES'].get(currency_code, {})
+        currency_symbol = currency_info.get('symbol', 'ر.س')
+
+        # Translate currency name based on code
+        currency_name_map = {
+            'SAR': 'Saudi Riyal',
+            'USD': 'US Dollar',
+            'EUR': 'Euro',
+            'AED': 'UAE Dirham',
+            'KWD': 'Kuwaiti Dinar',
+            'BHD': 'Bahraini Dinar',
+            'OMR': 'Omani Riyal',
+            'QAR': 'Qatari Riyal',
+            'EGP': 'Egyptian Pound',
+        }
+
+        currency_name_key = currency_name_map.get(currency_code, 'Saudi Riyal')
+        currency_name = gettext(currency_name_key)
+
+        return {
+            'currency_code': currency_code,
+            'currency_symbol': currency_symbol,
+            'currency_name': currency_name
+        }
+
+    # Add template filter for currency formatting
+    @app.template_filter('currency')
+    def currency_filter(value):
+        """Format number with currency symbol"""
+        from app.models import Company
+
+        try:
+            company = Company.query.first()
+            if company and company.currency:
+                currency_code = company.currency
+                currency_info = app.config['CURRENCIES'].get(currency_code, {})
+                currency_symbol = currency_info.get('symbol', 'ر.س')
+            else:
+                currency_symbol = 'ر.س'
+        except:
+            currency_symbol = 'ر.س'
+
+        try:
+            return f"{float(value):.2f} {currency_symbol}"
+        except (ValueError, TypeError):
+            return f"0.00 {currency_symbol}"
 
     return app
 

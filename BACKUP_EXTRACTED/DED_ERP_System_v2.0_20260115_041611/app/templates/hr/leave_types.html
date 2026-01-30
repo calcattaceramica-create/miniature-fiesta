@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}أنواع الإجازات{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-list-alt"></i> أنواع الإجازات</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addLeaveTypeModal">
+            <i class="fas fa-plus"></i> إضافة نوع إجازة
+        </button>
+    </div>
+
+    <!-- Leave Types Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> قائمة أنواع الإجازات</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>الاسم بالإنجليزية</th>
+                            <th>الأيام المسموحة/سنة</th>
+                            <th>مدفوعة</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lt in leave_types %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ lt.name }}</strong></td>
+                            <td>{{ lt.name_en or '-' }}</td>
+                            <td><span class="badge bg-info">{{ lt.days_per_year }} يوم</span></td>
+                            <td>
+                                {% if lt.is_paid %}
+                                <span class="badge bg-success">نعم</span>
+                                {% else %}
+                                <span class="badge bg-danger">لا</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if lt.is_active %}
+                                <span class="badge bg-success">نشط</span>
+                                {% else %}
+                                <span class="badge bg-secondary">غير نشط</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                لا توجد أنواع إجازات
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Leave Type Modal -->
+<div class="modal fade" id="addLeaveTypeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-plus"></i> إضافة نوع إجازة</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('hr.add_leave_type') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">الاسم <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم بالإنجليزية</label>
+                        <input type="text" class="form-control" name="name_en">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">عدد الأيام المسموحة في السنة <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" name="days_per_year" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="is_paid" id="is_paid" checked>
+                            <label class="form-check-label" for="is_paid">
+                                إجازة مدفوعة
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

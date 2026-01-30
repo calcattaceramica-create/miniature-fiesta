@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ session.get('language', 'ar') }}" dir="{{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فاتورة ضريبية - {{ order.order_number }}</title>
+    <title>{{ _('Tax Invoice') }} - {{ order.order_number }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========== إعدادات عامة ========== */
@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            direction: rtl;
+            direction: {{ 'rtl' if session.get('language', 'ar') == 'ar' else 'ltr' }};
             padding: 20px 15px;
             min-height: 100vh;
         }
@@ -597,26 +597,26 @@
                 {% endif %}
 
                 <div class="company-name">
-                    {{ company.name if company else 'نظام إدارة المخزون' }}
+                    {{ company.name if company else _('Inventory Management System') }}
                 </div>
 
                 <div class="invoice-title">
                     <i class="fas fa-file-invoice"></i>
-                    <span>فاتورة ضريبية مبسطة</span>
+                    <span>{{ _('Simplified Tax Invoice') }}</span>
                 </div>
 
                 <div class="company-details">
                     {% if company and company.tax_number %}
                     <div class="company-detail-item">
                         <i class="fas fa-receipt"></i>
-                        <span>الرقم الضريبي: {{ company.tax_number }}</span>
+                        <span>{{ _('Tax Number') }}: {{ company.tax_number }}</span>
                     </div>
                     {% endif %}
 
                     {% if company and company.commercial_register %}
                     <div class="company-detail-item">
                         <i class="fas fa-certificate"></i>
-                        <span>س.ت: {{ company.commercial_register }}</span>
+                        <span>{{ _('C.R.') }}: {{ company.commercial_register }}</span>
                     </div>
                     {% endif %}
 
@@ -642,7 +642,7 @@
             <div class="info-card">
                 <div class="info-label">
                     <i class="fas fa-hashtag"></i>
-                    رقم الطلب
+                    {{ _('Order Number') }}
                 </div>
                 <div class="info-value">{{ order.order_number }}</div>
             </div>
@@ -650,7 +650,7 @@
             <div class="info-card">
                 <div class="info-label">
                     <i class="fas fa-calendar"></i>
-                    التاريخ
+                    {{ _('Date') }}
                 </div>
                 <div class="info-value">{{ order.order_date.strftime('%Y-%m-%d') }}</div>
             </div>
@@ -658,7 +658,7 @@
             <div class="info-card">
                 <div class="info-label">
                     <i class="fas fa-clock"></i>
-                    الوقت
+                    {{ _('Time') }}
                 </div>
                 <div class="info-value">{{ order.order_date.strftime('%H:%M:%S') }}</div>
             </div>
@@ -666,7 +666,7 @@
             <div class="info-card">
                 <div class="info-label">
                     <i class="fas fa-user"></i>
-                    الكاشير
+                    {{ _('Cashier') }}
                 </div>
                 <div class="info-value">{{ order.session.cashier.username }}</div>
             </div>
@@ -675,7 +675,7 @@
             <div class="info-card">
                 <div class="info-label">
                     <i class="fas fa-user-tie"></i>
-                    العميل
+                    {{ _('Customer') }}
                 </div>
                 <div class="info-value">{{ order.customer.name }}</div>
             </div>
@@ -686,16 +686,16 @@
         <div class="items-section">
             <div class="section-title">
                 <i class="fas fa-shopping-cart"></i>
-                <span>تفاصيل المنتجات</span>
+                <span>{{ _('Product Details') }}</span>
             </div>
 
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th>المنتج</th>
-                        <th>الكمية</th>
-                        <th>السعر</th>
-                        <th>الإجمالي</th>
+                        <th>{{ _('Product') }}</th>
+                        <th>{{ _('Quantity') }}</th>
+                        <th>{{ _('Price') }}</th>
+                        <th>{{ _('Total') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -703,8 +703,8 @@
                     <tr>
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>{{ item.unit_price|round(2) }} ر.س</td>
-                        <td>{{ (item.unit_price * item.quantity)|round(2) }} ر.س</td>
+                        <td>{{ item.unit_price|round(2) }} {{ currency_symbol }}</td>
+                        <td>{{ (item.unit_price * item.quantity)|round(2) }} {{ currency_symbol }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -717,35 +717,35 @@
                 <div class="total-row">
                     <div class="total-label">
                         <i class="fas fa-calculator"></i>
-                        <span>المجموع الفرعي</span>
+                        <span>{{ _('Subtotal') }}</span>
                     </div>
-                    <div class="total-value">{{ order.subtotal|round(2) }} ر.س</div>
+                    <div class="total-value">{{ order.subtotal|round(2) }} {{ currency_symbol }}</div>
                 </div>
 
                 {% if order.discount_amount > 0 %}
                 <div class="total-row discount">
                     <div class="total-label">
                         <i class="fas fa-tag"></i>
-                        <span>الخصم</span>
+                        <span>{{ _('Discount') }}</span>
                     </div>
-                    <div class="total-value">-{{ order.discount_amount|round(2) }} ر.س</div>
+                    <div class="total-value">-{{ order.discount_amount|round(2) }} {{ currency_symbol }}</div>
                 </div>
                 {% endif %}
 
                 <div class="total-row tax">
                     <div class="total-label">
                         <i class="fas fa-percent"></i>
-                        <span>ضريبة القيمة المضافة (15%)</span>
+                        <span>{{ _('VAT') }} ({{ company.tax_rate|int }}%)</span>
                     </div>
-                    <div class="total-value">{{ order.tax_amount|round(2) }} ر.س</div>
+                    <div class="total-value">{{ order.tax_amount|round(2) }} {{ currency_symbol }}</div>
                 </div>
 
                 <div class="total-row grand">
                     <div class="total-label">
                         <i class="fas fa-money-bill-wave"></i>
-                        <span>الإجمالي النهائي</span>
+                        <span>{{ _('Grand Total') }}</span>
                     </div>
-                    <div class="total-value">{{ order.total_amount|round(2) }} ر.س</div>
+                    <div class="total-value">{{ order.total_amount|round(2) }} {{ currency_symbol }}</div>
                 </div>
             </div>
         </div>
@@ -754,27 +754,27 @@
         <div class="payment-section">
             <div class="section-title">
                 <i class="fas fa-credit-card"></i>
-                <span>تفاصيل الدفع</span>
+                <span>{{ _('Payment Details') }}</span>
             </div>
 
             <div class="payment-grid">
                 <div class="payment-card">
                     <div class="payment-label">
                         <i class="fas fa-wallet"></i>
-                        طريقة الدفع
+                        {{ _('Payment Method') }}
                     </div>
                     <div class="payment-value">
                         {% if order.payment_method == 'cash' %}
                         <span class="badge badge-success">
-                            <i class="fas fa-money-bill"></i> نقدي
+                            <i class="fas fa-money-bill"></i> {{ _('Cash') }}
                         </span>
                         {% elif order.payment_method == 'card' %}
                         <span class="badge badge-info">
-                            <i class="fas fa-credit-card"></i> بطاقة
+                            <i class="fas fa-credit-card"></i> {{ _('Card') }}
                         </span>
                         {% else %}
                         <span class="badge badge-warning">
-                            <i class="fas fa-exchange-alt"></i> مختلط
+                            <i class="fas fa-exchange-alt"></i> {{ _('Mixed') }}
                         </span>
                         {% endif %}
                     </div>
@@ -782,26 +782,26 @@
 
                 {% if order.payment_method == 'cash' %}
                 <div class="payment-card">
-                    <div class="payment-label">المبلغ المدفوع</div>
-                    <div class="payment-value">{{ order.cash_amount|round(2) }} ر.س</div>
+                    <div class="payment-label">{{ _('Amount Paid') }}</div>
+                    <div class="payment-value">{{ order.cash_amount|round(2) }} {{ currency_symbol }}</div>
                 </div>
 
                 {% if order.change_amount > 0 %}
                 <div class="payment-card">
-                    <div class="payment-label">الباقي</div>
-                    <div class="payment-value">{{ order.change_amount|round(2) }} ر.س</div>
+                    <div class="payment-label">{{ _('Change') }}</div>
+                    <div class="payment-value">{{ order.change_amount|round(2) }} {{ currency_symbol }}</div>
                 </div>
                 {% endif %}
 
                 {% elif order.payment_method == 'mixed' %}
                 <div class="payment-card">
-                    <div class="payment-label">نقدي</div>
-                    <div class="payment-value">{{ order.cash_amount|round(2) }} ر.س</div>
+                    <div class="payment-label">{{ _('Cash') }}</div>
+                    <div class="payment-value">{{ order.cash_amount|round(2) }} {{ currency_symbol }}</div>
                 </div>
 
                 <div class="payment-card">
-                    <div class="payment-label">بطاقة</div>
-                    <div class="payment-value">{{ order.card_amount|round(2) }} ر.س</div>
+                    <div class="payment-label">{{ _('Card') }}</div>
+                    <div class="payment-value">{{ order.card_amount|round(2) }} {{ currency_symbol }}</div>
                 </div>
                 {% endif %}
             </div>
@@ -815,11 +815,11 @@
 
             <div class="thank-you">
                 <i class="fas fa-heart"></i>
-                شكراً لتعاملكم معنا
+                {{ _('Thank you for your business') }}
             </div>
 
             <div class="footer-message">
-                نتمنى لكم يوماً سعيداً ونسعد بخدمتكم دائماً
+                {{ _('We wish you a great day and look forward to serving you again') }}
             </div>
 
             <div class="footer-details">
@@ -849,11 +849,11 @@
     <div class="print-buttons no-print">
         <button onclick="window.print()" class="btn btn-print">
             <i class="fas fa-print"></i>
-            <span>طباعة الفاتورة</span>
+            <span>{{ _('Print Invoice') }}</span>
         </button>
         <button onclick="window.close()" class="btn btn-close">
             <i class="fas fa-times"></i>
-            <span>إغلاق</span>
+            <span>{{ _('Close') }}</span>
         </button>
     </div>
 

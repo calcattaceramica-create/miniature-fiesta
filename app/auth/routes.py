@@ -1,9 +1,12 @@
-from flask import render_template, redirect, url_for, flash, request, session
+from flask import render_template, redirect, url_for, flash, request, session, current_app, make_response
 from flask_login import login_user, logout_user, current_user
 from flask_babel import gettext as _
 from app import db
 from app.auth import bp
 from app.models import User, SecurityLog, SessionLog
+from app.models_license import License
+from app.license_manager import LicenseManager
+from app.auth.multi_tenant_login import authenticate_with_license
 from datetime import datetime
 import uuid
 import json
@@ -78,65 +81,44 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        license_key = request.form.get('license_key')
         remember = request.form.get('remember', False)
 
-        user = User.query.filter_by(username=username).first()
-
-        # Check if user exists
-        if user is None:
-            log_security_event(None, 'failed_login_unknown_user',
-                             f'Unknown username: {username}', 'warning')
-            flash('اسم المستخدم أو كلمة المرور غير صحيحة', 'danger')
+        # License key is now required
+        if not license_key:
+            flash('🔑 يرجى إدخال مفتاح الترخيص', 'danger')
             return redirect(url_for('auth.login'))
 
-        # Check if account is locked
-        if user.is_account_locked():
-            log_security_event(user.id, 'login_attempt_locked_account',
-                             f'Attempt to login to locked account', 'warning')
-            flash('حسابك مقفل مؤقتاً بسبب محاولات دخول فاشلة متعددة. يرجى المحاولة لاحقاً', 'danger')
+        # Use Multi-Tenant authentication
+        app = current_app._get_current_object()
+        success, message, user = authenticate_with_license(
+            username, password, license_key, app
+        )
+
+        if not success:
+            log_security_event(None, 'failed_login',
+                             f'Failed login: {message}', 'warning')
+            flash(message, 'danger')
             return redirect(url_for('auth.login'))
 
-        # Check password
-        if not user.check_password(password):
-            user.record_failed_login()
-            log_security_event(user.id, 'failed_login_wrong_password',
-                             f'Failed login attempt #{user.failed_login_attempts}', 'warning')
+        # CRITICAL: authenticate_with_license has already switched to the correct tenant database
+        # DO NOT dispose the engine here as it will reset to the default database!
 
-            remaining_attempts = 5 - user.failed_login_attempts
-            if remaining_attempts > 0:
-                flash(f'اسم المستخدم أو كلمة المرور غير صحيحة. المحاولات المتبقية: {remaining_attempts}', 'danger')
-            else:
-                flash('تم قفل حسابك لمدة 30 دقيقة بسبب محاولات دخول فاشلة متعددة', 'danger')
+        # Clear session completely (EXCEPT Flask-Login internal keys)
+        # We need to preserve Flask-Login's session management
+        keys_to_remove = [key for key in session.keys() if not key.startswith('_')]
+        for key in keys_to_remove:
+            session.pop(key, None)
 
-            return redirect(url_for('auth.login'))
+        print(f"🔥 LOGIN: Cleared session data (kept Flask-Login internal state)")
 
-        # Check if account is active
-        if not user.is_active:
-            log_security_event(user.id, 'login_attempt_inactive_account',
-                             'Attempt to login to inactive account', 'warning')
-            flash('حسابك غير مفعل. يرجى التواصل مع المسؤول', 'warning')
-            return redirect(url_for('auth.login'))
+        # Set tenant license key BEFORE login_user
+        session['tenant_license_key'] = license_key
+        print(f"✅ LOGIN: Set tenant_license_key in session: {license_key}")
 
-        # Check license validity (NEW)
-        if not user.has_valid_license():
-            license_status = user.get_license_status()
-            log_security_event(user.id, 'login_attempt_invalid_license',
-                             f'License status: {license_status}', 'warning')
-
-            if license_status == 'no_license':
-                flash('🔒 لا يوجد ترخيص مرتبط بحسابك. يرجى التواصل مع المسؤول', 'danger')
-            elif license_status == 'suspended':
-                flash('🔒 تم إيقاف ترخيصك مؤقتاً. يرجى التواصل مع المسؤول', 'danger')
-            elif license_status == 'expired':
-                flash('🔒 انتهت صلاحية ترخيصك. يرجى التواصل مع المسؤول للتجديد', 'danger')
-            else:
-                flash('🔒 ترخيصك غير صالح. يرجى التواصل مع المسؤول', 'danger')
-
-            return redirect(url_for('auth.login'))
-
-        # Successful login
+        # Now login the user - this will set Flask-Login session data
         login_user(user, remember=remember)
-        user.record_successful_login(get_client_ip())
+        print(f"✅ LOGIN: Logged in user: {user.username}")
 
         # Create session log
         session_id = str(uuid.uuid4())
@@ -152,7 +134,7 @@ def login():
 
         # Log successful login
         log_security_event(user.id, 'successful_login',
-                         f'Successful login from {get_client_ip()}', 'info')
+                         f'Successful login from {get_client_ip()} with license {license_key[:4]}****', 'info')
 
         # Set user language in session
         session['language'] = user.language
@@ -160,14 +142,26 @@ def login():
         # Check if password change is required
         if user.must_change_password:
             flash('يجب عليك تغيير كلمة المرور', 'warning')
-            return redirect(url_for('auth.change_password'))
+            response = make_response(redirect(url_for('auth.change_password')))
+            # Add cache-busting headers
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+            return response
 
         next_page = request.args.get('next')
         if not next_page or not next_page.startswith('/'):
             next_page = url_for('main.index')
 
         flash(f'مرحباً {user.full_name}!', 'success')
-        return redirect(next_page)
+
+        # Create response with cache-busting headers to prevent browser caching
+        response = make_response(redirect(next_page))
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        print(f"✅ LOGIN: Redirecting to {next_page} with cache-busting headers")
+        return response
 
     return render_template('auth/login.html')
 
@@ -187,9 +181,25 @@ def logout():
         log_security_event(current_user.id, 'logout', 'User logged out', 'info')
 
         logout_user()
+
+        # CRITICAL: Clear ALL session data including tenant info
+        session.clear()
+        print(f"🔥 LOGOUT: Cleared all session data including tenant_license_key")
+
+        # Force database engine disposal
+        if hasattr(db, 'engine'):
+            db.engine.dispose()
+            print(f"🔥 LOGOUT: Disposed database engine")
+
         flash('تم تسجيل الخروج بنجاح', 'info')
 
-    return redirect(url_for('auth.login'))
+    # Create response with cache-busting headers
+    response = make_response(redirect(url_for('auth.login')))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    print(f"✅ LOGOUT: Redirecting to login with cache-busting headers")
+    return response
 
 @bp.route('/change-password', methods=['GET', 'POST'])
 def change_password():

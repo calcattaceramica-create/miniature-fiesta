@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}التقارير - نظام إدارة المخزون{% endblock %}
-{% block page_title %}التقارير{% endblock %}
+{% block title %}{{ _('Reports') }} - {{ _('Inventory Management System') }}{% endblock %}
+{% block page_title %}{{ _('Reports') }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h3><i class="fas fa-chart-bar"></i> مركز التقارير</h3>
-    <p class="text-muted mb-0">اختر التقرير المطلوب</p>
+    <h3><i class="fas fa-chart-bar"></i> {{ _('Reports Center') }}</h3>
+    <p class="text-muted mb-0">{{ _('Select the required report') }}</p>
 </div>
 
 <div class="row">
@@ -14,21 +14,21 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-shopping-cart text-success"></i> تقارير المبيعات</h5>
+                <h5 class="mb-0"><i class="fas fa-shopping-cart text-success"></i> {{ _('Sales Reports') }}</h5>
             </div>
             <div class="card-body">
                 <div class="list-group">
                     <a href="{{ url_for('reports.sales_report') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-file-invoice"></i> تقرير المبيعات التفصيلي
+                        <i class="fas fa-file-invoice"></i> {{ _('Detailed Sales Report') }}
                     </a>
                     <a href="{{ url_for('reports.sales_by_product') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-chart-line"></i> تقرير المبيعات حسب المنتج
+                        <i class="fas fa-chart-line"></i> {{ _('Sales Report by Product') }}
                     </a>
                     <a href="{{ url_for('reports.sales_by_customer') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-users"></i> تقرير المبيعات حسب العميل
+                        <i class="fas fa-users"></i> {{ _('Sales Report by Customer') }}
                     </a>
                     <a href="{{ url_for('reports.sales_report') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-calendar"></i> تقرير المبيعات الشهري
+                        <i class="fas fa-calendar"></i> {{ _('Monthly Sales Report') }}
                     </a>
                 </div>
             </div>
@@ -39,21 +39,21 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-shopping-bag text-primary"></i> تقارير المشتريات</h5>
+                <h5 class="mb-0"><i class="fas fa-shopping-bag text-primary"></i> {{ _('Purchase Reports') }}</h5>
             </div>
             <div class="card-body">
                 <div class="list-group">
                     <a href="{{ url_for('reports.purchases_report') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-file-invoice"></i> تقرير المشتريات التفصيلي
+                        <i class="fas fa-file-invoice"></i> {{ _('Detailed Purchase Report') }}
+                    </a>
+                    <a href="{{ url_for('reports.purchases_by_product') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> {{ _('Purchase Report by Product') }}
                     </a>
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-chart-line"></i> تقرير المشتريات حسب المنتج
+                        <i class="fas fa-truck"></i> {{ _('Purchase Report by Supplier') }}
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-truck"></i> تقرير المشتريات حسب المورد
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-calendar"></i> تقرير المشتريات الشهري
+                    <a href="{{ url_for('reports.purchases_monthly') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar"></i> {{ _('Monthly Purchase Report') }}
                     </a>
                 </div>
             </div>
@@ -64,21 +64,21 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-boxes text-info"></i> تقارير المخزون</h5>
+                <h5 class="mb-0"><i class="fas fa-boxes text-info"></i> {{ _('Inventory Reports') }}</h5>
             </div>
             <div class="card-body">
                 <div class="list-group">
                     <a href="{{ url_for('reports.inventory_report') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-warehouse"></i> تقرير المخزون الحالي
+                        <i class="fas fa-warehouse"></i> {{ _('Current Inventory Report') }}
                     </a>
                     <a href="{{ url_for('reports.low_stock_report') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-exclamation-triangle"></i> تقرير المنتجات منخفضة المخزون
+                        <i class="fas fa-exclamation-triangle"></i> {{ _('Low Stock Products Report') }}
                     </a>
                     <a href="{{ url_for('reports.stock_movement_report') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-exchange-alt"></i> تقرير حركة المخزون
+                        <i class="fas fa-exchange-alt"></i> {{ _('Stock Movement Report') }}
                     </a>
                     <a href="{{ url_for('reports.inventory_report') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-dollar-sign"></i> تقرير قيمة المخزون
+                        <i class="fas fa-dollar-sign"></i> {{ _('Inventory Value Report') }}
                     </a>
                 </div>
             </div>
@@ -89,21 +89,21 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-calculator text-warning"></i> التقارير المالية</h5>
+                <h5 class="mb-0"><i class="fas fa-calculator text-warning"></i> {{ _('Financial Reports') }}</h5>
             </div>
             <div class="card-body">
                 <div class="list-group">
                     <a href="{{ url_for('reports.profit_loss') }}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-chart-pie"></i> قائمة الأرباح والخسائر
+                        <i class="fas fa-chart-pie"></i> {{ _('Profit and Loss Statement') }}
                     </a>
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-balance-scale"></i> الميزانية العمومية
+                        <i class="fas fa-balance-scale"></i> {{ _('Balance Sheet') }}
                     </a>
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-money-bill-wave"></i> تقرير التدفقات النقدية
+                        <i class="fas fa-money-bill-wave"></i> {{ _('Cash Flow Report') }}
                     </a>
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-file-invoice-dollar"></i> تقرير الذمم المدينة
+                        <i class="fas fa-file-invoice-dollar"></i> {{ _('Accounts Receivable Report') }}
                     </a>
                 </div>
             </div>
@@ -114,21 +114,21 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-users text-success"></i> تقارير العملاء</h5>
+                <h5 class="mb-0"><i class="fas fa-users text-success"></i> {{ _('Customer Reports') }}</h5>
             </div>
             <div class="card-body">
                 <div class="list-group">
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-user-friends"></i> قائمة العملاء
+                        <i class="fas fa-user-friends"></i> {{ _('Customer List') }}
                     </a>
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-star"></i> تقرير أفضل العملاء
+                        <i class="fas fa-star"></i> {{ _('Top Customers Report') }}
                     </a>
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-credit-card"></i> تقرير أرصدة العملاء
+                        <i class="fas fa-credit-card"></i> {{ _('Customer Balances Report') }}
                     </a>
                     <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-history"></i> تقرير تاريخ العميل
+                        <i class="fas fa-history"></i> {{ _('Customer History Report') }}
                     </a>
                 </div>
             </div>
@@ -139,21 +139,21 @@
     <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-truck text-primary"></i> تقارير الموردين</h5>
+                <h5 class="mb-0"><i class="fas fa-truck text-primary"></i> {{ _('Supplier Reports') }}</h5>
             </div>
             <div class="card-body">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-list"></i> قائمة الموردين
+                    <a href="{{ url_for('reports.suppliers_list') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-list"></i> {{ _('Supplier List') }}
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-trophy"></i> تقرير أفضل الموردين
+                    <a href="{{ url_for('reports.suppliers_top') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-trophy"></i> {{ _('Top Suppliers Report') }}
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-money-check"></i> تقرير أرصدة الموردين
+                    <a href="{{ url_for('reports.suppliers_balances') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-money-check"></i> {{ _('Supplier Balances Report') }}
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-clock"></i> تقرير تاريخ المورد
+                    <a href="{{ url_for('reports.suppliers_list') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-history"></i> {{ _('Supplier History Report') }}
                     </a>
                 </div>
             </div>
