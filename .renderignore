@@ -1,0 +1,30 @@
+# Ignore backup and old versions
+BACKUP_EXTRACTED/
+DED_ERP_Extracted/
+DED_ERP_System_v2.0_20260115_041611/
+DED_System_v1.2.0_20260111_213947/
+DED_System_v1.2.0_20260111_220729/
+
+# Ignore virtual environment
+venv/
+
+# Ignore local databases
+*.db
+tenant_databases/
+instance/
+
+# Ignore cache
+__pycache__/
+*.pyc
+
+# Ignore uploads
+uploads/
+
+# Ignore documentation
+docs/
+*.md
+*.txt
+!requirements.txt
+!requirements-dev.txt
+!runtime.txt
+
