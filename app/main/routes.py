@@ -1,8 +1,9 @@
 from flask import render_template, redirect, url_for, flash, request, make_response, after_this_request
 from flask_login import login_required, current_user
+from flask_wtf.csrf import CSRFProtect
 from app.auth.decorators import permission_required
 from app.main import bp
-from app import db
+from app import db, csrf
 from app.models import *
 from app.models_license import License
 from app.license_manager import LicenseManager
@@ -304,6 +305,7 @@ def license_info():
 
 @bp.route('/activate-license', methods=['GET', 'POST'])
 @bp.route('/license-activation', methods=['GET', 'POST'])
+@csrf.exempt  # Exempt from CSRF protection for public access
 def activate_license():
     """صفحة تفعيل الترخيص"""
     try:

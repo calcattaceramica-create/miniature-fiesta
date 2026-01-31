@@ -5,7 +5,7 @@ services:
     plan: free
     region: frankfurt
     runtime: python-3.11.7
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && flask db upgrade && flask create-license || echo "Setup completed"
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && flask db upgrade && python create_render_license.py || echo "License setup completed"
     startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --log-level debug
     envVars:
       - key: FLASK_APP
