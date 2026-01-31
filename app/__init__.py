@@ -1,4 +1,4 @@
-from flask import Flask, request, session
+from flask import Flask, request, session, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -110,6 +110,26 @@ def create_app(config_name='default'):
     # Initialize Multi-Tenancy middleware
     from app.tenant_middleware import init_tenant_middleware
     init_tenant_middleware(app)
+
+    # Error handlers
+    @app.errorhandler(500)
+    def internal_error(error):
+        """Handle internal server errors"""
+        db.session.rollback()
+        import traceback
+        error_details = traceback.format_exc()
+        app.logger.error(f'Internal Server Error: {error_details}')
+
+        # In production, show generic error page
+        if app.config.get('DEBUG'):
+            return f'<pre>{error_details}</pre>', 500
+        else:
+            return render_template('errors/500.html'), 500
+
+    @app.errorhandler(404)
+    def not_found_error(error):
+        """Handle 404 errors"""
+        return render_template('errors/404.html'), 404
 
     # Add context processor for translations and currency
     @app.context_processor

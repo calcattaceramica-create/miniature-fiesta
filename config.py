@@ -87,7 +87,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     """Production configuration"""
-    DEBUG = False
+    DEBUG = True  # Temporarily enable for debugging
     SESSION_COOKIE_SECURE = True
 
 class TestingConfig(Config):
