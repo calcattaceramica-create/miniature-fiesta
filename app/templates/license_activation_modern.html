@@ -329,6 +329,7 @@
         </div>
 
         <form method="POST" action="{{ url_for('main.activate_license') }}" id="activationForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="form-group">
                 <label for="license_key" class="form-label">
                     <i class="fas fa-key"></i>

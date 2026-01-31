@@ -185,6 +185,7 @@
         {% endwith %}
         
         <form method="POST" action="{{ url_for('main.activate_license') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div class="mb-4">
                 <label for="license_key" class="form-label">
                     <i class="fas fa-key"></i> مفتاح الترخيص
