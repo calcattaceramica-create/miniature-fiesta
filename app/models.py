@@ -294,7 +294,41 @@ class Branch(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    """
+    Load user from database
+    IMPORTANT: This is called BEFORE before_request middleware!
+    So we need to handle database switching here
+    """
+    from flask import session
+    from app.tenant_manager import TenantManager
+
+    # If user is not logged in yet (login page), return None
+    if not user_id:
+        return None
+
+    # Get tenant license key from session
+    tenant_license_key = session.get('tenant_license_key')
+
+    # If no tenant in session (login page), return None
+    if not tenant_license_key:
+        return None
+
+    try:
+        # Make sure we're using the correct tenant database
+        from flask import current_app
+        tenant_db_uri = TenantManager.get_tenant_db_uri(tenant_license_key)
+
+        # Only switch if needed
+        if current_app.config.get('SQLALCHEMY_DATABASE_URI') != tenant_db_uri:
+            current_app.config['SQLALCHEMY_DATABASE_URI'] = tenant_db_uri
+            if hasattr(db, 'engine'):
+                db.engine.dispose()
+
+        # Now query the user
+        return User.query.get(int(user_id))
+    except Exception as e:
+        print(f"❌ Error in user_loader: {e}")
+        return None
 
 # Import all models
 from app.models_inventory import Category, Unit, Product, Warehouse, Stock, StockMovement, DamagedInventory

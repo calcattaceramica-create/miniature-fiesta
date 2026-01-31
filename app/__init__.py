@@ -110,9 +110,9 @@ def create_app(config_name='default'):
     from app.security import bp as security_bp
     app.register_blueprint(security_bp, url_prefix='/security')
 
-    # Initialize Multi-Tenancy middleware (temporarily disabled for debugging)
-    # from app.tenant_middleware import init_tenant_middleware
-    # init_tenant_middleware(app)
+    # Initialize Multi-Tenancy middleware
+    from app.tenant_middleware import init_tenant_middleware
+    init_tenant_middleware(app)
 
     # Error handlers
     @app.errorhandler(500)
@@ -149,6 +149,16 @@ def create_app(config_name='default'):
     def inject_currency():
         """Inject currency information into all templates"""
         from flask_babel import gettext
+
+        # Skip database queries for auth routes to prevent errors
+        EXEMPT_ROUTES = ['/auth/login', '/auth/logout', '/auth/register', '/static/']
+        for exempt_route in EXEMPT_ROUTES:
+            if request.path.startswith(exempt_route):
+                return {
+                    'currency_code': 'SAR',
+                    'currency_symbol': 'ر.س',
+                    'currency_name': 'Saudi Riyal'
+                }
 
         try:
             from app.models import Company

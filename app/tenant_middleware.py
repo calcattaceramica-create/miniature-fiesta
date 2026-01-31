@@ -36,10 +36,25 @@ def init_tenant_middleware(app):
         # Debug: Print request path
         print(f"DEBUG: Request path: {request.path}")
 
-        # Skip for exempt routes
+        # Skip for exempt routes - but reset to master database first!
         for exempt_route in EXEMPT_ROUTES:
             if request.path.startswith(exempt_route):
-                print(f"DEBUG: Skipping exempt route: {request.path}")
+                print(f"DEBUG: Exempt route detected: {request.path}")
+
+                # CRITICAL: Reset to master database for exempt routes
+                # This prevents "no such table" errors when accessing login page
+                master_db_uri = f'sqlite:///{TenantManager.get_master_db_path()}'
+                app.config['SQLALCHEMY_DATABASE_URI'] = master_db_uri
+
+                # Dispose old engine
+                if hasattr(db, 'engine'):
+                    db.engine.dispose()
+
+                # Remove the engine so Flask-SQLAlchemy will recreate it
+                if hasattr(db, '_engine'):
+                    db._engine = None
+
+                print(f"✅ MIDDLEWARE: Reset to master database for exempt route")
                 return None
         
         # Get current tenant from session
