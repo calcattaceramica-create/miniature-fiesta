@@ -75,95 +75,103 @@ def check_license(username):
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+    try:
+        if current_user.is_authenticated:
+            return redirect(url_for('main.index'))
 
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        license_key = request.form.get('license_key')
-        remember = request.form.get('remember', False)
+        if request.method == 'POST':
+            username = request.form.get('username')
+            password = request.form.get('password')
+            license_key = request.form.get('license_key')
+            remember = request.form.get('remember', False)
 
-        # License key is now required
-        if not license_key:
-            flash('🔑 يرجى إدخال مفتاح الترخيص', 'danger')
-            return redirect(url_for('auth.login'))
+            # License key is now required
+            if not license_key:
+                flash('🔑 يرجى إدخال مفتاح الترخيص', 'danger')
+                return redirect(url_for('auth.login'))
 
-        # Use Multi-Tenant authentication
-        app = current_app._get_current_object()
-        success, message, user = authenticate_with_license(
-            username, password, license_key, app
-        )
+            # Use Multi-Tenant authentication
+            app = current_app._get_current_object()
+            success, message, user = authenticate_with_license(
+                username, password, license_key, app
+            )
 
-        if not success:
-            log_security_event(None, 'failed_login',
-                             f'Failed login: {message}', 'warning')
-            flash(message, 'danger')
-            return redirect(url_for('auth.login'))
+            if not success:
+                log_security_event(None, 'failed_login',
+                                 f'Failed login: {message}', 'warning')
+                flash(message, 'danger')
+                return redirect(url_for('auth.login'))
 
-        # CRITICAL: authenticate_with_license has already switched to the correct tenant database
-        # DO NOT dispose the engine here as it will reset to the default database!
+            # CRITICAL: authenticate_with_license has already switched to the correct tenant database
+            # DO NOT dispose the engine here as it will reset to the default database!
 
-        # Clear session completely (EXCEPT Flask-Login internal keys)
-        # We need to preserve Flask-Login's session management
-        keys_to_remove = [key for key in session.keys() if not key.startswith('_')]
-        for key in keys_to_remove:
-            session.pop(key, None)
+            # Clear session completely (EXCEPT Flask-Login internal keys)
+            # We need to preserve Flask-Login's session management
+            keys_to_remove = [key for key in session.keys() if not key.startswith('_')]
+            for key in keys_to_remove:
+                session.pop(key, None)
 
-        print(f"🔥 LOGIN: Cleared session data (kept Flask-Login internal state)")
+            print(f"🔥 LOGIN: Cleared session data (kept Flask-Login internal state)")
 
-        # Set tenant license key BEFORE login_user
-        session['tenant_license_key'] = license_key
-        print(f"✅ LOGIN: Set tenant_license_key in session: {license_key}")
+            # Set tenant license key BEFORE login_user
+            session['tenant_license_key'] = license_key
+            print(f"✅ LOGIN: Set tenant_license_key in session: {license_key}")
 
-        # Now login the user - this will set Flask-Login session data
-        login_user(user, remember=remember)
-        print(f"✅ LOGIN: Logged in user: {user.username}")
+            # Now login the user - this will set Flask-Login session data
+            login_user(user, remember=remember)
+            print(f"✅ LOGIN: Logged in user: {user.username}")
 
-        # Create session log
-        session_id = str(uuid.uuid4())
-        session['session_id'] = session_id
-        session_log = SessionLog(
-            user_id=user.id,
-            session_id=session_id,
-            ip_address=get_client_ip(),
-            user_agent=request.headers.get('User-Agent', '')[:256]
-        )
-        db.session.add(session_log)
-        db.session.commit()
+            # Create session log
+            session_id = str(uuid.uuid4())
+            session['session_id'] = session_id
+            session_log = SessionLog(
+                user_id=user.id,
+                session_id=session_id,
+                ip_address=get_client_ip(),
+                user_agent=request.headers.get('User-Agent', '')[:256]
+            )
+            db.session.add(session_log)
+            db.session.commit()
 
-        # Log successful login
-        log_security_event(user.id, 'successful_login',
-                         f'Successful login from {get_client_ip()} with license {license_key[:4]}****', 'info')
+            # Log successful login
+            log_security_event(user.id, 'successful_login',
+                             f'Successful login from {get_client_ip()} with license {license_key[:4]}****', 'info')
 
-        # Set user language in session
-        session['language'] = user.language
+            # Set user language in session
+            session['language'] = user.language
 
-        # Check if password change is required
-        if user.must_change_password:
-            flash('يجب عليك تغيير كلمة المرور', 'warning')
-            response = make_response(redirect(url_for('auth.change_password')))
-            # Add cache-busting headers
+            # Check if password change is required
+            if user.must_change_password:
+                flash('يجب عليك تغيير كلمة المرور', 'warning')
+                response = make_response(redirect(url_for('auth.change_password')))
+                # Add cache-busting headers
+                response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+                response.headers['Pragma'] = 'no-cache'
+                response.headers['Expires'] = '0'
+                return response
+
+            next_page = request.args.get('next')
+            if not next_page or not next_page.startswith('/'):
+                next_page = url_for('main.index')
+
+            flash(f'مرحباً {user.full_name}!', 'success')
+
+            # Create response with cache-busting headers to prevent browser caching
+            response = make_response(redirect(next_page))
             response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             response.headers['Pragma'] = 'no-cache'
             response.headers['Expires'] = '0'
+            print(f"✅ LOGIN: Redirecting to {next_page} with cache-busting headers")
             return response
 
-        next_page = request.args.get('next')
-        if not next_page or not next_page.startswith('/'):
-            next_page = url_for('main.index')
+        return render_template('auth/login.html')
 
-        flash(f'مرحباً {user.full_name}!', 'success')
-
-        # Create response with cache-busting headers to prevent browser caching
-        response = make_response(redirect(next_page))
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
-        print(f"✅ LOGIN: Redirecting to {next_page} with cache-busting headers")
-        return response
-
-    return render_template('auth/login.html')
+    except Exception as e:
+        current_app.logger.error(f"Error in login route: {e}", exc_info=True)
+        import traceback
+        traceback.print_exc()
+        flash(f'حدث خطأ: {str(e)}', 'danger')
+        return render_template('auth/login.html')
 
 @bp.route('/logout')
 def logout():
