@@ -8,28 +8,30 @@ app = create_app(os.getenv('FLASK_ENV') or 'default')
 # Auto-create license on startup (for Render deployment)
 with app.app_context():
     try:
-        from app.models import License
+        from app.models_license import License
+        import hashlib
 
         # Check if license already exists
         existing_license = License.query.filter_by(license_key='9813-26D0-F98D-741C').first()
 
         if not existing_license:
+            # Create the license hash
+            license_key = '9813-26D0-F98D-741C'
+            license_hash = hashlib.sha256(license_key.encode()).hexdigest()
+
             # Create the license
             new_license = License(
-                license_key='9813-26D0-F98D-741C',
-                company_name='DED Company',
+                license_key=license_key,
+                license_hash=license_hash,
+                client_name='DED Company',
+                client_company='DED ERP System',
+                license_type='lifetime',
                 max_users=10,
                 max_branches=5,
-                expiry_date=datetime.utcnow() + timedelta(days=365),
+                expires_at=None,  # Lifetime license
                 is_active=True,
-                features={
-                    'inventory': True,
-                    'sales': True,
-                    'purchases': True,
-                    'accounting': True,
-                    'hr': True,
-                    'reports': True
-                }
+                activated_at=datetime.utcnow(),
+                notes='Auto-created for Render deployment'
             )
             db.session.add(new_license)
             db.session.commit()
