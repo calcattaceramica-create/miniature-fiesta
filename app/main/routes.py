@@ -30,6 +30,82 @@ def add_cache_headers(response):
 def index():
     """Dashboard - Main page"""
 
+    # Simple test page to check if user is loaded correctly
+    try:
+        user_info = f"""
+        <html dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    padding: 40px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                }}
+                .container {{
+                    background: white;
+                    padding: 30px;
+                    border-radius: 10px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }}
+                h1 {{ color: #28a745; }}
+                .info {{ background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; }}
+                .success {{ color: #28a745; }}
+                .error {{ color: #dc3545; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>✅ تم تسجيل الدخول بنجاح!</h1>
+
+                <div class="info">
+                    <h3>معلومات المستخدم:</h3>
+                    <p><strong>اسم المستخدم:</strong> {current_user.username}</p>
+                    <p><strong>الاسم الكامل:</strong> {current_user.full_name}</p>
+                    <p><strong>البريد الإلكتروني:</strong> {current_user.email}</p>
+                    <p><strong>مدير النظام:</strong> {'نعم' if current_user.is_admin else 'لا'}</p>
+                    <p><strong>نشط:</strong> {'نعم' if current_user.is_active else 'لا'}</p>
+                </div>
+
+                <div class="info">
+                    <h3>معلومات الدور:</h3>
+                    <p><strong>الدور:</strong> {current_user.role.name if current_user.role else 'لا يوجد'}</p>
+                    <p><strong>الدور (عربي):</strong> {current_user.role.name_ar if current_user.role else 'لا يوجد'}</p>
+                </div>
+
+                <div class="info">
+                    <h3>معلومات الفرع:</h3>
+                    <p><strong>الفرع:</strong> {current_user.branch.name if current_user.branch else 'لا يوجد'}</p>
+                </div>
+
+                <p class="success">✅ النظام يعمل بشكل صحيح!</p>
+                <p>سيتم تحميل لوحة التحكم الكاملة قريباً...</p>
+            </div>
+        </body>
+        </html>
+        """
+        return user_info
+    except Exception as e:
+        # If there's an error, return error details
+        return f"""
+        <html dir="rtl">
+        <head><meta charset="UTF-8"></head>
+        <body style="font-family: Arial; padding: 20px; background: #f8d7da;">
+            <h2 style="color: #721c24;">❌ خطأ في تحميل الصفحة</h2>
+            <div style="background: white; padding: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                <p><strong>الخطأ:</strong> {str(e)}</p>
+                <p><strong>النوع:</strong> {type(e).__name__}</p>
+                <hr>
+                <h3>Traceback:</h3>
+                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">{traceback.format_exc()}</pre>
+            </div>
+        </body>
+        </html>
+        """, 500
+
+    # Old code (commented out for now)
+    """
     # Wrap in try-except to catch any errors
     try:
         # Get statistics
@@ -42,7 +118,7 @@ def index():
         }
     except Exception as e:
         # If there's an error, return a simple page with error details
-        return f"""
+        return f'''
         <html dir="rtl">
         <body style="font-family: Arial; padding: 20px;">
             <h2>❌ خطأ في تحميل الصفحة الرئيسية</h2>
@@ -53,7 +129,8 @@ def index():
             <pre>{traceback.format_exc()}</pre>
         </body>
         </html>
-        """, 500
+        ''', 500
+    """
 
     # Calculate low stock products
     products = Product.query.filter_by(is_active=True, track_inventory=True).all()
