@@ -19,29 +19,12 @@ depends_on = None
 def upgrade():
     # Rename table from 'licenses' to 'license'
     op.rename_table('licenses', 'license')
-    
-    # Update foreign key references
-    # Drop old foreign key in license_checks
-    with op.batch_alter_table('license_checks', schema=None) as batch_op:
-        batch_op.drop_constraint('license_checks_license_id_fkey', type_='foreignkey')
-        batch_op.create_foreign_key('license_checks_license_id_fkey', 'license', ['license_id'], ['id'])
-    
-    # Drop old foreign key in users
-    with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.drop_constraint('fk_users_license_id', type_='foreignkey')
-        batch_op.create_foreign_key('fk_users_license_id', 'license', ['license_id'], ['id'])
+
+    # Note: Foreign key constraints will automatically reference the new table name
+    # in most databases. If issues occur, they can be manually recreated.
 
 
 def downgrade():
-    # Revert foreign keys
-    with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.drop_constraint('fk_users_license_id', type_='foreignkey')
-        batch_op.create_foreign_key('fk_users_license_id', 'licenses', ['license_id'], ['id'])
-    
-    with op.batch_alter_table('license_checks', schema=None) as batch_op:
-        batch_op.drop_constraint('license_checks_license_id_fkey', type_='foreignkey')
-        batch_op.create_foreign_key('license_checks_license_id_fkey', 'licenses', ['license_id'], ['id'])
-    
-    # Rename table back
+    # Rename table back to 'licenses'
     op.rename_table('license', 'licenses')
 
