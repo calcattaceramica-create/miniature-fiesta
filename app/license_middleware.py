@@ -13,6 +13,9 @@ EXEMPT_ROUTES = [
     '/auth/logout',
     '/activate-license',
     '/license-activation',
+    '/licenses-dashboard',  # License management dashboard
+    '/license/',  # All license view/edit/delete routes
+    '/create-license',  # Create new license
 ]
 
 # Last license check time (to avoid checking on every request)

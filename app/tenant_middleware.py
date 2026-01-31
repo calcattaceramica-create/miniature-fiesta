@@ -17,6 +17,9 @@ EXEMPT_ROUTES = [
     '/auth/register',
     '/activate-license',
     '/license-activation',
+    '/licenses-dashboard',  # License management dashboard
+    '/license/',  # All license view/edit/delete routes
+    '/create-license',  # Create new license
     '/security/license',  # All license management routes use master database
     '/security/create_license',
     '/_debug_toolbar/',  # Flask Debug Toolbar
