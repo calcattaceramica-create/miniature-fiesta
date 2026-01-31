@@ -231,7 +231,7 @@ def activate_license():
         flash('تم تفعيل الترخيص بنجاح!', 'success')
         return redirect(url_for('auth.login'))
 
-    return render_template('license_activation.html')
+    return render_template('license_activation_modern.html')
 
 
 @bp.route('/license-status')
