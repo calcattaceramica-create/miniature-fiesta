@@ -304,6 +304,151 @@ def license_info():
     return render_template('license_info.html', license_info=license_data)
 
 
+@bp.route('/licenses-dashboard')
+@csrf.exempt  # Exempt from CSRF protection for public access
+def licenses_dashboard():
+    """لوحة تحكم التراخيص - عرض جميع التراخيص"""
+    try:
+        # Get all licenses
+        licenses = License.query.order_by(License.created_at.desc()).all()
+
+        # Calculate statistics
+        total_licenses = len(licenses)
+        active_licenses = sum(1 for lic in licenses if lic.is_active and lic.is_valid()[0] and not lic.is_suspended)
+        expired_licenses = sum(1 for lic in licenses if not lic.is_valid()[0])
+        trial_licenses = sum(1 for lic in licenses if lic.license_type == 'trial')
+
+        stats = {
+            'total': total_licenses,
+            'active': active_licenses,
+            'expired': expired_licenses,
+            'trial': trial_licenses
+        }
+
+        return render_template('license_dashboard.html', licenses=licenses, stats=stats)
+
+    except Exception as e:
+        print(f"Error in licenses_dashboard: {e}")
+        print(traceback.format_exc())
+        flash(f'حدث خطأ أثناء تحميل لوحة التحكم: {str(e)}', 'danger')
+        return render_template('license_dashboard.html', licenses=[], stats={'total': 0, 'active': 0, 'expired': 0, 'trial': 0})
+
+
+@bp.route('/license/<int:license_id>/view')
+@csrf.exempt
+def view_license(license_id):
+    """عرض تفاصيل ترخيص معين"""
+    try:
+        license = License.query.get_or_404(license_id)
+        is_valid, message = license.is_valid()
+
+        license_info = {
+            'id': license.id,
+            'license_key': license.license_key,
+            'client_name': license.client_name,
+            'client_company': license.client_company,
+            'client_email': license.client_email,
+            'client_phone': license.client_phone,
+            'license_type': license.license_type,
+            'max_users': license.max_users,
+            'max_branches': license.max_branches,
+            'is_active': license.is_active,
+            'is_suspended': license.is_suspended,
+            'is_valid': is_valid,
+            'message': message,
+            'created_at': license.created_at,
+            'activated_at': license.activated_at,
+            'expires_at': license.expires_at,
+            'days_remaining': license.days_remaining(),
+            'machine_id': license.machine_id,
+            'ip_address': license.ip_address,
+            'notes': license.notes
+        }
+
+        return render_template('license_view.html', license=license_info)
+
+    except Exception as e:
+        print(f"Error in view_license: {e}")
+        flash(f'حدث خطأ: {str(e)}', 'danger')
+        return redirect(url_for('main.licenses_dashboard'))
+
+
+@bp.route('/license/<int:license_id>/toggle-suspend', methods=['POST'])
+@csrf.exempt
+def toggle_suspend_license(license_id):
+    """تعليق/تفعيل ترخيص"""
+    try:
+        license = License.query.get_or_404(license_id)
+        data = request.get_json()
+        suspend = data.get('suspend', False)
+
+        license.is_suspended = suspend
+        db.session.commit()
+
+        return {'success': True, 'message': 'تم تحديث حالة الترخيص بنجاح'}
+
+    except Exception as e:
+        print(f"Error in toggle_suspend_license: {e}")
+        return {'success': False, 'message': str(e)}, 400
+
+
+@bp.route('/license/<int:license_id>/delete', methods=['POST'])
+@csrf.exempt
+def delete_license(license_id):
+    """حذف ترخيص"""
+    try:
+        license = License.query.get_or_404(license_id)
+        db.session.delete(license)
+        db.session.commit()
+
+        return {'success': True, 'message': 'تم حذف الترخيص بنجاح'}
+
+    except Exception as e:
+        print(f"Error in delete_license: {e}")
+        return {'success': False, 'message': str(e)}, 400
+
+
+@bp.route('/license/<int:license_id>/edit', methods=['GET', 'POST'])
+@csrf.exempt
+def edit_license(license_id):
+    """تعديل ترخيص"""
+    try:
+        license = License.query.get_or_404(license_id)
+
+        if request.method == 'POST':
+            # Update license data
+            license.client_name = request.form.get('client_name', license.client_name)
+            license.client_company = request.form.get('client_company', license.client_company)
+            license.client_email = request.form.get('client_email', license.client_email)
+            license.client_phone = request.form.get('client_phone', license.client_phone)
+            license.max_users = int(request.form.get('max_users', license.max_users))
+            license.max_branches = int(request.form.get('max_branches', license.max_branches))
+            license.notes = request.form.get('notes', license.notes)
+
+            # Update license type and expiration
+            new_type = request.form.get('license_type', license.license_type)
+            if new_type != license.license_type:
+                license.license_type = new_type
+                if new_type == 'trial':
+                    license.expires_at = datetime.utcnow() + timedelta(days=30)
+                elif new_type == 'annual':
+                    license.expires_at = datetime.utcnow() + timedelta(days=365)
+                else:  # lifetime
+                    license.expires_at = None
+
+            db.session.commit()
+            flash('تم تحديث الترخيص بنجاح', 'success')
+            return redirect(url_for('main.view_license', license_id=license.id))
+
+        # GET request - show edit form
+        return render_template('license_edit.html', license=license)
+
+    except Exception as e:
+        print(f"Error in edit_license: {e}")
+        flash(f'حدث خطأ: {str(e)}', 'danger')
+        return redirect(url_for('main.licenses_dashboard'))
+
+
 @bp.route('/create-license', methods=['GET', 'POST'])
 @csrf.exempt  # Exempt from CSRF protection for public access
 def create_new_license():

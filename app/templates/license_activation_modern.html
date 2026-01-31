@@ -371,11 +371,19 @@
             </ul>
         </div>
 
-        <div class="help-text" style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 10px;">
-            <a href="{{ url_for('main.create_new_license') }}" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 16px;">
-                <i class="fas fa-plus-circle me-1"></i>
-                ليس لديك ترخيص؟ قم بإنشاء ترخيص جديد الآن
-            </a>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div style="text-align: center; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 10px;">
+                <a href="{{ url_for('main.licenses_dashboard') }}" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 15px;">
+                    <i class="fas fa-list me-1"></i>
+                    قائمة التراخيص
+                </a>
+            </div>
+            <div style="text-align: center; padding: 15px; background: rgba(72, 187, 120, 0.1); border-radius: 10px;">
+                <a href="{{ url_for('main.create_new_license') }}" style="color: #48bb78; text-decoration: none; font-weight: 600; font-size: 15px;">
+                    <i class="fas fa-plus-circle me-1"></i>
+                    إنشاء ترخيص جديد
+                </a>
+            </div>
         </div>
 
         <div class="help-text" style="margin-top: 15px;">
