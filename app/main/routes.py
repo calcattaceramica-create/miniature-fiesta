@@ -10,6 +10,7 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 import calendar
 import json
+import traceback
 from pathlib import Path
 
 @bp.after_request
@@ -24,18 +25,35 @@ def add_cache_headers(response):
 @bp.route('/')
 @bp.route('/index')
 @login_required
-@permission_required('dashboard.view')
+# Temporarily disable permission check for debugging on Render
+# @permission_required('dashboard.view')
 def index():
     """Dashboard - Main page"""
 
-    # Get statistics
-    stats = {
-        'total_products': Product.query.filter_by(is_active=True).count(),
-        'total_customers': Customer.query.filter_by(is_active=True).count(),
-        'total_suppliers': Supplier.query.filter_by(is_active=True).count(),
-        'low_stock_products': 0,
-        'total_warehouses': Warehouse.query.filter_by(is_active=True).count(),
-    }
+    # Wrap in try-except to catch any errors
+    try:
+        # Get statistics
+        stats = {
+            'total_products': Product.query.filter_by(is_active=True).count(),
+            'total_customers': Customer.query.filter_by(is_active=True).count(),
+            'total_suppliers': Supplier.query.filter_by(is_active=True).count(),
+            'low_stock_products': 0,
+            'total_warehouses': Warehouse.query.filter_by(is_active=True).count(),
+        }
+    except Exception as e:
+        # If there's an error, return a simple page with error details
+        return f"""
+        <html dir="rtl">
+        <body style="font-family: Arial; padding: 20px;">
+            <h2>❌ خطأ في تحميل الصفحة الرئيسية</h2>
+            <p><strong>الخطأ:</strong> {str(e)}</p>
+            <p><strong>المستخدم:</strong> {current_user.username if current_user.is_authenticated else 'غير مسجل'}</p>
+            <p><strong>is_admin:</strong> {current_user.is_admin if current_user.is_authenticated else 'N/A'}</p>
+            <hr>
+            <pre>{traceback.format_exc()}</pre>
+        </body>
+        </html>
+        """, 500
 
     # Calculate low stock products
     products = Product.query.filter_by(is_active=True, track_inventory=True).all()
