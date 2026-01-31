@@ -306,49 +306,61 @@ def license_info():
 @bp.route('/license-activation', methods=['GET', 'POST'])
 def activate_license():
     """صفحة تفعيل الترخيص"""
-    if request.method == 'POST':
-        license_key = request.form.get('license_key', '').strip().upper()
+    try:
+        if request.method == 'POST':
+            license_key = request.form.get('license_key', '').strip().upper()
 
-        if not license_key:
-            flash('يرجى إدخال مفتاح الترخيص', 'danger')
-            return redirect(url_for('main.activate_license'))
+            if not license_key:
+                flash('يرجى إدخال مفتاح الترخيص', 'danger')
+                return redirect(url_for('main.activate_license'))
 
-        # التحقق من صحة الترخيص
-        license = License.query.filter_by(license_key=license_key).first()
+            # التحقق من صحة الترخيص
+            license = License.query.filter_by(license_key=license_key).first()
 
-        if not license:
-            flash('مفتاح الترخيص غير صحيح', 'danger')
-            return redirect(url_for('main.activate_license'))
+            if not license:
+                flash('مفتاح الترخيص غير صحيح', 'danger')
+                return redirect(url_for('main.activate_license'))
 
-        # التحقق من صلاحية الترخيص
-        is_valid, message = license.is_valid()
+            # التحقق من صلاحية الترخيص
+            is_valid, message = license.is_valid()
 
-        if not is_valid:
-            flash(f'الترخيص غير صالح: {message}', 'danger')
-            return redirect(url_for('main.activate_license'))
+            if not is_valid:
+                flash(f'الترخيص غير صالح: {message}', 'danger')
+                return redirect(url_for('main.activate_license'))
 
-        # ربط الترخيص بالجهاز
-        machine_id = LicenseManager.get_machine_id()
-        ip_address = LicenseManager.get_ip_address()
+            # ربط الترخيص بالجهاز
+            try:
+                machine_id = LicenseManager.get_machine_id()
+                ip_address = LicenseManager.get_ip_address()
+            except Exception as e:
+                print(f"Error getting machine info: {e}")
+                machine_id = "RENDER_SERVER"
+                ip_address = request.remote_addr or "0.0.0.0"
 
-        # إذا كان الترخيص مربوط بجهاز آخر - السماح بإعادة التفعيل على Render
-        # (تم تعطيل الفحص للسماح بالنشر على Render)
-        # if license.machine_id and license.machine_id != machine_id:
-        #     flash('هذا الترخيص مربوط بجهاز آخر', 'danger')
-        #     return redirect(url_for('main.activate_license'))
+            # إذا كان الترخيص مربوط بجهاز آخر - السماح بإعادة التفعيل على Render
+            # (تم تعطيل الفحص للسماح بالنشر على Render)
+            # if license.machine_id and license.machine_id != machine_id:
+            #     flash('هذا الترخيص مربوط بجهاز آخر', 'danger')
+            #     return redirect(url_for('main.activate_license'))
 
-        # تفعيل الترخيص - تحديث machine_id للجهاز الحالي
-        license.machine_id = machine_id
-        license.ip_address = ip_address
-        license.activated_at = datetime.utcnow()
-        license.is_active = True
+            # تفعيل الترخيص - تحديث machine_id للجهاز الحالي
+            license.machine_id = machine_id
+            license.ip_address = ip_address
+            license.activated_at = datetime.utcnow()
+            license.is_active = True
 
-        db.session.commit()
+            db.session.commit()
 
-        flash('تم تفعيل الترخيص بنجاح!', 'success')
-        return redirect(url_for('auth.login'))
+            flash('تم تفعيل الترخيص بنجاح!', 'success')
+            return redirect(url_for('auth.login'))
 
-    return render_template('license_activation_modern.html')
+        return render_template('license_activation_modern.html')
+
+    except Exception as e:
+        print(f"Error in activate_license: {e}")
+        print(traceback.format_exc())
+        flash(f'حدث خطأ أثناء تفعيل الترخيص: {str(e)}', 'danger')
+        return render_template('license_activation_modern.html')
 
 
 @bp.route('/license-status')
