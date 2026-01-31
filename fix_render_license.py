@@ -44,15 +44,20 @@ def fix_license():
         # Update admin credentials
         admin_username = 'admin'
         admin_password = 'admin123'
-        
+
         license.admin_username = admin_username
         license.admin_password_hash = generate_password_hash(admin_password)
-        
+
+        # Reset machine_id to allow activation from any device
+        license.machine_id = None
+        license.ip_address = None
+
         db.session.commit()
         
         print(f"✅ Updated license admin credentials")
         print(f"   Username: {admin_username}")
         print(f"   Password: {admin_password}")
+        print(f"   Machine ID: Reset (can activate from any device)")
         print()
         
         # Step 2: Check if tenant database exists
