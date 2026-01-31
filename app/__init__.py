@@ -63,9 +63,12 @@ def create_app(config_name='default'):
     login_manager.login_message = 'يرجى تسجيل الدخول للوصول إلى هذه الصفحة'
     login_manager.login_message_category = 'info'
     
-    # Create upload folder
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
+    # Create upload folder (with error handling for read-only filesystems)
+    try:
+        if not os.path.exists(app.config['UPLOAD_FOLDER']):
+            os.makedirs(app.config['UPLOAD_FOLDER'])
+    except Exception as e:
+        app.logger.warning(f'Could not create upload folder: {e}')
     
     # Register blueprints
     from app.auth import bp as auth_bp
