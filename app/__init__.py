@@ -62,6 +62,12 @@ def create_app(config_name='default'):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'يرجى تسجيل الدخول للوصول إلى هذه الصفحة'
     login_manager.login_message_category = 'info'
+
+    # User loader for Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        from app.models import User
+        return User.query.get(int(user_id))
     
     # Create upload folder (with error handling for read-only filesystems)
     try:
@@ -107,9 +113,9 @@ def create_app(config_name='default'):
     from app.security import bp as security_bp
     app.register_blueprint(security_bp, url_prefix='/security')
 
-    # Initialize Multi-Tenancy middleware
-    from app.tenant_middleware import init_tenant_middleware
-    init_tenant_middleware(app)
+    # Initialize Multi-Tenancy middleware (temporarily disabled for debugging)
+    # from app.tenant_middleware import init_tenant_middleware
+    # init_tenant_middleware(app)
 
     # Error handlers
     @app.errorhandler(500)
@@ -145,17 +151,18 @@ def create_app(config_name='default'):
     @app.context_processor
     def inject_currency():
         """Inject currency information into all templates"""
-        from app.models import Company
         from flask_babel import gettext
 
         try:
+            from app.models import Company
             company = Company.query.first()
             if company and company.currency:
                 currency_code = company.currency
             else:
                 currency_code = app.config.get('DEFAULT_CURRENCY', 'SAR')
-        except:
+        except Exception as e:
             # Fallback if database is not available
+            app.logger.warning(f'Could not get currency from database: {e}')
             currency_code = 'SAR'
 
         # Get currency info from config
