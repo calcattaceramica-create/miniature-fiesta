@@ -25,7 +25,3 @@ typing_extensions==4.15.0
 colorama==0.4.6
 gunicorn==21.2.0
 psycopg2-binary==2.9.9
-waitress==3.0.2
-streamlit
-pandas
-openpyxl
