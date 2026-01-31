@@ -5,9 +5,11 @@ services:
     plan: free
     region: frankfurt
     runtime: python-3.11.7
-    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
-    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && flask db upgrade || echo "Migration skipped"
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --log-level debug
     envVars:
+      - key: FLASK_APP
+        value: run.py
       - key: FLASK_ENV
         value: production
       - key: SECRET_KEY
