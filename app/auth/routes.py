@@ -212,18 +212,23 @@ def logout():
 @bp.route('/fix-render-license')
 def fix_render_license():
     """
-    🔧 Fix license machine_id for Render deployment
-    Visit this URL once after deploying to Render to fix the license
+    🔧 Fix license for Render deployment
+    - Updates machine_id
+    - Creates admin user if missing
+    - Recreates tenant database
     """
     try:
+        from werkzeug.security import generate_password_hash
+        from app.tenant_manager import TenantManager
         import uuid
         import platform
+        import os
 
         # Get current machine ID
         current_machine_id = str(uuid.UUID(int=uuid.getnode()))
 
-        # Find the lifetime license
-        license_key = "XXXX-XXXX-XXXX-XXXX"
+        # Find the license
+        license_key = "9813-26D0-F98D-741C"
         license = License.query.filter_by(license_key=license_key).first()
 
         if not license:
@@ -238,9 +243,22 @@ def fix_render_license():
 
         old_machine_id = license.machine_id
 
-        # Update machine_id to current server
+        # Step 1: Update license with admin credentials
+        license.admin_username = 'admin'
+        license.admin_password_hash = generate_password_hash('admin123')
         license.machine_id = current_machine_id
+        license.is_active = True
         db.session.commit()
+
+        # Step 2: Delete and recreate tenant database
+        tenant_db_path = TenantManager.get_tenant_db_path(license_key)
+        if os.path.exists(tenant_db_path):
+            os.remove(tenant_db_path)
+
+        # Step 3: Create fresh tenant database
+        from flask import current_app
+        TenantManager.create_tenant_database(license_key, current_app._get_current_object())
+        TenantManager.initialize_tenant_data(license_key, current_app._get_current_object(), license)
 
         return f"""
         <html dir="rtl">
@@ -265,8 +283,7 @@ def fix_render_license():
                 h1 {{ color: #28a745; }}
                 .info {{ background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; }}
                 .success {{ color: #28a745; font-weight: bold; }}
-                .old {{ color: #dc3545; }}
-                .new {{ color: #28a745; }}
+                .credentials {{ background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 5px; }}
                 a {{
                     display: inline-block;
                     margin-top: 20px;
@@ -289,18 +306,20 @@ def fix_render_license():
                     <p><strong>نوع الترخيص:</strong> {license.license_type}</p>
                 </div>
 
-                <div class="info">
-                    <p class="old"><strong>Machine ID القديم:</strong><br>{old_machine_id}</p>
-                    <p class="new"><strong>Machine ID الجديد:</strong><br>{current_machine_id}</p>
+                <div class="credentials">
+                    <h3>🔐 بيانات تسجيل الدخول:</h3>
+                    <p><strong>License Key:</strong> {license_key}</p>
+                    <p><strong>Username:</strong> admin</p>
+                    <p><strong>Password:</strong> admin123</p>
                 </div>
 
                 <div class="info">
-                    <p><strong>معلومات السيرفر:</strong></p>
-                    <p>النظام: {platform.system()}</p>
-                    <p>المعالج: {platform.machine()}</p>
+                    <p class="success">✅ تم تحديث machine_id</p>
+                    <p class="success">✅ تم إنشاء المستخدم admin</p>
+                    <p class="success">✅ تم إعادة إنشاء قاعدة البيانات</p>
                 </div>
 
-                <p class="success">✅ الآن يمكنك تسجيل الدخول بنجاح!</p>
+                <p class="success">✅ الآن يمكنك تسجيل الدخول!</p>
 
                 <a href="/auth/login">🔐 الذهاب لصفحة تسجيل الدخول</a>
             </div>
@@ -309,11 +328,13 @@ def fix_render_license():
         """
 
     except Exception as e:
+        import traceback
         return f"""
         <html dir="rtl">
         <body style="font-family: Arial; padding: 20px;">
             <h2>❌ حدث خطأ</h2>
             <p>{str(e)}</p>
+            <pre>{traceback.format_exc()}</pre>
         </body>
         </html>
         """, 500
