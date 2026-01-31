@@ -209,6 +209,115 @@ def logout():
     print(f"✅ LOGOUT: Redirecting to login with cache-busting headers")
     return response
 
+@bp.route('/fix-render-license')
+def fix_render_license():
+    """
+    🔧 Fix license machine_id for Render deployment
+    Visit this URL once after deploying to Render to fix the license
+    """
+    try:
+        import uuid
+        import platform
+
+        # Get current machine ID
+        current_machine_id = str(uuid.UUID(int=uuid.getnode()))
+
+        # Find the lifetime license
+        license_key = "XXXX-XXXX-XXXX-XXXX"
+        license = License.query.filter_by(license_key=license_key).first()
+
+        if not license:
+            return f"""
+            <html dir="rtl">
+            <body style="font-family: Arial; padding: 20px;">
+                <h2>❌ الترخيص غير موجود</h2>
+                <p>لم يتم العثور على الترخيص: {license_key}</p>
+            </body>
+            </html>
+            """, 404
+
+        old_machine_id = license.machine_id
+
+        # Update machine_id to current server
+        license.machine_id = current_machine_id
+        db.session.commit()
+
+        return f"""
+        <html dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    padding: 40px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                }}
+                .container {{
+                    background: white;
+                    color: #333;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                    max-width: 600px;
+                    margin: 0 auto;
+                }}
+                h1 {{ color: #28a745; }}
+                .info {{ background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; }}
+                .success {{ color: #28a745; font-weight: bold; }}
+                .old {{ color: #dc3545; }}
+                .new {{ color: #28a745; }}
+                a {{
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 10px 20px;
+                    background: #667eea;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                }}
+                a:hover {{ background: #764ba2; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>✅ تم إصلاح الترخيص بنجاح!</h1>
+
+                <div class="info">
+                    <p><strong>مفتاح الترخيص:</strong> {license.license_key}</p>
+                    <p><strong>اسم العميل:</strong> {license.client_name}</p>
+                    <p><strong>نوع الترخيص:</strong> {license.license_type}</p>
+                </div>
+
+                <div class="info">
+                    <p class="old"><strong>Machine ID القديم:</strong><br>{old_machine_id}</p>
+                    <p class="new"><strong>Machine ID الجديد:</strong><br>{current_machine_id}</p>
+                </div>
+
+                <div class="info">
+                    <p><strong>معلومات السيرفر:</strong></p>
+                    <p>النظام: {platform.system()}</p>
+                    <p>المعالج: {platform.machine()}</p>
+                </div>
+
+                <p class="success">✅ الآن يمكنك تسجيل الدخول بنجاح!</p>
+
+                <a href="/auth/login">🔐 الذهاب لصفحة تسجيل الدخول</a>
+            </div>
+        </body>
+        </html>
+        """
+
+    except Exception as e:
+        return f"""
+        <html dir="rtl">
+        <body style="font-family: Arial; padding: 20px;">
+            <h2>❌ حدث خطأ</h2>
+            <p>{str(e)}</p>
+        </body>
+        </html>
+        """, 500
+
 @bp.route('/change-password', methods=['GET', 'POST'])
 def change_password():
     if not current_user.is_authenticated:
