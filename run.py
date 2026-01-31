@@ -1,46 +1,8 @@
 import os
 from app import create_app, db
 from app.models import *
-from datetime import datetime, timedelta
 
 app = create_app(os.getenv('FLASK_ENV') or 'default')
-
-# Auto-create license on startup (for Render deployment)
-with app.app_context():
-    try:
-        from app.models_license import License
-        import hashlib
-
-        # Check if license already exists
-        existing_license = License.query.filter_by(license_key='9813-26D0-F98D-741C').first()
-
-        if not existing_license:
-            # Create the license hash
-            license_key = '9813-26D0-F98D-741C'
-            license_hash = hashlib.sha256(license_key.encode()).hexdigest()
-
-            # Create the license
-            new_license = License(
-                license_key=license_key,
-                license_hash=license_hash,
-                client_name='DED Company',
-                client_company='DED ERP System',
-                license_type='lifetime',
-                max_users=10,
-                max_branches=5,
-                expires_at=None,  # Lifetime license
-                is_active=True,
-                activated_at=datetime.utcnow(),
-                notes='Auto-created for Render deployment'
-            )
-            db.session.add(new_license)
-            db.session.commit()
-            print('✅ License created successfully!')
-        else:
-            print('✅ License already exists')
-    except Exception as e:
-        print(f'⚠️ License creation skipped: {e}')
-        db.session.rollback()
 
 @app.shell_context_processor
 def make_shell_context():
@@ -65,6 +27,48 @@ def make_shell_context():
         'Employee': Employee,
         'Department': Department,
     }
+
+@app.cli.command()
+def create_license():
+    """Create default license for production"""
+    from app.models_license import License
+    from datetime import datetime
+    import hashlib
+
+    try:
+        # Check if license already exists
+        existing_license = License.query.filter_by(license_key='9813-26D0-F98D-741C').first()
+
+        if existing_license:
+            print('✅ License already exists')
+            return
+
+        # Create the license hash
+        license_key = '9813-26D0-F98D-741C'
+        license_hash = hashlib.sha256(license_key.encode()).hexdigest()
+
+        # Create the license
+        new_license = License(
+            license_key=license_key,
+            license_hash=license_hash,
+            client_name='DED Company',
+            client_company='DED ERP System',
+            license_type='lifetime',
+            max_users=10,
+            max_branches=5,
+            expires_at=None,  # Lifetime license
+            is_active=True,
+            activated_at=datetime.utcnow(),
+            notes='Auto-created for production deployment'
+        )
+        db.session.add(new_license)
+        db.session.commit()
+        print('✅ License created successfully!')
+        print(f'🔑 License Key: {license_key}')
+
+    except Exception as e:
+        print(f'❌ Error creating license: {e}')
+        db.session.rollback()
 
 @app.cli.command()
 def init_db():
