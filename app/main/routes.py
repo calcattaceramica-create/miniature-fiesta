@@ -13,6 +13,7 @@ import calendar
 import json
 import traceback
 from pathlib import Path
+import uuid
 
 @bp.after_request
 def add_cache_headers(response):
@@ -303,12 +304,85 @@ def license_info():
     return render_template('license_info.html', license_info=license_data)
 
 
+@bp.route('/create-license', methods=['GET', 'POST'])
+@csrf.exempt  # Exempt from CSRF protection for public access
+def create_new_license():
+    """صفحة إنشاء ترخيص جديد"""
+    try:
+        if request.method == 'POST':
+            # Get form data
+            license_type = request.form.get('license_type', 'trial')
+            client_name = request.form.get('client_name', '').strip()
+            client_company = request.form.get('client_company', '').strip()
+            client_email = request.form.get('client_email', '').strip()
+            client_phone = request.form.get('client_phone', '').strip()
+            max_users = int(request.form.get('max_users', 10))
+            max_branches = int(request.form.get('max_branches', 5))
+            notes = request.form.get('notes', '').strip()
+
+            # Validate required fields
+            if not all([client_name, client_company, client_email, client_phone]):
+                flash('يرجى ملء جميع الحقول المطلوبة', 'danger')
+                return redirect(url_for('main.create_new_license'))
+
+            # Generate license key
+            license_key = '-'.join([uuid.uuid4().hex[:4].upper() for _ in range(4)])
+
+            # Calculate expiration date
+            if license_type == 'trial':
+                expires_at = datetime.utcnow() + timedelta(days=30)
+            elif license_type == 'annual':
+                expires_at = datetime.utcnow() + timedelta(days=365)
+            else:  # lifetime
+                expires_at = None
+
+            # Create new license
+            new_license = License(
+                license_key=license_key,
+                license_hash=License.hash_license_key(license_key),
+                client_name=client_name,
+                client_company=client_company,
+                client_email=client_email,
+                client_phone=client_phone,
+                license_type=license_type,
+                max_users=max_users,
+                max_branches=max_branches,
+                is_active=True,
+                is_suspended=False,
+                created_at=datetime.utcnow(),
+                activated_at=datetime.utcnow(),
+                expires_at=expires_at,
+                admin_username='admin',
+                notes=notes or f'ترخيص {license_type} - تم الإنشاء تلقائياً'
+            )
+
+            db.session.add(new_license)
+            db.session.commit()
+
+            flash(f'تم إنشاء الترخيص بنجاح! مفتاح الترخيص: {license_key}', 'success')
+
+            # Redirect to activation page with the license key
+            return redirect(url_for('main.activate_license', key=license_key))
+
+        # GET request - show form
+        return render_template('license_create.html')
+
+    except Exception as e:
+        print(f"Error in create_new_license: {e}")
+        print(traceback.format_exc())
+        flash(f'حدث خطأ أثناء إنشاء الترخيص: {str(e)}', 'danger')
+        return render_template('license_create.html')
+
+
 @bp.route('/activate-license', methods=['GET', 'POST'])
 @bp.route('/license-activation', methods=['GET', 'POST'])
 @csrf.exempt  # Exempt from CSRF protection for public access
 def activate_license():
     """صفحة تفعيل الترخيص"""
     try:
+        # Get license key from URL parameter if available
+        url_license_key = request.args.get('key', '').strip().upper()
+
         if request.method == 'POST':
             license_key = request.form.get('license_key', '').strip().upper()
 
@@ -356,13 +430,13 @@ def activate_license():
             flash('تم تفعيل الترخيص بنجاح!', 'success')
             return redirect(url_for('auth.login'))
 
-        return render_template('license_activation_modern.html')
+        return render_template('license_activation_modern.html', prefilled_key=url_license_key)
 
     except Exception as e:
         print(f"Error in activate_license: {e}")
         print(traceback.format_exc())
         flash(f'حدث خطأ أثناء تفعيل الترخيص: {str(e)}', 'danger')
-        return render_template('license_activation_modern.html')
+        return render_template('license_activation_modern.html', prefilled_key=url_license_key)
 
 
 @bp.route('/license-status')

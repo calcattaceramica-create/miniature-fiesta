@@ -340,7 +340,7 @@
                            class="form-control license-input"
                            id="license_key"
                            name="license_key"
-                           value="9813-26D0-F98D-741C"
+                           value="{{ prefilled_key or '9813-26D0-F98D-741C' }}"
                            placeholder="XXXX-XXXX-XXXX-XXXX"
                            pattern="[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}"
                            required
@@ -371,7 +371,14 @@
             </ul>
         </div>
 
-        <div class="help-text">
+        <div class="help-text" style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 10px;">
+            <a href="{{ url_for('main.create_new_license') }}" style="color: #667eea; text-decoration: none; font-weight: 600; font-size: 16px;">
+                <i class="fas fa-plus-circle me-1"></i>
+                ليس لديك ترخيص؟ قم بإنشاء ترخيص جديد الآن
+            </a>
+        </div>
+
+        <div class="help-text" style="margin-top: 15px;">
             لا تملك ترخيص؟
             <a href="mailto:support@ded-erp.com">تواصل معنا</a>
         </div>
