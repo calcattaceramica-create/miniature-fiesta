@@ -1,8 +1,44 @@
 import os
 from app import create_app, db
 from app.models import *
+from datetime import datetime, timedelta
 
 app = create_app(os.getenv('FLASK_ENV') or 'default')
+
+# Auto-create license on startup (for Render deployment)
+with app.app_context():
+    try:
+        from app.models import License
+
+        # Check if license already exists
+        existing_license = License.query.filter_by(license_key='9813-26D0-F98D-741C').first()
+
+        if not existing_license:
+            # Create the license
+            new_license = License(
+                license_key='9813-26D0-F98D-741C',
+                company_name='DED Company',
+                max_users=10,
+                max_branches=5,
+                expiry_date=datetime.utcnow() + timedelta(days=365),
+                is_active=True,
+                features={
+                    'inventory': True,
+                    'sales': True,
+                    'purchases': True,
+                    'accounting': True,
+                    'hr': True,
+                    'reports': True
+                }
+            )
+            db.session.add(new_license)
+            db.session.commit()
+            print('✅ License created successfully!')
+        else:
+            print('✅ License already exists')
+    except Exception as e:
+        print(f'⚠️ License creation skipped: {e}')
+        db.session.rollback()
 
 @app.shell_context_processor
 def make_shell_context():
