@@ -215,12 +215,13 @@ def activate_license():
         machine_id = LicenseManager.get_machine_id()
         ip_address = LicenseManager.get_ip_address()
 
-        # إذا كان الترخيص مربوط بجهاز آخر
-        if license.machine_id and license.machine_id != machine_id:
-            flash('هذا الترخيص مربوط بجهاز آخر', 'danger')
-            return redirect(url_for('main.activate_license'))
+        # إذا كان الترخيص مربوط بجهاز آخر - السماح بإعادة التفعيل على Render
+        # (تم تعطيل الفحص للسماح بالنشر على Render)
+        # if license.machine_id and license.machine_id != machine_id:
+        #     flash('هذا الترخيص مربوط بجهاز آخر', 'danger')
+        #     return redirect(url_for('main.activate_license'))
 
-        # تفعيل الترخيص
+        # تفعيل الترخيص - تحديث machine_id للجهاز الحالي
         license.machine_id = machine_id
         license.ip_address = ip_address
         license.activated_at = datetime.utcnow()
