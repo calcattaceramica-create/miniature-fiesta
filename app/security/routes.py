@@ -443,3 +443,87 @@ def create_license():
 
     return render_template('security/create_license.html')
 
+
+@bp.route('/licenses')
+@login_required
+@admin_required
+def license_management():
+    """License management page"""
+    licenses = License.query.order_by(License.created_at.desc()).all()
+    return render_template('license_management.html', licenses=licenses)
+
+
+@bp.route('/license/<int:license_id>/view')
+@login_required
+@admin_required
+def view_license(license_id):
+    """View license details"""
+    license = License.query.get_or_404(license_id)
+    return render_template('security/view_license.html', license=license)
+
+
+@bp.route('/license/<int:license_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_license(license_id):
+    """Edit license"""
+    license = License.query.get_or_404(license_id)
+
+    if request.method == 'POST':
+        try:
+            license.client_name = request.form.get('client_name')
+            license.client_email = request.form.get('client_email')
+            license.client_company = request.form.get('client_company')
+            license.max_users = int(request.form.get('max_users', 10))
+            license.max_branches = int(request.form.get('max_branches', 1))
+            license.notes = request.form.get('notes', '')
+
+            db.session.commit()
+            flash(_('License updated successfully!'), 'success')
+            return redirect(url_for('security.license_management'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(_('Error updating license: {}').format(str(e)), 'danger')
+
+    return render_template('security/edit_license.html', license=license)
+
+
+@bp.route('/license/<int:license_id>/suspend')
+@login_required
+@admin_required
+def suspend_license(license_id):
+    """Suspend license"""
+    license = License.query.get_or_404(license_id)
+
+    try:
+        license.is_suspended = True
+        license.is_active = False
+        db.session.commit()
+        flash(_('License suspended successfully!'), 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(_('Error suspending license: {}').format(str(e)), 'danger')
+
+    return redirect(url_for('security.license_management'))
+
+
+@bp.route('/license/<int:license_id>/activate')
+@login_required
+@admin_required
+def activate_license(license_id):
+    """Activate license"""
+    license = License.query.get_or_404(license_id)
+
+    try:
+        license.is_suspended = False
+        license.is_active = True
+        if not license.activated_at:
+            license.activated_at = datetime.utcnow()
+        db.session.commit()
+        flash(_('License activated successfully!'), 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(_('Error activating license: {}').format(str(e)), 'danger')
+
+    return redirect(url_for('security.license_management'))

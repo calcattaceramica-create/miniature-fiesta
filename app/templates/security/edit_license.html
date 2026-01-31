@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل الترخيص - Edit License{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0">
+                        <i class="fas fa-edit"></i>
+                        تعديل الترخيص - Edit License
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('security.edit_license', license_id=license.id) }}">
+                        <!-- License Key (Read-only) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                مفتاح الترخيص - License Key
+                            </label>
+                            <input type="text" class="form-control" value="{{ license.license_key }}" readonly>
+                            <small class="text-muted">لا يمكن تعديل مفتاح الترخيص - License key cannot be changed</small>
+                        </div>
+                        
+                        <!-- Client Name -->
+                        <div class="mb-3">
+                            <label for="client_name" class="form-label fw-bold">
+                                اسم العميل - Client Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="client_name" 
+                                   name="client_name" 
+                                   value="{{ license.client_name }}"
+                                   required>
+                        </div>
+                        
+                        <!-- Client Email -->
+                        <div class="mb-3">
+                            <label for="client_email" class="form-label fw-bold">
+                                البريد الإلكتروني - Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="client_email" 
+                                   name="client_email" 
+                                   value="{{ license.client_email }}"
+                                   required>
+                        </div>
+                        
+                        <!-- Client Company -->
+                        <div class="mb-3">
+                            <label for="client_company" class="form-label fw-bold">
+                                الشركة - Company
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="client_company" 
+                                   name="client_company" 
+                                   value="{{ license.client_company or '' }}">
+                        </div>
+                        
+                        <!-- Max Users -->
+                        <div class="mb-3">
+                            <label for="max_users" class="form-label fw-bold">
+                                الحد الأقصى للمستخدمين - Max Users <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="max_users" 
+                                   name="max_users" 
+                                   value="{{ license.max_users }}"
+                                   min="1"
+                                   max="1000"
+                                   required>
+                        </div>
+                        
+                        <!-- Max Branches -->
+                        <div class="mb-3">
+                            <label for="max_branches" class="form-label fw-bold">
+                                الحد الأقصى للفروع - Max Branches <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="max_branches" 
+                                   name="max_branches" 
+                                   value="{{ license.max_branches }}"
+                                   min="1"
+                                   max="100"
+                                   required>
+                        </div>
+                        
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label for="notes" class="form-label fw-bold">
+                                ملاحظات - Notes
+                            </label>
+                            <textarea class="form-control" 
+                                      id="notes" 
+                                      name="notes" 
+                                      rows="3">{{ license.notes or '' }}</textarea>
+                        </div>
+                        
+                        <!-- License Type (Read-only) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                نوع الترخيص - License Type
+                            </label>
+                            <p>
+                                {% if license.license_type == 'lifetime' %}
+                                    <span class="badge bg-success fs-6">مدى الحياة - Lifetime</span>
+                                {% elif license.license_type == 'yearly' %}
+                                    <span class="badge bg-info fs-6">سنوي - Yearly</span>
+                                {% elif license.license_type == 'monthly' %}
+                                    <span class="badge bg-warning fs-6">شهري - Monthly</span>
+                                {% else %}
+                                    <span class="badge bg-secondary fs-6">تجريبي - Trial</span>
+                                {% endif %}
+                            </p>
+                            <small class="text-muted">لا يمكن تعديل نوع الترخيص - License type cannot be changed</small>
+                        </div>
+                        
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('security.license_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> إلغاء - Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> حفظ التغييرات - Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

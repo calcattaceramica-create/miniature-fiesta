@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة التراخيص - License Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-key"></i>
+                        إدارة التراخيص - License Management
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Add New License Button -->
+                    <div class="mb-3">
+                        <a href="{{ url_for('security.create_license') }}" class="btn btn-success">
+                            <i class="fas fa-plus"></i>
+                            إضافة ترخيص جديد - Add New License
+                        </a>
+                    </div>
+
+                    <!-- Licenses Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>مفتاح الترخيص - License Key</th>
+                                    <th>العميل - Client</th>
+                                    <th>النوع - Type</th>
+                                    <th>الحالة - Status</th>
+                                    <th>المستخدمين - Users</th>
+                                    <th>الفروع - Branches</th>
+                                    <th>تاريخ الانتهاء - Expires</th>
+                                    <th>الإجراءات - Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for license in licenses %}
+                                <tr>
+                                    <td>
+                                        <code>{{ license.license_key }}</code>
+                                    </td>
+                                    <td>{{ license.client_name }}</td>
+                                    <td>
+                                        {% if license.license_type == 'lifetime' %}
+                                            <span class="badge bg-success">مدى الحياة - Lifetime</span>
+                                        {% elif license.license_type == 'yearly' %}
+                                            <span class="badge bg-info">سنوي - Yearly</span>
+                                        {% elif license.license_type == 'monthly' %}
+                                            <span class="badge bg-warning">شهري - Monthly</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">تجريبي - Trial</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if license.is_suspended %}
+                                            <span class="badge bg-danger">معلق - Suspended</span>
+                                        {% elif license.is_active %}
+                                            <span class="badge bg-success">نشط - Active</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">غير نشط - Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ license.max_users }}</td>
+                                    <td>{{ license.max_branches }}</td>
+                                    <td>
+                                        {% if license.expires_at %}
+                                            {{ license.expires_at.strftime('%Y-%m-%d') }}
+                                        {% else %}
+                                            <span class="text-success">لا ينتهي - Never</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('security.view_license', license_id=license.id) }}" 
+                                               class="btn btn-sm btn-info" title="عرض - View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('security.edit_license', license_id=license.id) }}" 
+                                               class="btn btn-sm btn-warning" title="تعديل - Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% if license.is_active %}
+                                            <button class="btn btn-sm btn-danger" 
+                                                    onclick="suspendLicense('{{ license.id }}')" 
+                                                    title="تعليق - Suspend">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                            {% else %}
+                                            <button class="btn btn-sm btn-success" 
+                                                    onclick="activateLicense('{{ license.id }}')" 
+                                                    title="تفعيل - Activate">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        لا توجد تراخيص - No licenses found
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function suspendLicense(licenseId) {
+    if (confirm('هل أنت متأكد من تعليق هذا الترخيص؟\nAre you sure you want to suspend this license?')) {
+        window.location.href = `/security/license/${licenseId}/suspend`;
+    }
+}
+
+function activateLicense(licenseId) {
+    if (confirm('هل أنت متأكد من تفعيل هذا الترخيص؟\nAre you sure you want to activate this license?')) {
+        window.location.href = `/security/license/${licenseId}/activate`;
+    }
+}
+</script>
+{% endblock %}
+

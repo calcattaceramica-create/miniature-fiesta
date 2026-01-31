@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الترخيص - License Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-key"></i>
+                        تفاصيل الترخيص - License Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- License Information -->
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">معلومات الترخيص - License Information</h5>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">مفتاح الترخيص - License Key:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="{{ license.license_key }}" readonly id="licenseKey">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyLicenseKey()">
+                                        <i class="fas fa-copy"></i> نسخ
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">النوع - Type:</label>
+                                <p>
+                                    {% if license.license_type == 'lifetime' %}
+                                        <span class="badge bg-success fs-6">مدى الحياة - Lifetime</span>
+                                    {% elif license.license_type == 'yearly' %}
+                                        <span class="badge bg-info fs-6">سنوي - Yearly</span>
+                                    {% elif license.license_type == 'monthly' %}
+                                        <span class="badge bg-warning fs-6">شهري - Monthly</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary fs-6">تجريبي - Trial</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">الحالة - Status:</label>
+                                <p>
+                                    {% if license.is_suspended %}
+                                        <span class="badge bg-danger fs-6">معلق - Suspended</span>
+                                    {% elif license.is_active %}
+                                        <span class="badge bg-success fs-6">نشط - Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary fs-6">غير نشط - Inactive</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">الحد الأقصى للمستخدمين - Max Users:</label>
+                                <p>{{ license.max_users }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">الحد الأقصى للفروع - Max Branches:</label>
+                                <p>{{ license.max_branches }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Client Information -->
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">معلومات العميل - Client Information</h5>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">اسم العميل - Client Name:</label>
+                                <p>{{ license.client_name }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">البريد الإلكتروني - Email:</label>
+                                <p>{{ license.client_email }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">الشركة - Company:</label>
+                                <p>{{ license.client_company or 'N/A' }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">تاريخ الإنشاء - Created At:</label>
+                                <p>{{ license.created_at.strftime('%Y-%m-%d %H:%M:%S') if license.created_at else 'N/A' }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">تاريخ التفعيل - Activated At:</label>
+                                <p>{{ license.activated_at.strftime('%Y-%m-%d %H:%M:%S') if license.activated_at else 'Not activated' }}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="fw-bold">تاريخ الانتهاء - Expires At:</label>
+                                <p>
+                                    {% if license.expires_at %}
+                                        {{ license.expires_at.strftime('%Y-%m-%d') }}
+                                    {% else %}
+                                        <span class="text-success">لا ينتهي - Never</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes -->
+                    {% if license.notes %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">ملاحظات - Notes</h5>
+                            <p class="text-muted">{{ license.notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Actions -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <a href="{{ url_for('security.license_management') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> رجوع - Back
+                            </a>
+                            <a href="{{ url_for('security.edit_license', license_id=license.id) }}" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> تعديل - Edit
+                            </a>
+                            {% if license.is_active %}
+                            <a href="{{ url_for('security.suspend_license', license_id=license.id) }}" 
+                               class="btn btn-danger"
+                               onclick="return confirm('هل أنت متأكد من تعليق هذا الترخيص؟')">
+                                <i class="fas fa-ban"></i> تعليق - Suspend
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('security.activate_license', license_id=license.id) }}" 
+                               class="btn btn-success"
+                               onclick="return confirm('هل أنت متأكد من تفعيل هذا الترخيص؟')">
+                                <i class="fas fa-check"></i> تفعيل - Activate
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyLicenseKey() {
+    const licenseKey = document.getElementById('licenseKey');
+    licenseKey.select();
+    document.execCommand('copy');
+    alert('تم نسخ مفتاح الترخيص!\nLicense key copied!');
+}
+</script>
+{% endblock %}
+
