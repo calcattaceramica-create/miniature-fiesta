@@ -18,7 +18,7 @@ class User(UserMixin, db.Model):
     language = db.Column(db.String(5), default='ar')
     branch_id = db.Column(db.Integer, db.ForeignKey('branches.id'))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-    license_id = db.Column(db.Integer, db.ForeignKey('licenses.id'))  # NEW: Link to license
+    license_id = db.Column(db.Integer, db.ForeignKey('license.id'))  # NEW: Link to license
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
 

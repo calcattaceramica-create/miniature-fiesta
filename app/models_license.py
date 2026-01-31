@@ -9,7 +9,7 @@ import hashlib
 
 class License(db.Model):
     """License model for application access control"""
-    __tablename__ = 'licenses'
+    __tablename__ = 'license'
     
     id = db.Column(db.Integer, primary_key=True)
     license_key = db.Column(db.String(64), unique=True, nullable=False, index=True)
@@ -116,9 +116,9 @@ class License(db.Model):
 class LicenseCheck(db.Model):
     """License check history"""
     __tablename__ = 'license_checks'
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    license_id = db.Column(db.Integer, db.ForeignKey('licenses.id'), nullable=False)
+    license_id = db.Column(db.Integer, db.ForeignKey('license.id'), nullable=False)
     
     check_time = db.Column(db.DateTime, default=datetime.utcnow)
     is_valid = db.Column(db.Boolean)
