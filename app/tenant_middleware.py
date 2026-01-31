@@ -129,6 +129,11 @@ def init_tenant_middleware(app):
     @app.context_processor
     def inject_license():
         """Inject license information into all templates"""
+        # Skip for exempt routes to avoid database queries on login page
+        for exempt_route in EXEMPT_ROUTES:
+            if request.path.startswith(exempt_route):
+                return dict(license=None)
+
         license_data = getattr(g, 'license_data', None)
         return dict(license=license_data)
 

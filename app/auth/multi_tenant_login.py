@@ -28,32 +28,42 @@ def authenticate_with_license(username, password, license_key, app):
         (success: bool, message: str, user: User or None)
     """
 
-    # Step 1: Verify license in master database
-    master_db_uri = f'sqlite:///{TenantManager.get_master_db_path()}'
-    original_uri = app.config.get('SQLALCHEMY_DATABASE_URI')
+    # Step 1: Verify license in master database using direct SQLAlchemy
+    master_db_path = TenantManager.get_master_db_path()
+    master_db_uri = f'sqlite:///{master_db_path}'
+
+    # Create direct connection to master database
+    master_engine = create_engine(master_db_uri)
+    MasterSession = sessionmaker(bind=master_engine)
+    master_session = MasterSession()
 
     with app.app_context():
         try:
-            # Switch to master database
-            app.config['SQLALCHEMY_DATABASE_URI'] = master_db_uri
-            db.engine.dispose()
-
-            # Find license
-            license = License.query.filter_by(license_key=license_key).first()
+            # Find license using direct SQLAlchemy query
+            license = master_session.query(License).filter_by(license_key=license_key).first()
 
             if not license:
+                master_session.close()
+                master_engine.dispose()
                 return False, '🔑 مفتاح الترخيص غير صحيح', None
 
             # Check if license is active
             if not license.is_active:
+                master_session.close()
+                master_engine.dispose()
                 return False, '🔑 الترخيص غير نشط', None
 
             # Check if license is suspended
             if license.is_suspended:
-                return False, f'🔑 الترخيص معلق: {license.suspension_reason or "يرجى الاتصال بالدعم"}', None
+                reason = license.suspension_reason or "يرجى الاتصال بالدعم"
+                master_session.close()
+                master_engine.dispose()
+                return False, f'🔑 الترخيص معلق: {reason}', None
 
             # Check if license is expired
             if license.expires_at and license.expires_at < datetime.utcnow():
+                master_session.close()
+                master_engine.dispose()
                 return False, '🔑 انتهت صلاحية الترخيص', None
 
             # Store license info for later use
@@ -67,8 +77,9 @@ def authenticate_with_license(username, password, license_key, app):
             }
 
         finally:
-            # Don't switch back yet - we'll switch to tenant database next
-            pass
+            # Close master database connection
+            master_session.close()
+            master_engine.dispose()
 
         # Step 2: Check if tenant database exists, create if not
         tenant_db_path = TenantManager.get_tenant_db_path(license_key)
@@ -77,19 +88,28 @@ def authenticate_with_license(username, password, license_key, app):
             # Create tenant database
             print(f"📦 Creating tenant database for license {license_key}...")
 
-            # Switch back to master temporarily to get full license object
-            app.config['SQLALCHEMY_DATABASE_URI'] = master_db_uri
-            db.engine.dispose()
+            # Get license object from master database using direct SQLAlchemy
+            master_engine2 = create_engine(master_db_uri)
+            MasterSession2 = sessionmaker(bind=master_engine2)
+            master_session2 = MasterSession2()
 
-            license = License.query.filter_by(license_key=license_key).first()
+            try:
+                license = master_session2.query(License).filter_by(license_key=license_key).first()
 
-            # Create tenant database
-            if not TenantManager.create_tenant_database(license_key, app):
-                return False, '❌ فشل إنشاء قاعدة بيانات الترخيص', None
+                if not license:
+                    return False, '❌ خطأ في تحميل بيانات الترخيص', None
 
-            # Initialize tenant data
-            if not TenantManager.initialize_tenant_data(license_key, app, license):
-                return False, '❌ فشل تهيئة بيانات الترخيص', None
+                # Create tenant database
+                if not TenantManager.create_tenant_database(license_key, app):
+                    return False, '❌ فشل إنشاء قاعدة بيانات الترخيص', None
+
+                # Initialize tenant data
+                if not TenantManager.initialize_tenant_data(license_key, app, license):
+                    return False, '❌ فشل تهيئة بيانات الترخيص', None
+
+            finally:
+                master_session2.close()
+                master_engine2.dispose()
 
         # Step 3: Switch to tenant database and authenticate user using direct SQLAlchemy
         tenant_db_path = TenantManager.get_tenant_db_path(license_key)

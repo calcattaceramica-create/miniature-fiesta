@@ -32,6 +32,27 @@ def index():
 
     # Simple test page to check if user is loaded correctly
     try:
+        # Test accessing current_user attributes one by one
+        username = getattr(current_user, 'username', 'N/A')
+        full_name = getattr(current_user, 'full_name', 'N/A')
+        email = getattr(current_user, 'email', 'N/A')
+        is_admin = getattr(current_user, 'is_admin', False)
+        is_active = getattr(current_user, 'is_active', False)
+
+        # Try to get role
+        try:
+            role_name = current_user.role.name if current_user.role else 'لا يوجد'
+            role_name_ar = current_user.role.name_ar if current_user.role else 'لا يوجد'
+        except Exception as role_error:
+            role_name = f"Error: {str(role_error)}"
+            role_name_ar = f"Error: {str(role_error)}"
+
+        # Try to get branch
+        try:
+            branch_name = current_user.branch.name if current_user.branch else 'لا يوجد'
+        except Exception as branch_error:
+            branch_name = f"Error: {str(branch_error)}"
+
         user_info = f"""
         <html dir="rtl">
         <head>
@@ -61,22 +82,22 @@ def index():
 
                 <div class="info">
                     <h3>معلومات المستخدم:</h3>
-                    <p><strong>اسم المستخدم:</strong> {current_user.username}</p>
-                    <p><strong>الاسم الكامل:</strong> {current_user.full_name}</p>
-                    <p><strong>البريد الإلكتروني:</strong> {current_user.email}</p>
-                    <p><strong>مدير النظام:</strong> {'نعم' if current_user.is_admin else 'لا'}</p>
-                    <p><strong>نشط:</strong> {'نعم' if current_user.is_active else 'لا'}</p>
+                    <p><strong>اسم المستخدم:</strong> {username}</p>
+                    <p><strong>الاسم الكامل:</strong> {full_name}</p>
+                    <p><strong>البريد الإلكتروني:</strong> {email}</p>
+                    <p><strong>مدير النظام:</strong> {'نعم' if is_admin else 'لا'}</p>
+                    <p><strong>نشط:</strong> {'نعم' if is_active else 'لا'}</p>
                 </div>
 
                 <div class="info">
                     <h3>معلومات الدور:</h3>
-                    <p><strong>الدور:</strong> {current_user.role.name if current_user.role else 'لا يوجد'}</p>
-                    <p><strong>الدور (عربي):</strong> {current_user.role.name_ar if current_user.role else 'لا يوجد'}</p>
+                    <p><strong>الدور:</strong> {role_name}</p>
+                    <p><strong>الدور (عربي):</strong> {role_name_ar}</p>
                 </div>
 
                 <div class="info">
                     <h3>معلومات الفرع:</h3>
-                    <p><strong>الفرع:</strong> {current_user.branch.name if current_user.branch else 'لا يوجد'}</p>
+                    <p><strong>الفرع:</strong> {branch_name}</p>
                 </div>
 
                 <p class="success">✅ النظام يعمل بشكل صحيح!</p>
