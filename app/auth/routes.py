@@ -78,13 +78,6 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
 
-    # Check if there's an active license - if not, redirect to activation page
-    from app.models_license import License
-    active_license = License.query.filter_by(is_active=True).first()
-    if not active_license:
-        flash('يرجى تفعيل الترخيص أولاً', 'warning')
-        return redirect(url_for('main.activate_license'))
-
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')

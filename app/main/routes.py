@@ -187,6 +187,7 @@ def license_info():
 
 
 @bp.route('/activate-license', methods=['GET', 'POST'])
+@bp.route('/license-activation', methods=['GET', 'POST'])
 def activate_license():
     """صفحة تفعيل الترخيص"""
     if request.method == 'POST':
