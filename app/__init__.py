@@ -62,12 +62,6 @@ def create_app(config_name='default'):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'يرجى تسجيل الدخول للوصول إلى هذه الصفحة'
     login_manager.login_message_category = 'info'
-
-    # User loader for Flask-Login
-    @login_manager.user_loader
-    def load_user(user_id):
-        from app.models import User
-        return User.query.get(int(user_id))
     
     # Create upload folder (with error handling for read-only filesystems)
     try:
