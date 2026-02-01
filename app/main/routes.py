@@ -27,133 +27,18 @@ def add_cache_headers(response):
 @bp.route('/')
 @bp.route('/index')
 @login_required
-# Temporarily disable permission check for debugging on Render
-# @permission_required('dashboard.view')
+@permission_required('dashboard.view')
 def index():
     """Dashboard - Main page"""
 
-    # Simple test page to check if user is loaded correctly
-    try:
-        # Test accessing current_user attributes one by one
-        username = getattr(current_user, 'username', 'N/A')
-        full_name = getattr(current_user, 'full_name', 'N/A')
-        email = getattr(current_user, 'email', 'N/A')
-        is_admin = getattr(current_user, 'is_admin', False)
-        is_active = getattr(current_user, 'is_active', False)
-
-        # Try to get role
-        try:
-            role_name = current_user.role.name if current_user.role else 'لا يوجد'
-            role_name_ar = current_user.role.name_ar if current_user.role else 'لا يوجد'
-        except Exception as role_error:
-            role_name = f"Error: {str(role_error)}"
-            role_name_ar = f"Error: {str(role_error)}"
-
-        # Try to get branch
-        try:
-            branch_name = current_user.branch.name if current_user.branch else 'لا يوجد'
-        except Exception as branch_error:
-            branch_name = f"Error: {str(branch_error)}"
-
-        user_info = f"""
-        <html dir="rtl">
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    padding: 40px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                }}
-                .container {{
-                    background: white;
-                    padding: 30px;
-                    border-radius: 10px;
-                    max-width: 800px;
-                    margin: 0 auto;
-                }}
-                h1 {{ color: #28a745; }}
-                .info {{ background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; }}
-                .success {{ color: #28a745; }}
-                .error {{ color: #dc3545; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>✅ تم تسجيل الدخول بنجاح!</h1>
-
-                <div class="info">
-                    <h3>معلومات المستخدم:</h3>
-                    <p><strong>اسم المستخدم:</strong> {username}</p>
-                    <p><strong>الاسم الكامل:</strong> {full_name}</p>
-                    <p><strong>البريد الإلكتروني:</strong> {email}</p>
-                    <p><strong>مدير النظام:</strong> {'نعم' if is_admin else 'لا'}</p>
-                    <p><strong>نشط:</strong> {'نعم' if is_active else 'لا'}</p>
-                </div>
-
-                <div class="info">
-                    <h3>معلومات الدور:</h3>
-                    <p><strong>الدور:</strong> {role_name}</p>
-                    <p><strong>الدور (عربي):</strong> {role_name_ar}</p>
-                </div>
-
-                <div class="info">
-                    <h3>معلومات الفرع:</h3>
-                    <p><strong>الفرع:</strong> {branch_name}</p>
-                </div>
-
-                <p class="success">✅ النظام يعمل بشكل صحيح!</p>
-                <p>سيتم تحميل لوحة التحكم الكاملة قريباً...</p>
-            </div>
-        </body>
-        </html>
-        """
-        return user_info
-    except Exception as e:
-        # If there's an error, return error details
-        return f"""
-        <html dir="rtl">
-        <head><meta charset="UTF-8"></head>
-        <body style="font-family: Arial; padding: 20px; background: #f8d7da;">
-            <h2 style="color: #721c24;">❌ خطأ في تحميل الصفحة</h2>
-            <div style="background: white; padding: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">
-                <p><strong>الخطأ:</strong> {str(e)}</p>
-                <p><strong>النوع:</strong> {type(e).__name__}</p>
-                <hr>
-                <h3>Traceback:</h3>
-                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">{traceback.format_exc()}</pre>
-            </div>
-        </body>
-        </html>
-        """, 500
-
-    # Old code (commented out for now)
-    """
-    # Wrap in try-except to catch any errors
-    try:
-        # Get statistics
-        stats = {
-            'total_products': Product.query.filter_by(is_active=True).count(),
-            'total_customers': Customer.query.filter_by(is_active=True).count(),
-            'total_suppliers': Supplier.query.filter_by(is_active=True).count(),
-            'low_stock_products': 0,
-            'total_warehouses': Warehouse.query.filter_by(is_active=True).count(),
-        }
-    except Exception as e:
-        # If there's an error, return a simple page with error details
-        return f'''
-        <html dir="rtl">
-        <body style="font-family: Arial; padding: 20px;">
-            <h2>❌ خطأ في تحميل الصفحة الرئيسية</h2>
-            <p><strong>الخطأ:</strong> {str(e)}</p>
-            <p><strong>المستخدم:</strong> {current_user.username if current_user.is_authenticated else 'غير مسجل'}</p>
-            <p><strong>is_admin:</strong> {current_user.is_admin if current_user.is_authenticated else 'N/A'}</p>
-            <hr>
-            <pre>{traceback.format_exc()}</pre>
-        </body>
-        </html>
-        ''', 500
-    """
+    # Get statistics
+    stats = {
+        'total_products': Product.query.filter_by(is_active=True).count(),
+        'total_customers': Customer.query.filter_by(is_active=True).count(),
+        'total_suppliers': Supplier.query.filter_by(is_active=True).count(),
+        'low_stock_products': 0,
+        'total_warehouses': Warehouse.query.filter_by(is_active=True).count(),
+    }
 
     # Calculate low stock products
     products = Product.query.filter_by(is_active=True, track_inventory=True).all()
