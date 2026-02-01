@@ -130,13 +130,13 @@
                                 <i class="fas fa-edit"></i> تعديل - Edit
                             </a>
                             {% if license.is_active %}
-                            <a href="{{ url_for('security.suspend_license', license_id=license.id) }}" 
+                            <a href="{{ url_for('security.suspend_license_get', license_id=license.id) }}"
                                class="btn btn-danger"
                                onclick="return confirm('هل أنت متأكد من تعليق هذا الترخيص؟')">
                                 <i class="fas fa-ban"></i> تعليق - Suspend
                             </a>
                             {% else %}
-                            <a href="{{ url_for('security.activate_license', license_id=license.id) }}" 
+                            <a href="{{ url_for('security.activate_license_get', license_id=license.id) }}"
                                class="btn btn-success"
                                onclick="return confirm('هل أنت متأكد من تفعيل هذا الترخيص؟')">
                                 <i class="fas fa-check"></i> تفعيل - Activate

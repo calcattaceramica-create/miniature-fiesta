@@ -492,8 +492,8 @@ def edit_license(license_id):
 @bp.route('/license/<int:license_id>/suspend')
 @login_required
 @admin_required
-def suspend_license(license_id):
-    """Suspend license"""
+def suspend_license_get(license_id):
+    """Suspend license (GET method)"""
     license = License.query.get_or_404(license_id)
 
     try:
@@ -511,8 +511,8 @@ def suspend_license(license_id):
 @bp.route('/license/<int:license_id>/activate')
 @login_required
 @admin_required
-def activate_license(license_id):
-    """Activate license"""
+def activate_license_get(license_id):
+    """Activate license (GET method)"""
     license = License.query.get_or_404(license_id)
 
     try:
