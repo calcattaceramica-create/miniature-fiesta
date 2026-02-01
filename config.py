@@ -34,7 +34,6 @@ class Config:
     }
 
     # Session Security
-    SESSION_TYPE = 'null'  # Use default Flask session (signed cookies)
     PERMANENT_SESSION_LIFETIME = timedelta(hours=2)  # Session expires after 2 hours
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False') == 'True'
     SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies
