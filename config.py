@@ -34,11 +34,13 @@ class Config:
     }
 
     # Session Security
+    SESSION_TYPE = 'null'  # Use default Flask session (signed cookies)
     PERMANENT_SESSION_LIFETIME = timedelta(hours=2)  # Session expires after 2 hours
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False') == 'True'
     SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies
     SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
     SESSION_REFRESH_EACH_REQUEST = True  # Refresh session on each request
+    SESSION_PERMANENT = True  # Make sessions permanent (use PERMANENT_SESSION_LIFETIME)
 
     # Security
     WTF_CSRF_ENABLED = True  # Enable CSRF protection
