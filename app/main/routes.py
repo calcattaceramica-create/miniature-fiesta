@@ -620,3 +620,115 @@ def license_status():
 
     return render_template('license_status.html', license=license_info)
 
+
+@bp.route('/emergency-create-license')
+@csrf.exempt
+def emergency_create_license():
+    """Emergency route to create default license - REMOVE AFTER USE"""
+    from datetime import datetime
+    import hashlib
+    from werkzeug.security import generate_password_hash
+
+    try:
+        default_license_key = "RENDER-2026-PROD-LIVE"
+
+        # Check if license already exists
+        existing_license = License.query.filter_by(license_key=default_license_key).first()
+
+        if existing_license:
+            # Update if needed
+            if not existing_license.is_active or existing_license.is_suspended:
+                existing_license.is_active = True
+                existing_license.is_suspended = False
+                existing_license.activated_at = datetime.utcnow()
+                db.session.commit()
+                return f"""
+                <html dir="rtl">
+                <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #28a745;">✅ تم تحديث الترخيص بنجاح!</h2>
+                        <hr>
+                        <p><strong>🔑 مفتاح الترخيص:</strong> {default_license_key}</p>
+                        <p><strong>👤 اسم المستخدم:</strong> admin</p>
+                        <p><strong>🔒 كلمة المرور:</strong> admin123</p>
+                        <hr>
+                        <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول</a>
+                    </div>
+                </body>
+                </html>
+                """
+            else:
+                return f"""
+                <html dir="rtl">
+                <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #17a2b8;">ℹ️ الترخيص موجود بالفعل!</h2>
+                        <hr>
+                        <p><strong>🔑 مفتاح الترخيص:</strong> {default_license_key}</p>
+                        <p><strong>👤 اسم المستخدم:</strong> admin</p>
+                        <p><strong>🔒 كلمة المرور:</strong> admin123</p>
+                        <p><strong>✅ الحالة:</strong> نشط</p>
+                        <hr>
+                        <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول</a>
+                    </div>
+                </body>
+                </html>
+                """
+        else:
+            # Create new license
+            license = License(
+                license_key=default_license_key,
+                license_hash=hashlib.sha256(default_license_key.encode()).hexdigest(),
+                client_name="DED ERP System - Production",
+                client_email="admin@ded-erp.com",
+                client_company="DED Company",
+                license_type="lifetime",
+                max_users=100,
+                max_branches=10,
+                is_active=True,
+                is_suspended=False,
+                created_at=datetime.utcnow(),
+                activated_at=datetime.utcnow(),
+                expires_at=None,
+                admin_username="admin",
+                admin_password_hash=generate_password_hash("admin123"),
+                notes="Production license for Render deployment"
+            )
+
+            db.session.add(license)
+            db.session.commit()
+
+            return f"""
+            <html dir="rtl">
+            <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
+                <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #28a745;">🎉 تم إنشاء الترخيص بنجاح!</h2>
+                    <hr>
+                    <p><strong>🔑 مفتاح الترخيص:</strong> {default_license_key}</p>
+                    <p><strong>👤 اسم المستخدم:</strong> admin</p>
+                    <p><strong>🔒 كلمة المرور:</strong> admin123</p>
+                    <p><strong>📅 النوع:</strong> مدى الحياة</p>
+                    <p><strong>👥 عدد المستخدمين:</strong> 100</p>
+                    <p><strong>🏢 عدد الفروع:</strong> 10</p>
+                    <hr>
+                    <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول الآن</a>
+                </div>
+            </body>
+            </html>
+            """
+
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        return f"""
+        <html dir="rtl">
+        <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
+            <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #dc3545;">❌ حدث خطأ!</h2>
+                <hr>
+                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">{error_details}</pre>
+            </div>
+        </body>
+        </html>
+        """
+
