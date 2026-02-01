@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_babel import Babel
 from flask_wtf.csrf import CSRFProtect
+from flask_session import Session
 from config import config
 import os
 
@@ -12,6 +13,7 @@ login_manager = LoginManager()
 migrate = Migrate()
 babel = Babel()
 csrf = CSRFProtect()
+sess = Session()
 
 def get_locale():
     """Get user's preferred language from session or default to Arabic"""
@@ -54,6 +56,7 @@ def create_app(config_name='default'):
     login_manager.init_app(app)
     migrate.init_app(app, db)
     csrf.init_app(app)  # Initialize CSRF protection
+    sess.init_app(app)  # Initialize Flask-Session
 
     # Initialize Babel with absolute path
     app.config['BABEL_DEFAULT_LOCALE'] = 'ar'
