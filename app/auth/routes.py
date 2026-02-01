@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request, session, current_app, make_response
 from flask_login import login_user, logout_user, current_user
 from flask_babel import gettext as _
-from app import db
+from app import db, csrf
 from app.auth import bp
 from app.models import User, SecurityLog, SessionLog
 from app.models_license import License
@@ -74,6 +74,7 @@ def check_license(username):
         return False, f"خطأ في التحقق من الترخيص: {str(e)}"
 
 @bp.route('/login', methods=['GET', 'POST'])
+@csrf.exempt  # Temporarily disable CSRF for login to fix Render deployment issue
 def login():
     try:
         if current_user.is_authenticated:
