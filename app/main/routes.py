@@ -818,6 +818,21 @@ def emergency_create_license():
             )
 
             db.session.add(license)
+            db.session.flush()  # Get license.id before creating user
+
+            # Create admin user in User table
+            admin_user = User(
+                username=username,
+                email=client_email,
+                password_hash=generate_password_hash(password),
+                full_name=client_name,
+                is_active=True,
+                is_admin=True,
+                license_id=license.id,
+                created_at=datetime.utcnow()
+            )
+
+            db.session.add(admin_user)
             db.session.commit()
 
             return f"""
@@ -825,15 +840,17 @@ def emergency_create_license():
             <head><meta charset="UTF-8"></head>
             <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
                 <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #28a745;">🎉 تم إنشاء الترخيص بنجاح!</h2>
+                    <h2 style="color: #28a745;">🎉 تم إنشاء الترخيص والمستخدم بنجاح!</h2>
                     <hr>
                     <p><strong>🔑 مفتاح الترخيص:</strong> {license_key}</p>
                     <p><strong>👤 اسم المستخدم:</strong> {username}</p>
                     <p><strong>🔒 كلمة المرور:</strong> {password}</p>
+                    <p><strong>📧 البريد الإلكتروني:</strong> {client_email}</p>
                     <p><strong>📅 النوع:</strong> {license_type}</p>
                     <p><strong>👥 عدد المستخدمين:</strong> {max_users}</p>
                     <p><strong>🏢 عدد الفروع:</strong> {max_branches}</p>
                     <hr>
+                    <p style="color: #28a745; font-weight: bold;">✅ تم إنشاء المستخدم الإداري في قاعدة البيانات</p>
                     <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول الآن</a>
                 </div>
             </body>
