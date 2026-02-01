@@ -621,78 +621,200 @@ def license_status():
     return render_template('license_status.html', license=license_info)
 
 
-@bp.route('/emergency-create-license')
+@bp.route('/emergency-create-license', methods=['GET', 'POST'])
 @csrf.exempt
 def emergency_create_license():
-    """Emergency route to create default license - REMOVE AFTER USE"""
+    """Emergency route to create license with custom credentials"""
     from datetime import datetime
     import hashlib
     from werkzeug.security import generate_password_hash
 
+    if request.method == 'GET':
+        # Show form to create license
+        return """
+        <html dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>إنشاء ترخيص جديد</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 50px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                }
+                .container {
+                    background: white;
+                    padding: 40px;
+                    border-radius: 10px;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                }
+                h2 { color: #333; margin-bottom: 30px; }
+                .form-group {
+                    margin-bottom: 20px;
+                }
+                label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                    color: #555;
+                }
+                input, select {
+                    width: 100%;
+                    padding: 12px;
+                    border: 2px solid #ddd;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    box-sizing: border-box;
+                }
+                input:focus, select:focus {
+                    border-color: #667eea;
+                    outline: none;
+                }
+                button {
+                    width: 100%;
+                    padding: 15px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-top: 20px;
+                }
+                button:hover {
+                    opacity: 0.9;
+                }
+                .note {
+                    background: #fff3cd;
+                    border: 1px solid #ffc107;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin-bottom: 20px;
+                    color: #856404;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h2>🔑 إنشاء ترخيص جديد</h2>
+
+                <div class="note">
+                    <strong>ملاحظة:</strong> سيتم إنشاء ترخيص جديد مع بيانات الدخول التي تحددها.
+                </div>
+
+                <form method="POST">
+                    <div class="form-group">
+                        <label>🔑 مفتاح الترخيص (License Key)</label>
+                        <input type="text" name="license_key" value="RENDER-2026-PROD-LIVE" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>👤 اسم المستخدم (Username)</label>
+                        <input type="text" name="username" value="admin" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🔒 كلمة المرور (Password)</label>
+                        <input type="password" name="password" value="admin123" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🏢 اسم العميل</label>
+                        <input type="text" name="client_name" value="DED ERP System - Production" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📧 البريد الإلكتروني</label>
+                        <input type="email" name="client_email" value="admin@ded-erp.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📅 نوع الترخيص</label>
+                        <select name="license_type">
+                            <option value="lifetime">مدى الحياة (Lifetime)</option>
+                            <option value="annual">سنوي (Annual)</option>
+                            <option value="monthly">شهري (Monthly)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>👥 عدد المستخدمين</label>
+                        <input type="number" name="max_users" value="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🏢 عدد الفروع</label>
+                        <input type="number" name="max_branches" value="10" required>
+                    </div>
+
+                    <button type="submit">✅ إنشاء الترخيص</button>
+                </form>
+            </div>
+        </body>
+        </html>
+        """
+
+    # POST request - Create license
     try:
-        default_license_key = "RENDER-2026-PROD-LIVE"
+        license_key = request.form.get('license_key')
+        username = request.form.get('username')
+        password = request.form.get('password')
+        client_name = request.form.get('client_name')
+        client_email = request.form.get('client_email')
+        license_type = request.form.get('license_type', 'lifetime')
+        max_users = int(request.form.get('max_users', 100))
+        max_branches = int(request.form.get('max_branches', 10))
 
         # Check if license already exists
-        existing_license = License.query.filter_by(license_key=default_license_key).first()
+        existing_license = License.query.filter_by(license_key=license_key).first()
 
         if existing_license:
-            # Update if needed
-            if not existing_license.is_active or existing_license.is_suspended:
-                existing_license.is_active = True
-                existing_license.is_suspended = False
-                existing_license.activated_at = datetime.utcnow()
-                db.session.commit()
-                return f"""
-                <html dir="rtl">
-                <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
-                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #28a745;">✅ تم تحديث الترخيص بنجاح!</h2>
-                        <hr>
-                        <p><strong>🔑 مفتاح الترخيص:</strong> {default_license_key}</p>
-                        <p><strong>👤 اسم المستخدم:</strong> admin</p>
-                        <p><strong>🔒 كلمة المرور:</strong> admin123</p>
-                        <hr>
-                        <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول</a>
-                    </div>
-                </body>
-                </html>
-                """
-            else:
-                return f"""
-                <html dir="rtl">
-                <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
-                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #17a2b8;">ℹ️ الترخيص موجود بالفعل!</h2>
-                        <hr>
-                        <p><strong>🔑 مفتاح الترخيص:</strong> {default_license_key}</p>
-                        <p><strong>👤 اسم المستخدم:</strong> admin</p>
-                        <p><strong>🔒 كلمة المرور:</strong> admin123</p>
-                        <p><strong>✅ الحالة:</strong> نشط</p>
-                        <hr>
-                        <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول</a>
-                    </div>
-                </body>
-                </html>
-                """
+            # Update existing license
+            existing_license.is_active = True
+            existing_license.is_suspended = False
+            existing_license.activated_at = datetime.utcnow()
+            existing_license.admin_username = username
+            existing_license.admin_password_hash = generate_password_hash(password)
+            db.session.commit()
+
+            return f"""
+            <html dir="rtl">
+            <head><meta charset="UTF-8"></head>
+            <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
+                <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #28a745;">✅ تم تحديث الترخيص بنجاح!</h2>
+                    <hr>
+                    <p><strong>🔑 مفتاح الترخيص:</strong> {license_key}</p>
+                    <p><strong>👤 اسم المستخدم:</strong> {username}</p>
+                    <p><strong>🔒 كلمة المرور:</strong> {password}</p>
+                    <hr>
+                    <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول الآن</a>
+                </div>
+            </body>
+            </html>
+            """
         else:
             # Create new license
             license = License(
-                license_key=default_license_key,
-                license_hash=hashlib.sha256(default_license_key.encode()).hexdigest(),
-                client_name="DED ERP System - Production",
-                client_email="admin@ded-erp.com",
-                client_company="DED Company",
-                license_type="lifetime",
-                max_users=100,
-                max_branches=10,
+                license_key=license_key,
+                license_hash=hashlib.sha256(license_key.encode()).hexdigest(),
+                client_name=client_name,
+                client_email=client_email,
+                client_company=client_name,
+                license_type=license_type,
+                max_users=max_users,
+                max_branches=max_branches,
                 is_active=True,
                 is_suspended=False,
                 created_at=datetime.utcnow(),
                 activated_at=datetime.utcnow(),
-                expires_at=None,
-                admin_username="admin",
-                admin_password_hash=generate_password_hash("admin123"),
-                notes="Production license for Render deployment"
+                expires_at=None if license_type == 'lifetime' else None,
+                admin_username=username,
+                admin_password_hash=generate_password_hash(password),
+                notes=f"Created via emergency route on {datetime.utcnow()}"
             )
 
             db.session.add(license)
@@ -700,16 +822,17 @@ def emergency_create_license():
 
             return f"""
             <html dir="rtl">
+            <head><meta charset="UTF-8"></head>
             <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
                 <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
                     <h2 style="color: #28a745;">🎉 تم إنشاء الترخيص بنجاح!</h2>
                     <hr>
-                    <p><strong>🔑 مفتاح الترخيص:</strong> {default_license_key}</p>
-                    <p><strong>👤 اسم المستخدم:</strong> admin</p>
-                    <p><strong>🔒 كلمة المرور:</strong> admin123</p>
-                    <p><strong>📅 النوع:</strong> مدى الحياة</p>
-                    <p><strong>👥 عدد المستخدمين:</strong> 100</p>
-                    <p><strong>🏢 عدد الفروع:</strong> 10</p>
+                    <p><strong>🔑 مفتاح الترخيص:</strong> {license_key}</p>
+                    <p><strong>👤 اسم المستخدم:</strong> {username}</p>
+                    <p><strong>🔒 كلمة المرور:</strong> {password}</p>
+                    <p><strong>📅 النوع:</strong> {license_type}</p>
+                    <p><strong>👥 عدد المستخدمين:</strong> {max_users}</p>
+                    <p><strong>🏢 عدد الفروع:</strong> {max_branches}</p>
                     <hr>
                     <a href="/auth/login" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تسجيل الدخول الآن</a>
                 </div>
@@ -722,6 +845,7 @@ def emergency_create_license():
         error_details = traceback.format_exc()
         return f"""
         <html dir="rtl">
+        <head><meta charset="UTF-8"></head>
         <body style="font-family: Arial; padding: 50px; background: #f0f0f0;">
             <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #dc3545;">❌ حدث خطأ!</h2>
