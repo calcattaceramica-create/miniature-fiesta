@@ -57,26 +57,17 @@ def init_tenant_middleware(app):
                 if hasattr(db, '_engine'):
                     db._engine = None
 
-                print(f"✅ MIDDLEWARE: Reset to master database for exempt route")
                 return None
         
         # Get current tenant from session
         tenant_license_key = session.get('tenant_license_key')
 
-        print(f"🔍 MIDDLEWARE: tenant_license_key from session: {tenant_license_key}")
-        print(f"🔍 MIDDLEWARE: current_user.is_authenticated: {current_user.is_authenticated}")
-        print(f"🔍 MIDDLEWARE: session keys: {list(session.keys())}")
-        print(f"🔍 MIDDLEWARE: session data: {dict(session)}")
-
         # If no tenant in session, redirect to login
         if not tenant_license_key:
-            print(f"❌ MIDDLEWARE: No tenant_license_key in session!")
             if current_user.is_authenticated:
                 # User is authenticated but no tenant - logout
-                print(f"❌ MIDDLEWARE: User is authenticated but no tenant - logging out")
                 flash('خطأ في تحديد الترخيص. يرجى تسجيل الدخول مرة أخرى.', 'error')
                 return redirect(url_for('auth.logout'))
-            print(f"❌ MIDDLEWARE: User not authenticated - redirecting to login")
             return redirect(url_for('auth.login'))
         
         # Get master database URI

@@ -39,7 +39,6 @@ class Config:
     SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies
     SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
     SESSION_REFRESH_EACH_REQUEST = True  # Refresh session on each request
-    SESSION_PERMANENT = True  # Make sessions permanent (use PERMANENT_SESSION_LIFETIME)
 
     # Security
     WTF_CSRF_ENABLED = True  # Enable CSRF protection

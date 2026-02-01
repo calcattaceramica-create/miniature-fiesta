@@ -112,24 +112,15 @@ def login():
             for key in keys_to_remove:
                 session.pop(key, None)
 
-            print(f"🔥 LOGIN: Cleared session data (kept Flask-Login internal state)")
-
             # Set tenant license key BEFORE login_user
             session['tenant_license_key'] = license_key
-            session.modified = True  # Force session to save
-            print(f"✅ LOGIN: Set tenant_license_key in session: {license_key}")
-            print(f"✅ LOGIN: Session keys after setting license: {list(session.keys())}")
-            print(f"✅ LOGIN: Session data: {dict(session)}")
 
             # Now login the user - this will set Flask-Login session data
             login_user(user, remember=remember)
-            print(f"✅ LOGIN: Logged in user: {user.username}")
-            print(f"✅ LOGIN: Session keys after login_user: {list(session.keys())}")
 
             # Create session log
             session_id = str(uuid.uuid4())
             session['session_id'] = session_id
-            session.modified = True  # Force session to save
             session_log = SessionLog(
                 user_id=user.id,
                 session_id=session_id,
@@ -145,10 +136,6 @@ def login():
 
             # Set user language in session
             session['language'] = user.language
-            session.modified = True  # Force session to save
-
-            print(f"✅ LOGIN: Final session keys: {list(session.keys())}")
-            print(f"✅ LOGIN: Final session data: {dict(session)}")
 
             # Check if password change is required
             if user.must_change_password:
@@ -171,8 +158,6 @@ def login():
             response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             response.headers['Pragma'] = 'no-cache'
             response.headers['Expires'] = '0'
-            print(f"✅ LOGIN: Redirecting to {next_page} with cache-busting headers")
-            print(f"✅ LOGIN: Session before redirect: {dict(session)}")
             return response
 
         return render_template('auth/login.html')
@@ -203,12 +188,10 @@ def logout():
 
         # CRITICAL: Clear ALL session data including tenant info
         session.clear()
-        print(f"🔥 LOGOUT: Cleared all session data including tenant_license_key")
 
         # Force database engine disposal
         if hasattr(db, 'engine'):
             db.engine.dispose()
-            print(f"🔥 LOGOUT: Disposed database engine")
 
         flash('تم تسجيل الخروج بنجاح', 'info')
 
@@ -217,7 +200,6 @@ def logout():
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
-    print(f"✅ LOGOUT: Redirecting to login with cache-busting headers")
     return response
 
 @bp.route('/fix-render-license')
